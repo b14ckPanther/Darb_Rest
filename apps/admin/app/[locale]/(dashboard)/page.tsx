@@ -1,4 +1,5 @@
 import React from "react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
 import { resolveTenantContext } from "../../../lib/tenant-resolver";
@@ -20,6 +21,9 @@ export default async function AdminDashboardPage({
   const { locale } = await params;
   const dict = getDictionary(locale);
   const tenantContext = await resolveTenantContext();
+
+  if (tenantContext?.user.isPlatformAdmin && !tenantContext.activeMembership)
+    redirect(`/${locale}/platform`);
 
   if (!tenantContext?.activeBusiness) {
     return (

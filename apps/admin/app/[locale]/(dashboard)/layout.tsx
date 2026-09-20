@@ -23,6 +23,10 @@ export default async function DashboardLayout({
     redirect(`/${currentLocale}/auth/signin`);
   }
 
+  if (tenantContext.user.isPlatformAdmin && !tenantContext.activeMembership) {
+    redirect(`/${currentLocale}/platform`);
+  }
+
   return (
     <TenantProvider value={tenantContext}>
       <AdminShell>{children}</AdminShell>

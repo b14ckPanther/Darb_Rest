@@ -421,12 +421,11 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
       .eq("id", authUser.id)
       .maybeSingle()) as { data: Database["public"]["Tables"]["profiles"]["Row"] | null };
 
-    // Check platform admin status
-    const { data: adminRow } = (await supabase
-      .from("platform_admins")
-      .select("id")
-      .eq("user_id", authUser.id)
-      .maybeSingle()) as { data: { id: string } | null };
+    // Use the canonical security-definer check; fail closed on lookup errors.
+    const { data: platformAdmin, error: platformError } = await supabase.rpc("is_platform_admin", {
+      target_user_id: authUser.id,
+    });
+    if (platformError) throw Error("platform_role_unavailable");
 
     userProfile = {
       id: authUser.id,
@@ -434,7 +433,7 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
       fullName: profileRow?.full_name ?? authUser.email?.split("@")[0] ?? "User",
       phone: profileRow?.phone ?? undefined,
       preferredLocale: (profileRow?.preferred_locale as "ar" | "he" | "en") ?? "ar",
-      isPlatformAdmin: Boolean(adminRow?.id),
+      isPlatformAdmin: platformAdmin === true,
       createdAt: profileRow?.created_at ?? authUser.created_at,
       updatedAt: profileRow?.updated_at ?? authUser.created_at,
     };

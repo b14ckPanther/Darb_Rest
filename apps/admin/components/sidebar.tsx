@@ -33,10 +33,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         activeBusiness.name.en ||
         Object.values(activeBusiness.name)[0]
       : String(activeBusiness.name)
-    : t("admin.noBusinessFound");
+    : user.isPlatformAdmin
+      ? t("platform.title")
+      : t("admin.noBusinessFound");
 
   // Only show routes that actually exist
-  const navItems = [
+  const tenantItems = [
     ...(canManageBranding(activeMembership?.role ?? "read_only")
       ? [{ href: `/${locale}/launch`, label: t("launch.title"), icon: <IconLayers size={18} /> }]
       : []),
@@ -78,6 +80,19 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       label: t("navigation.settings"),
       icon: <IconSettings size={18} />,
     },
+  ];
+
+  const navItems = [
+    ...(user.isPlatformAdmin
+      ? [
+          {
+            href: `/${locale}/platform`,
+            label: t("platform.title"),
+            icon: <IconBuilding size={18} />,
+          },
+        ]
+      : []),
+    ...(!user.isPlatformAdmin || activeBusiness ? tenantItems : []),
   ];
 
   return (
@@ -185,8 +200,13 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               >
                 {user.email || user.fullName}
               </div>
-              <div className="truncate text-[11px] text-[var(--fg-muted)] capitalize" lang="en">
-                {activeMembership?.role || "staff"}
+              <div
+                className="truncate text-[11px] text-[var(--fg-muted)] capitalize"
+                lang={user.isPlatformAdmin ? locale : "en"}
+              >
+                {user.isPlatformAdmin
+                  ? t("platform.role")
+                  : activeMembership?.role || t("platform.account")}
               </div>
             </div>
           </div>
