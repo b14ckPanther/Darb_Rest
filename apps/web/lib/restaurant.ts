@@ -1,5 +1,5 @@
 import "server-only";
-import { assertPublicBusiness } from "./launch";
+import { publicBusiness } from "./launch";
 import { cache } from "react";
 import {
   DEFAULT_APPEARANCE,
@@ -12,16 +12,9 @@ import {
 import { appearanceSchema } from "@darb-rest/validation";
 import { guestDb } from "./guest-orders";
 export const loadRestaurant = cache(async (slug: string, branchSlug?: string) => {
-  if (!(await assertPublicBusiness(slug))) return null;
-  const db = guestDb();
-  const { data: business, error } = await db
-    .from("businesses")
-    .select("id,slug,name,timezone,default_locale")
-    .eq("slug", slug)
-    .eq("status", "active")
-    .maybeSingle();
-  if (error) throw error;
+  const business = await publicBusiness(slug);
   if (!business) return null;
+  const db = guestDb();
   const [branches, branding, appearance] = await Promise.all([
     db
       .from("locations")

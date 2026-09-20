@@ -555,3 +555,13 @@ Local validation is complete. Actual DNS TXT/TLS provisioning and renewal, produ
 trust, CDN/cache headers, deployed smoke checks, alerting and representative load/cross-browser
 checks remain launch gates. Local Next development responses use `no-cache, must-revalidate`;
 request-time publication changes were verified, but production hosting cache behavior was not.
+
+## Performance pass — web and admin
+
+Removed sequential per-membership tenant lookups, reused request-scoped public business/SEO
+reads, eliminated original downloads on warm authorized media-cache hits, and reduced robots
+loading to launch/canonical data. No schema or product phase changes.
+
+Validation: typecheck, lint, unit tests, configured production build, full E2E (**65 passed**) and
+format check pass. See [performance findings and measurements](PERFORMANCE.md) for query counts,
+local trace sizes, benchmark scope and remaining production measurements.

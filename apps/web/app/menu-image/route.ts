@@ -17,9 +17,12 @@ export async function GET(request: Request) {
     return new Response(null, { status: 404 });
   const width = Number(q.get("width") ?? 960);
   if (![480, 960, 1440].includes(width)) return new Response(null, { status: 400 });
-  const { data, error } = await guestDb().storage.from("menu-media").download(dish.image_path);
-  if (error || !data || data.size > 8 * 1024 * 1024) return new Response(null, { status: 404 });
-  const body = await imageDerivative(`menu:${dish.image_path}`, width, await data.arrayBuffer());
+  const body = await imageDerivative(`menu:${dish.image_path}`, width, async () => {
+    const { data, error } = await guestDb().storage.from("menu-media").download(dish.image_path!);
+    if (error || !data || data.size > 8 * 1024 * 1024) throw Error("media_unavailable");
+    return data.arrayBuffer();
+  }).catch(() => null);
+  if (!body) return new Response(null, { status: 404 });
   return new Response(new Uint8Array(body), {
     headers: {
       "Content-Type": "image/webp",

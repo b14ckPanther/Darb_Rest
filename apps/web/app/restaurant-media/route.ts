@@ -23,15 +23,16 @@ export async function GET(request: Request) {
     .maybeSingle();
   if (!business.data || business.error) return new Response(null, { status: 404 });
   if (!(await assertPublicBusiness(business.data.slug))) return new Response(null, { status: 404 });
-  const image = await db.storage.from("restaurant-branding").download(path);
-  if (image.error || !image.data) return new Response(null, { status: 404 });
-  const width = Number(new URL(request.url).searchParams.get("width"));
-  if (new URL(request.url).searchParams.has("width") && ![480, 960, 1440].includes(width))
-    return new Response(null, { status: 400 });
-  if (image.data.size > 8 * 1024 * 1024) return new Response(null, { status: 404 });
-  const body = [480, 960, 1440].includes(width)
-    ? new Uint8Array(await imageDerivative(path, width, await image.data.arrayBuffer()))
-    : image.data;
+  const width = Number(new URL(request.url).searchParams.get("width") ?? 960);
+  if (![480, 960, 1440].includes(width)) return new Response(null, { status: 400 });
+  const derivative = await imageDerivative(path, width, async () => {
+    const image = await db.storage.from("restaurant-branding").download(path);
+    if (image.error || !image.data || image.data.size > 8 * 1024 * 1024)
+      throw Error("media_unavailable");
+    return image.data.arrayBuffer();
+  }).catch(() => null);
+  if (!derivative) return new Response(null, { status: 404 });
+  const body = new Uint8Array(derivative);
   return new Response(body, {
     headers: {
       "Content-Type": "image/webp",

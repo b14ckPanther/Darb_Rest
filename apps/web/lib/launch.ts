@@ -1,5 +1,6 @@
 import "server-only";
 import { cache } from "react";
+import type { Database } from "@darb-rest/supabase";
 import { headers } from "next/headers";
 import { getAdminClient } from "@darb-rest/supabase/admin";
 import { publicOrigin, validateProduction } from "@darb-rest/config";
@@ -23,18 +24,22 @@ export const requestTenant = cache(async () => {
   if (error || !data) throw Error("unknown_host");
   return data;
 });
-export async function assertPublicBusiness(slug: string) {
+type PublicBusiness = Pick<
+  Database["public"]["Tables"]["businesses"]["Row"],
+  "id" | "slug" | "name" | "timezone" | "default_locale"
+>;
+export const publicBusiness = cache(async (slug: string): Promise<PublicBusiness | null> => {
   const bound = await requestTenant();
-  if (bound && bound !== slug) return false;
+  if (bound && bound !== slug) return null;
   const db = getAdminClient();
   const { data: b, error: e } = await db
     .from("businesses")
-    .select("id")
+    .select("id,slug,name,timezone,default_locale")
     .eq("slug", slug)
     .eq("status", "active")
     .maybeSingle();
   if (e) throw e;
-  if (!b) return false;
+  if (!b) return null;
   const { data, error } = await db
     .from("restaurant_launch")
     .select("is_public")
@@ -43,10 +48,13 @@ export async function assertPublicBusiness(slug: string) {
   // Existing local tests may run before the operator applies the launch migration. Production fails closed.
   if (error) {
     if (process.env.NODE_ENV !== "production" && ["42P01", "PGRST205"].includes(error.code))
-      return true;
+      return b;
     throw error;
   }
-  return data?.is_public === true;
+  return data?.is_public === true ? b : null;
+});
+export async function assertPublicBusiness(slug: string) {
+  return !!(await publicBusiness(slug));
 }
 export async function publicMutationBudget() {
   if (process.env.NODE_ENV !== "production") return;
@@ -58,7 +66,7 @@ export async function publicMutationBudget() {
   const { data, error } = await getAdminClient().rpc("consume_public_budget", { p_key: key });
   if (error || !data) throw Error("request_budget_exceeded");
 }
-export async function canonicalOrigin(businessId: string) {
+export const canonicalOrigin = cache(async (businessId: string) => {
   const { data, error } = await getAdminClient()
     .from("business_domains")
     .select("hostname")
@@ -75,4 +83,4 @@ export async function canonicalOrigin(businessId: string) {
   return data
     ? { origin: `https://${data.hostname}`, custom: true }
     : { origin: publicOrigin(), custom: false };
-}
+});

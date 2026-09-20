@@ -8,7 +8,7 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "test": "turbo test && node --test scripts/test-account-fixture.test.mjs",
+    "test": "turbo test && node --test scripts/test-account-fixture.test.mjs && node --experimental-strip-types --test scripts/media-cache.test.mjs",
     "test:e2e": "playwright test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,json,css,md}\"",
