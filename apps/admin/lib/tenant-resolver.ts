@@ -483,6 +483,64 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
     };
 
     if (membershipRows && membershipRows.length > 0) {
+      const businessIds = membershipRows
+        .filter((m) => m.business?.status === "active")
+        .map((m) => m.business_id);
+      const planIds = [
+        ...new Set(
+          membershipRows.flatMap((m) => (m.business?.plan_id ? [m.business.plan_id] : [])),
+        ),
+      ];
+      // Batch across accessible tenants; retain RLS and paginate to avoid the API row cap.
+      async function allRows<T>(
+        query: (start: number, end: number) => PromiseLike<{ data: T[] | null; error: unknown }>,
+      ) {
+        const rows: T[] = [];
+        for (let start = 0; ; start += 1000) {
+          const result = await query(start, start + 999);
+          if (result.error) throw result.error;
+          rows.push(...(result.data ?? []));
+          if ((result.data?.length ?? 0) < 1000) return rows;
+        }
+      }
+      const [allLocations, allEntitlements, allOverrides] = await Promise.all([
+        businessIds.length
+          ? allRows((start, end) =>
+              supabase
+                .from("locations")
+                .select(
+                  "id,business_id,name,slug,phone,email,address_line1,address_line2,city,country,latitude,longitude,timezone,is_primary,status,created_at,updated_at",
+                )
+                .in("business_id", businessIds)
+                .eq("status", "active")
+                .order("is_primary", { ascending: false })
+                .order("id")
+                .range(start, end),
+            )
+          : [],
+        planIds.length
+          ? allRows((start, end) =>
+              supabase
+                .from("plan_entitlements")
+                .select("id,plan_id,feature_key,enabled,limit_value,created_at,updated_at")
+                .in("plan_id", planIds)
+                .order("id")
+                .range(start, end),
+            )
+          : [],
+        businessIds.length
+          ? allRows((start, end) =>
+              supabase
+                .from("business_feature_overrides")
+                .select(
+                  "id,business_id,feature_key,enabled,limit_value,reason,expires_at,created_at,updated_at",
+                )
+                .in("business_id", businessIds)
+                .order("id")
+                .range(start, end),
+            )
+          : [],
+      ]);
       for (const m of membershipRows) {
         const b = m.business;
         if (!b || b.status !== "active") continue;
@@ -506,15 +564,7 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
           disabledAt: b.disabled_at ?? undefined,
         };
 
-        // Fetch locations
-        const { data: locRows } = (await supabase
-          .from("locations")
-          .select("*")
-          .eq("business_id", businessObj.id)
-          .eq("status", "active")
-          .order("is_primary", { ascending: false })) as {
-          data: Array<Database["public"]["Tables"]["locations"]["Row"]> | null;
-        };
+        const locRows = allLocations.filter((l) => l.business_id === businessObj.id);
 
         const locations: BranchLocation[] = (locRows || []).map((l) => ({
           id: l.id,
@@ -542,12 +592,7 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
         // Fetch plan entitlements
         let planEntitlements: PlanEntitlement[] = [];
         if (businessObj.planId) {
-          const { data: peRows } = (await supabase
-            .from("plan_entitlements")
-            .select("*")
-            .eq("plan_id", businessObj.planId)) as {
-            data: Array<Database["public"]["Tables"]["plan_entitlements"]["Row"]> | null;
-          };
+          const peRows = allEntitlements.filter((pe) => pe.plan_id === businessObj.planId);
 
           if (peRows) {
             planEntitlements = peRows.map((pe) => ({
@@ -562,13 +607,7 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
           }
         }
 
-        // Fetch feature overrides
-        const { data: ovRows } = (await supabase
-          .from("business_feature_overrides")
-          .select("*")
-          .eq("business_id", businessObj.id)) as {
-          data: Array<Database["public"]["Tables"]["business_feature_overrides"]["Row"]> | null;
-        };
+        const ovRows = allOverrides.filter((ov) => ov.business_id === businessObj.id);
 
         const overrides: BusinessFeatureOverride[] = (ovRows || []).map((ov) => ({
           id: ov.id,
