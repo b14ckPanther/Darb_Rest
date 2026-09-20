@@ -111,6 +111,10 @@ Use separate deployment projects for public/admin apps, monorepo-aware pnpm inst
 correct app workspace build/start commands. Secure preview deployments with hosting access controls;
 robots exclusions alone do not make a preview private.
 
+Both app projects pin Node.js functions to Frankfurt (`fra1`) near the database.
+See [Vercel region configuration](VERCEL-REGIONS.md) for project-root checks,
+configuration precedence and post-deployment verification.
+
 ## Launch checklist
 
 - [ ] Apply migration 14 locally; run database assertions and full browser regressions.
