@@ -39,3 +39,31 @@ notches, actual software keyboard/AutoFill and VoiceOver still need physical-dev
 viewport units, safe-area padding and in-flow forms are implemented, but emulated viewport resizing
 is not evidence of physical keyboard behavior. Development screenshots include local test-account
 controls and the framework indicator; these are absent from production. No deployment was made.
+
+## Mobile-only height and centering correction
+
+The following measurements supersede the initial pass above. Changes apply below 768px only;
+tablet/desktop styling, assets, typography, controls and auth behavior are unchanged.
+
+- Hero minimum height is now `96svh`, removing the previous 720px cap. At 390x844 it is about
+  810px, with CTA bottom edges at 724px and 782px. At 430x932 it is about 895px.
+- Hero bottom padding adds 28px to the safe-area inset instead of taking the larger value.
+  Stable viewport sizing does not depend on Safari toolbar pixels and also scales to standalone
+  PWA space. Header/content top insets and image focal position remain intact.
+- The sign-in panel centers the top bar and form together using flex safe centering, `100dvh`
+  with `100svh` fallback, safe-area padding and a clamped internal gap. Content can grow and scroll
+  when there is less room; there is no fixed height or fixed submit button.
+- Real local production sign-in screenshots exclude development account controls. At 390x844,
+  English/Hebrew composition spans roughly 194–650px; Arabic spans 176–668px. Equal remaining
+  top/bottom space confirms composition centering. Submit remains visible at 623–641px.
+
+Captured and inspected EN/AR/HE at 375x812, 390x844, 393x852 and 430x932, with browser-sized space
+and simulated 47px top/34px bottom safe-area padding. All 48 app/locale/viewport/inset combinations
+show visible CTAs/submit without clipping or horizontal overflow. Insets were injected as equivalent
+CSS for QA; these are not real iOS standalone screenshots. Existing tests also cover tablet sizes
+and focused-password/submit reachability with the viewport reduced to 480px.
+
+Validation: typecheck, lint, unit tests, configured production build, formatting and the complete
+68-test E2E suite pass. The three locale mobile tests also pass with an added hero-height assertion.
+Physical iPhone Safari/PWA, software keyboard and browser-chrome transitions remain device QA
+limitations. No schema, deployment, auth or product behavior changes were made.

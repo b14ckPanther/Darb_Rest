@@ -148,7 +148,7 @@
 /* Mobile art direction: actions sit within the stable viewport, not below a full-screen image. */
 @media (max-width: 767px) {
   .marketing-hero {
-    min-height: min(720px, calc(100svh - 24px));
+    min-height: 96svh;
     background: var(--darb-green-dark);
   }
   .marketing-hero picture img {
@@ -156,7 +156,7 @@
   }
   .marketing-hero-content {
     padding-top: max(190px, calc(env(safe-area-inset-top) + 150px));
-    padding-bottom: max(28px, env(safe-area-inset-bottom));
+    padding-bottom: calc(28px + env(safe-area-inset-bottom));
     background: linear-gradient(0deg, var(--darb-green-dark) 0%, transparent 100%);
   }
   .marketing-hero .hero-animate {

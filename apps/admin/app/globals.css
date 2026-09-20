@@ -116,3 +116,21 @@
     display: none;
   }
 }
+
+/* Center the whole mobile composition; allow natural scrolling when the keyboard reduces space. */
+@media (max-width: 767px) {
+  .signin-panel {
+    min-height: 100svh;
+    min-height: 100dvh;
+    justify-content: center;
+    justify-content: safe center;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+  .signin-topbar {
+    padding-block: 0;
+  }
+  .signin-form-area {
+    padding-block: clamp(20px, 3svh, 28px) 0;
+  }
+}

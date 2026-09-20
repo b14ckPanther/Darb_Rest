@@ -21,6 +21,10 @@ for (const locale of ["en", "ar", "he"]) {
         const box = await action.boundingBox();
         expect(box!.y + box!.height).toBeLessThanOrEqual(height!);
       }
+      if (width! < 768) {
+        const hero = await page.locator(".marketing-hero").boundingBox();
+        expect(hero!.height).toBeGreaterThanOrEqual(height! * 0.95);
+      }
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
         true,
       );
