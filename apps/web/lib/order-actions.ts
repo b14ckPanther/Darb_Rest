@@ -1,4 +1,5 @@
 "use server";
+import { assertPublicBusiness, publicMutationBudget } from "./launch";
 import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { orderInputSchema, orderError } from "@darb-rest/validation";
@@ -14,6 +15,8 @@ export async function saveGuestOrder(
   tableToken: string | null = null,
 ): Promise<OrderResult> {
   try {
+    await publicMutationBudget();
+    if (!(await assertPublicBusiness(businessSlug))) return { ok: false, error: "unavailable" };
     const parsed = orderInputSchema.safeParse(raw);
     if (
       !parsed.success ||
@@ -107,6 +110,8 @@ export async function checkoutGuestOrder(
   tableToken: string | null = null,
 ): Promise<OrderResult> {
   try {
+    await publicMutationBudget();
+    if (!(await assertPublicBusiness(businessSlug))) return { ok: false, error: "unavailable" };
     const parsed = orderInputSchema.safeParse(raw);
     if (
       !parsed.success ||

@@ -1,4 +1,5 @@
 import "server-only";
+import { assertPublicBusiness } from "./launch";
 import { cache } from "react";
 import { createHash } from "node:crypto";
 import { cookies } from "next/headers";
@@ -15,6 +16,7 @@ export const guestDb = (): ReturnType<typeof getAdminClient> => {
   return getAdminClient();
 };
 export const loadPublicMenu = cache(async (businessSlug: string, locationSlug: string) => {
+  if (!(await assertPublicBusiness(businessSlug))) return null;
   const db = guestDb();
   const { data, error } = await db.rpc("public_order_menu", {
     p_business_slug: businessSlug,
@@ -32,13 +34,13 @@ export const loadPublicMenu = cache(async (businessSlug: string, locationSlug: s
     } | null;
     content: ContentData;
   };
-  const paths = loaded.content.menu_items.flatMap((i) => (i.image_path ? [i.image_path] : []));
-  const signed = paths.length
-    ? await db.storage.from("menu-media").createSignedUrls(paths, 3600)
-    : null;
-  if (signed?.error) throw signed.error;
   const images = Object.fromEntries(
-    (signed?.data ?? []).filter((s) => s.path && s.signedUrl).map((s) => [s.path!, s.signedUrl!]),
+    loaded.content.menu_items
+      .filter((i) => i.image_path)
+      .map((i) => [
+        i.image_path!,
+        `/menu-image?${new URLSearchParams({ business: businessSlug, branch: locationSlug, item: i.id })}`,
+      ]),
   );
   return { ...loaded, images };
 });

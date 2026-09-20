@@ -1,4 +1,5 @@
 import React from "react";
+import { publicOrigin } from "@darb-rest/config";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
@@ -38,7 +39,7 @@ export async function generateMetadata({
   return {
     title: titles[currentLocale],
     description: descriptions[currentLocale],
-    metadataBase: new URL("https://rest.darb.co.il"),
+    metadataBase: new URL(publicOrigin()),
     icons: {
       icon: "/brand/darb-rest-favicon.png",
       apple: "/brand/darb-rest-pwa-icon.png",
