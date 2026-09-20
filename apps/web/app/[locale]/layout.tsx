@@ -80,6 +80,7 @@ export default async function LocaleLayout({
 
   return (
     <html
+      data-scroll-behavior="smooth"
       lang={locale}
       dir={direction}
       className={`${fontCairo.variable} ${fontHeebo.variable} ${fontUbuntu.variable}`}
