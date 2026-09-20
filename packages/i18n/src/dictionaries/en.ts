@@ -660,9 +660,8 @@ export const en = {
   },
   web: {
     heroEyebrow: "The digital platform for hospitality",
-    heroTitle: "A digital experience worthy of your restaurant",
-    heroSubtitle:
-      "Beautiful menus, clear brand identity, organized locations, and a smoother experience for every guest.",
+    heroTitle: "A premium digital restaurant experience",
+    heroSubtitle: "Premium menus, clear brand identity, and a smoother experience for every guest.",
     heroCta: "Get Started",
     heroCtaSecondary: "See How It Works",
     navProduct: "Product",
