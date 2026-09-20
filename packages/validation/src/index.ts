@@ -10,3 +10,5 @@ export * from "./tables";
 export * from "./kitchen";
 export * from "./operations";
 export * from "./appearance";
+
+export * from "./applications";

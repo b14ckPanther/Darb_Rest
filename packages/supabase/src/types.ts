@@ -29,6 +29,31 @@ export type Database = {
   };
   public: {
     Tables: {
+      restaurant_applications: {
+        Row: {
+          id: string;
+          kind: "application" | "inquiry";
+          full_name: string;
+          business_name: string;
+          email: string;
+          phone: string;
+          city: string | null;
+          business_type: "restaurant" | "cafe" | null;
+          branch_count: number | null;
+          requested_plan_code: "starter" | "pro" | "enterprise" | null;
+          message: string;
+          locale: "en" | "ar" | "he";
+          status: "pending" | "approved" | "rejected";
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          internal_note: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [];
+      };
       restaurant_launch: {
         Row: { business_id: string; is_public: boolean; updated_at: string };
         Insert: { business_id: string; is_public?: boolean };
@@ -1789,6 +1814,12 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      submit_restaurant_application: { Args: { p_input: Json }; Returns: undefined };
+      review_restaurant_application: {
+        Args: { p_id: string; p_status: string; p_internal_note: string; p_plan: string | null };
+        Returns: undefined;
+      };
+
       save_restaurant_appearance: {
         Args: { p_business_id: string; p_revision: number; p_settings: Json; p_publish: boolean };
         Returns: number;
