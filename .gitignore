@@ -1,0 +1,64 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js
+.next/
+out/
+
+# Turborepo
+.turbo
+
+# Testing
+coverage/
+playwright-report/
+test-results/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build outputs
+dist/
+build/
+
+# Operating System
+.DS_Store
+*.pem
+
+# IDEs
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Local reconciliation backups and Supabase runtime
+.tmp/
+supabase/.temp/
+supabase/.branches/
+
+# Isolated local database browser tests
+.next-phase4/
+
+.next-phase5/
+
+# All private environment variants; examples contain placeholders only
+.env*
+!.env.example
+*.tsbuildinfo
+.next-*/
+
+# Local editor guidance (preserved on disk)
+AGENTS.md
+CLAUDE.md
+
+# Local diagnostic artifacts
+*.log
+*.dump
+*.backup
