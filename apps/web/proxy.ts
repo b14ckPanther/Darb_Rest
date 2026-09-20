@@ -1,12 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE, COOKIE_KEYS, publicOrigin } from "@darb-rest/config";
 import { domainHostname } from "@darb-rest/types";
+import { isLocalDevelopmentHost } from "./lib/local-development-host";
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   if (pathname.startsWith("/_next/")) return NextResponse.next();
   const raw = request.headers.get("host") ?? "";
-  const local =
-    process.env.NODE_ENV !== "production" && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(raw);
+  const local = isLocalDevelopmentHost(raw);
   let tenant: string | null = null;
   if (!local && raw !== new URL(publicOrigin()).host) {
     const hostname = domainHostname(raw);
