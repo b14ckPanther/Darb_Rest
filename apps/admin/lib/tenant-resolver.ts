@@ -1,3 +1,4 @@
+import { decodeDevMemberships } from "./dev-memberships";
 import { cache } from "react";
 import { cookies } from "next/headers";
 import { adminAuth, platformRole } from "./auth";
@@ -633,30 +634,14 @@ async function resolveTenantContextUncached(): Promise<TenantContext | null> {
   }
 
   // 2.5 Merge dynamic memberships created via onboarding or branch management in non-production
-  if (process.env.NODE_ENV !== "production") {
-    // 1. In-memory store (bypasses 4KB cookie limits and serialization)
-    if (globalThis.__DARB_REST_DEV_MEMBERSHIPS__) {
-      const devStoreList = globalThis.__DARB_REST_DEV_MEMBERSHIPS__.get(userProfile.email) || [];
-      for (const item of devStoreList) {
-        const existingIdx = membershipsList.findIndex((m) => m.business.id === item.business.id);
-        if (existingIdx >= 0) {
-          membershipsList[existingIdx] = item;
-        } else {
-          membershipsList.push(item);
-        }
-      }
-    }
-
-    // 2. Dynamic cookie fallback
+  if (process.env.NODE_ENV !== "production" && !authUser) {
+    // Browser-backed state is isolated to the existing mock session, never real auth.
     const dynamicCookie = cookieStore.get("darb_rest_dynamic_memberships")?.value;
     if (dynamicCookie) {
       try {
-        const decoded = dynamicCookie.includes("%")
-          ? decodeURIComponent(dynamicCookie)
-          : dynamicCookie;
-        const dynamicList = JSON.parse(decoded);
+        const dynamicList = decodeDevMemberships(dynamicCookie);
         for (const item of dynamicList) {
-          if (!item.userEmail || item.userEmail === userProfile.email) {
+          if (item.userEmail === userProfile.email) {
             const existingIdx = membershipsList.findIndex(
               (m) => m.business.id === item.business.id,
             );

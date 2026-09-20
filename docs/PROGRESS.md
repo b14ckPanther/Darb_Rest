@@ -627,3 +627,15 @@ remote-backed production latency; deployed authenticated traces and region check
   full parallel run. Focused acquisition + locale rerun: 7 passed, 1 skipped.
   The skip is the new real persistence/review test awaiting migration 15. Database
   assertions and platform applications visual QA remain pending that migration.
+
+### E2E scroll and onboarding follow-up (September 21, 2026)
+
+- Fixed initial streamed fragment scrolling and centralized homepage locale restoration
+  after content commits. Query strings, hashes and visible section offsets are preserved;
+  locale switches remain client navigation.
+- Fixed the oversized development onboarding membership cookie (rejected by Chromium).
+  Bounded compressed session data replaces worker-local membership memory. Real sessions
+  use successful onboarding RPC IDs and cannot fall back to mock memberships.
+- Independent verification: all four locale tests passed five repetitions (20/20);
+  onboarding passed five repetitions (5/5). Full parallel E2E suite: **77 passed**.
+  No migrations were run and no translations were changed.

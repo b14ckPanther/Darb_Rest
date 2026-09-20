@@ -40,9 +40,6 @@ export async function POST(request: NextRequest) {
       cookieStore.delete("darb_rest_dynamic_memberships");
       cookieStore.delete("darb_rest_onboarding_draft");
       cookieStore.delete(COOKIE_KEYS.ONBOARDING_DRAFT);
-      if (globalThis.__DARB_REST_DEV_MEMBERSHIPS__) {
-        globalThis.__DARB_REST_DEV_MEMBERSHIPS__.delete("newuser@darb.co.il");
-      }
     }
   }
 
@@ -74,9 +71,6 @@ export async function GET(request: NextRequest) {
       cookieStore.delete("darb_rest_dynamic_memberships");
       cookieStore.delete("darb_rest_onboarding_draft");
       cookieStore.delete(COOKIE_KEYS.ONBOARDING_DRAFT);
-      if (globalThis.__DARB_REST_DEV_MEMBERSHIPS__) {
-        globalThis.__DARB_REST_DEV_MEMBERSHIPS__.delete("newuser@darb.co.il");
-      }
     }
   }
 

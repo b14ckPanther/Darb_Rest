@@ -47,11 +47,23 @@ for (const viewport of [
     await page.evaluate(() =>
       window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }),
     );
+    const footerOffset = await page
+      .locator("footer")
+      .evaluate((element) => element.getBoundingClientRect().top);
     await page
       .locator("footer")
       .getByRole("button", { name: "Switch language to English", exact: true })
       .click();
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect
+      .poll(async () =>
+        Math.abs(
+          (await page
+            .locator("footer")
+            .evaluate((element) => element.getBoundingClientRect().top)) - footerOffset,
+        ),
+      )
+      .toBeLessThan(3);
     const y = await page.evaluate(() => window.scrollY);
     await page
       .locator("footer")
@@ -65,6 +77,10 @@ for (const viewport of [
 test("language switching retains the hash without scrolling back to a stale anchor", async ({
   page,
 }) => {
+  let documents = 0;
+  page.on("request", (request) => {
+    if (request.isNavigationRequest() && request.frame() === page.mainFrame()) documents++;
+  });
   await page.goto("http://localhost:3000/en?source=locale-qa#product");
   await page.evaluate(() => document.fonts.ready);
   await expect
@@ -88,6 +104,7 @@ test("language switching retains the hash without scrolling back to a stale anch
     .filter({ visible: true })
     .click();
   await expect(page).toHaveURL("http://localhost:3000/he?source=locale-qa#product");
+  expect(documents).toBe(1);
   await expect
     .poll(async () =>
       Math.abs(

@@ -1,15 +1,11 @@
 "use client";
 
-import React, { useLayoutEffect } from "react";
+import React from "react";
+import { rememberLocalePosition } from "./home-scroll-restoration";
 import { usePathname, useRouter } from "next/navigation";
 import { LOCALE_CONFIGS, SUPPORTED_LOCALES, type SupportedLocale } from "@darb-rest/i18n";
 import { COOKIE_KEYS } from "@darb-rest/config";
 import { IconGlobe } from "@darb-rest/icons";
-
-// A locale segment can remount the header/footer. Keep the one-shot scroll target
-// outside either switcher instance, and consume it only on the destination route.
-let pendingScroll: { pathname: string; section: number; offset: number; y: number } | undefined;
-const scrollSections = () => Array.from(document.querySelectorAll("main section, footer"));
 
 export function LocaleSwitcher({
   currentLocale,
@@ -20,21 +16,6 @@ export function LocaleSwitcher({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-
-  useLayoutEffect(() => {
-    const target = pendingScroll;
-    if (!target) return;
-    pendingScroll = undefined;
-    if (target.pathname !== pathname) return;
-    const section = scrollSections()[target.section];
-    // Restore before paint without animating through the translated document.
-    window.scrollTo({
-      top: section
-        ? window.scrollY + section.getBoundingClientRect().top - target.offset
-        : target.y,
-      behavior: "instant",
-    });
-  }, [pathname]);
 
   const handleLocaleChange = (newLocale: SupportedLocale) => {
     if (newLocale === currentLocale) return;
@@ -52,14 +33,7 @@ export function LocaleSwitcher({
     const newPath = `/${segments.join("/")}`;
     // On the homepage preserve the visible section, not just its old pixel
     // position: translated text and fonts change the height of preceding sections.
-    const sections = segments.length === 1 ? scrollSections() : [];
-    const section = sections.findIndex((element) => element.getBoundingClientRect().bottom > 100);
-    pendingScroll = {
-      pathname: newPath,
-      section,
-      offset: sections[section]?.getBoundingClientRect().top ?? 0,
-      y: window.scrollY,
-    };
+    rememberLocalePosition(newPath, segments.length === 1);
     router.push(`${newPath}${window.location.search}${window.location.hash}`, { scroll: false });
   };
 

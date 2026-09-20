@@ -1,5 +1,6 @@
 "use server";
 
+import { encodeDevMemberships, decodeDevMemberships } from "../dev-memberships";
 import { cookies } from "next/headers";
 import { getServerClient } from "@darb-rest/supabase/server";
 import {
@@ -55,11 +56,11 @@ export async function updateBusinessInfoAction(
   const dynamicCookie = cookieStore.get("darb_rest_dynamic_memberships")?.value;
   if (dynamicCookie) {
     try {
-      const list = JSON.parse(dynamicCookie);
+      const list = decodeDevMemberships(dynamicCookie);
       const target = list.find((m: { business: { id: string } }) => m.business.id === businessId);
       if (target) {
         Object.assign(target.business, data);
-        cookieStore.set("darb_rest_dynamic_memberships", JSON.stringify(list), {
+        cookieStore.set("darb_rest_dynamic_memberships", encodeDevMemberships(list), {
           path: "/",
           httpOnly: true,
           sameSite: "lax",

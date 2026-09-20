@@ -6,6 +6,15 @@ test.describe("Phase 3: Business & Branch Onboarding Flow", () => {
   test("Fresh user sees onboarding CTA, completes wizard, and accesses new active tenant", async ({
     page,
   }) => {
+    const blockedMembershipCookies: string[] = [];
+    const cdp = await page.context().newCDPSession(page);
+    await cdp.send("Network.enable");
+    cdp.on("Network.responseReceivedExtraInfo", (event) => {
+      for (const blocked of event.blockedCookies ?? []) {
+        if (blocked.cookieLine.startsWith("darb_rest_dynamic_memberships="))
+          blockedMembershipCookies.push(...blocked.blockedReasons);
+      }
+    });
     // 1. Authenticate as fresh user without businesses
     await page.goto(
       "http://localhost:3001/auth/dev-login?email=newuser%40darb.co.il&redirectUrl=/ar",
@@ -130,6 +139,13 @@ test.describe("Phase 3: Business & Branch Onboarding Flow", () => {
     // Verify zero emojis on newly rendered dashboard
     const dashboardText = (await page.textContent("body")) || "";
     expect(EMOJI_REGEX.test(dashboardText)).toBe(false);
+
+    expect(blockedMembershipCookies).toEqual([]);
+    const stored = (await page.context().cookies()).find(
+      (c) => c.name === "darb_rest_dynamic_memberships",
+    );
+    expect(stored).toBeDefined();
+    expect(Buffer.byteLength(stored!.value)).toBeLessThan(4096);
 
     // 12. Navigate to Locations page
     await page.goto("http://localhost:3001/ar/locations");

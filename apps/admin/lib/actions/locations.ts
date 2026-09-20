@@ -1,5 +1,6 @@
 "use server";
 
+import { encodeDevMemberships, decodeDevMemberships } from "../dev-memberships";
 import { cookies } from "next/headers";
 import { getServerClient } from "@darb-rest/supabase/server";
 import { COOKIE_KEYS } from "@darb-rest/config";
@@ -149,7 +150,7 @@ export async function createBranchAction(
   const dynamicCookie = cookieStore.get("darb_rest_dynamic_memberships")?.value;
   if (dynamicCookie) {
     try {
-      const list = JSON.parse(dynamicCookie);
+      const list = decodeDevMemberships(dynamicCookie);
       const target = list.find(
         (m: { business: { id: string } }) => m.business.id === data.businessId,
       );
@@ -160,7 +161,7 @@ export async function createBranchAction(
           });
         }
         target.locations.push(newLocation);
-        cookieStore.set("darb_rest_dynamic_memberships", JSON.stringify(list), {
+        cookieStore.set("darb_rest_dynamic_memberships", encodeDevMemberships(list), {
           path: "/",
           httpOnly: true,
           sameSite: "lax",
@@ -201,7 +202,7 @@ export async function updateBranchAction(
   const dynamicCookie = cookieStore.get("darb_rest_dynamic_memberships")?.value;
   if (dynamicCookie) {
     try {
-      const list = JSON.parse(dynamicCookie);
+      const list = decodeDevMemberships(dynamicCookie);
       const target = list.find(
         (m: { business: { id: string } }) => m.business.id === context.activeBusiness!.id,
       );
@@ -209,7 +210,7 @@ export async function updateBranchAction(
         const loc = target.locations.find((l: BranchLocation) => l.id === locationId);
         if (loc) {
           Object.assign(loc, parseResult.data);
-          cookieStore.set("darb_rest_dynamic_memberships", JSON.stringify(list), {
+          cookieStore.set("darb_rest_dynamic_memberships", encodeDevMemberships(list), {
             path: "/",
             httpOnly: true,
             sameSite: "lax",

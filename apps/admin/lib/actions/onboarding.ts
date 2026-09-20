@@ -1,5 +1,6 @@
 "use server";
 
+import { encodeDevMemberships, decodeDevMemberships } from "../dev-memberships";
 import { cookies } from "next/headers";
 import { getServerClient } from "@darb-rest/supabase/server";
 import { COOKIE_KEYS } from "@darb-rest/config";
@@ -67,7 +68,7 @@ export async function checkSlugAvailability(rawSlug: string): Promise<SlugCheckR
   const dynamicCookie = cookieStore.get("darb_rest_dynamic_memberships")?.value;
   if (dynamicCookie) {
     try {
-      const dynamicList = JSON.parse(dynamicCookie);
+      const dynamicList = decodeDevMemberships(dynamicCookie);
       const exists = dynamicList.some(
         (m: { business: { slug: string } }) => m.business.slug === normalized,
       );
@@ -90,25 +91,8 @@ interface DevDraftStoreRecord {
   updatedAt: string;
 }
 
-export interface DevMembershipRecord {
-  userEmail: string;
-  business: Business;
-  role: "owner";
-  locations: BranchLocation[];
-  planEntitlements: PlanEntitlement[];
-  overrides: [];
-}
-
 declare global {
   var __DARB_REST_DEV_DRAFTS__: Map<string, DevDraftStoreRecord> | undefined;
-  var __DARB_REST_DEV_MEMBERSHIPS__: Map<string, DevMembershipRecord[]> | undefined;
-}
-
-export function getDevMembershipsStore(): Map<string, DevMembershipRecord[]> {
-  if (!globalThis.__DARB_REST_DEV_MEMBERSHIPS__) {
-    globalThis.__DARB_REST_DEV_MEMBERSHIPS__ = new Map<string, DevMembershipRecord[]>();
-  }
-  return globalThis.__DARB_REST_DEV_MEMBERSHIPS__;
 }
 
 function getDevDraftStore(): Map<string, DevDraftStoreRecord> {
@@ -350,12 +334,14 @@ export async function completeOnboarding(
   // 1. Authenticate user server-side
   let userId: string | null = null;
   let userEmail: string | null = null;
+  let usesRealAuth = false;
 
   if (isRealSupabase) {
     try {
       const supabase = await getServerClient();
       const { data: authData } = await supabase.auth.getUser();
       if (authData?.user) {
+        usesRealAuth = true;
         userId = authData.user.id;
         userEmail = authData.user.email || "";
       }
@@ -386,11 +372,11 @@ export async function completeOnboarding(
     rpc: (func: string, params: unknown) => Promise<{ data: unknown; error: unknown }>;
   }
 
-  // 2. Try executing via Supabase RPC or atomic DB inserts
-  if (isRealSupabase) {
+  // Real sessions must use authoritative database IDs and may never fall back to mock state.
+  if (usesRealAuth) {
     try {
       const supabase = await getServerClient();
-      await (supabase as unknown as DbRpcClient).rpc("create_onboarding_business", {
+      const result = await (supabase as unknown as DbRpcClient).rpc("create_onboarding_business", {
         p_slug: data.businessSlug,
         p_name: data.businessName,
         p_legal_name: data.legalName || null,
@@ -413,12 +399,30 @@ export async function completeOnboarding(
         p_branch_address_line1: data.branchAddressLine1,
         p_branch_city: data.branchCity,
         p_branch_country: data.branchCountry,
-        p_hours: data.operatingHours,
+        p_hours: data.operatingHours.map((h) => ({
+          day_of_week: h.dayOfWeek,
+          open_time: h.openTime,
+          close_time: h.closeTime,
+          is_closed: h.isClosed,
+        })),
       });
+      const created = result.data as { business_id?: string; location_id?: string } | null;
+      if (result.error || !created?.business_id || !created.location_id) return { success: false };
+      const options = {
+        path: "/",
+        httpOnly: true,
+        sameSite: "lax" as const,
+        maxAge: 60 * 60 * 24 * 30,
+      };
+      cookieStore.set(COOKIE_KEYS.ACTIVE_BUSINESS, created.business_id, options);
+      cookieStore.set(COOKIE_KEYS.ACTIVE_LOCATION, created.location_id, options);
+      await clearOnboardingDraft();
+      return { success: true, businessId: created.business_id, slug: data.businessSlug };
     } catch {
-      // RPC failed or Docker database not running; fallback to non-production dynamic store
+      return { success: false };
     }
   }
+  if (process.env.NODE_ENV === "production") return { success: false };
 
   // 3. Register created tenant in dynamic store for seamless non-production access
   const newBusiness: Business = {
@@ -519,7 +523,7 @@ export async function completeOnboarding(
   const existingDynamic = cookieStore.get("darb_rest_dynamic_memberships")?.value;
   if (existingDynamic) {
     try {
-      dynamicMemberships = JSON.parse(existingDynamic);
+      dynamicMemberships = decodeDevMemberships(existingDynamic);
     } catch {
       dynamicMemberships = [];
     }
@@ -534,20 +538,7 @@ export async function completeOnboarding(
     overrides: [],
   });
 
-  if (process.env.NODE_ENV !== "production" && userEmail) {
-    const list = getDevMembershipsStore().get(userEmail) || [];
-    list.push({
-      userEmail,
-      business: newBusiness,
-      role: "owner",
-      locations: [newLocation],
-      planEntitlements: defaultEntitlements,
-      overrides: [],
-    });
-    getDevMembershipsStore().set(userEmail, list);
-  }
-
-  cookieStore.set("darb_rest_dynamic_memberships", JSON.stringify(dynamicMemberships), {
+  cookieStore.set("darb_rest_dynamic_memberships", encodeDevMemberships(dynamicMemberships), {
     path: "/",
     httpOnly: true,
     sameSite: "lax",

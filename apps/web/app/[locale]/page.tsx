@@ -1,3 +1,4 @@
+import { HomeScrollRestoration } from "../../components/home-scroll-restoration";
 import React from "react";
 import type { SupportedLocale } from "@darb-rest/i18n";
 import { Header } from "../../components/header";
@@ -35,6 +36,7 @@ export default async function WebHomePage({
         </RevealProvider>
       </main>
       <Footer locale={locale} />
+      <HomeScrollRestoration />
     </>
   );
 }
