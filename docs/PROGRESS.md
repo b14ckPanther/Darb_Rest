@@ -605,3 +605,25 @@ including 69 browser tests covering role revocation, tenant isolation and consol
 See [admin performance measurements](ADMIN-PERFORMANCE.md) for full timings, query counts,
 instrumentation and limitations. Local Supabase response times are not a certification of
 remote-backed production latency; deployed authenticated traces and region checks remain.
+
+## Controlled acquisition increment — implementation complete, migration validation pending
+
+- Public localized Get Started form replaces acquisition links to sign-in; pricing
+  preserves plan preference. Sign-in remains separate. Free-trial copy removed.
+- Contact now persists general inquiries through the same protected server foundation;
+  no simulated success or guaranteed response time remains in the form.
+- Platform applications queue/detail supports search, filters, pagination, notes,
+  approve/reject, reviewer timestamps and duplicate decision protection.
+- Migration 15 and focused validation/database/browser tests authored. No migrations
+  executed. Real persistence/RLS/review validation awaits manual application.
+- Approval does not create an account or send email. Secure operator-led account
+  invitation remains required before existing business onboarding.
+- Architecture and operator commands: [ACQUISITION-ARCHITECTURE.md](ACQUISITION-ARCHITECTURE.md).
+- Validation (September 21, 2026): typecheck, lint, unit tests, production build and
+  formatting pass. Public visual QA covered 375/390/393/430/768/834/1024/1440px in
+  EN/AR/HE (24 combinations, no horizontal overflow, 48px submit targets).
+- Full E2E: 74 passed, 2 failed, 1 skipped. Existing mocked onboarding dashboard
+  assertion still fails; the locale-anchor check failed intermittently under the
+  full parallel run. Focused acquisition + locale rerun: 7 passed, 1 skipped.
+  The skip is the new real persistence/review test awaiting migration 15. Database
+  assertions and platform applications visual QA remain pending that migration.

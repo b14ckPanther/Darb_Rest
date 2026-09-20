@@ -49,7 +49,9 @@ export default async function PlatformLayout({
         <nav aria-label={L.title} className="mx-auto mt-4 flex max-w-7xl flex-wrap gap-2">
           {[
             ["", L.overview],
+            ["/applications", D.acquisition.applications],
             ["/businesses", L.businesses],
+            ["/users", D.acquisition.users],
             ["/plans", L.plans],
           ].map(([path, label]) => (
             <Link
