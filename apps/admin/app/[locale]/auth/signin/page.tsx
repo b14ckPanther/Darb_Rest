@@ -68,7 +68,7 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="grid min-h-screen lg:grid-cols-2">
+    <div className="grid min-h-[100svh] lg:min-h-screen lg:grid-cols-2">
       {/* Left: Hero Art (desktop) */}
       <div className="relative hidden lg:block">
         <picture>
@@ -96,9 +96,9 @@ export default function SignInPage() {
       </div>
 
       {/* Right: Auth Form */}
-      <div className="flex flex-col bg-[var(--bg-canvas)]">
+      <div className="signin-panel flex flex-col bg-[var(--bg-canvas)]">
         {/* Top bar */}
-        <div className="flex items-center justify-between px-5 py-4 sm:px-8">
+        <div className="signin-topbar flex items-center justify-between px-5 py-4 sm:px-8">
           <Image
             src="/brand/darb-rest-logo-header.png"
             alt="Darb REST"
@@ -112,8 +112,8 @@ export default function SignInPage() {
         </div>
 
         {/* Form Area */}
-        <div className="flex flex-1 items-start px-5 pt-6 sm:items-center sm:justify-center sm:px-8">
-          <div className="w-full max-w-sm space-y-6">
+        <div className="signin-form-area flex flex-1 items-start px-5 pt-6 sm:items-center sm:justify-center sm:px-8">
+          <div className="signin-card w-full max-w-sm space-y-6">
             {/* Heading */}
             <div>
               <h1 className="text-xl font-bold text-[var(--fg-default)] sm:text-2xl">
@@ -138,7 +138,7 @@ export default function SignInPage() {
                 >
                   {t("auth.email")}
                 </label>
-                <div className="relative">
+                <div className="relative" dir="ltr">
                   <div className="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3.5 text-[var(--fg-muted)]">
                     <IconMail size={16} />
                   </div>

@@ -42,3 +42,77 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Compact, in-flow sign-in composition keeps the form clear when the keyboard opens. */
+@media (max-width: 1023px) {
+  .signin-panel {
+    min-height: 100svh;
+    background: radial-gradient(ellipse at 100% 0%, #dce6dd 0%, transparent 52%), #f7f4ed;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+  .signin-topbar {
+    padding: max(16px, env(safe-area-inset-top)) 18px 16px;
+    gap: 12px;
+    border-bottom: 1px solid #183e2d14;
+  }
+  .signin-topbar > img {
+    max-width: 88px;
+    height: auto;
+  }
+  .signin-topbar button {
+    min-height: 44px;
+    padding-inline: 8px;
+  }
+  .signin-form-area {
+    flex: none;
+    justify-content: center;
+    padding: 32px 18px 24px;
+  }
+  .signin-card {
+    max-width: 420px;
+    padding: 26px 22px;
+    background: #fffdf8;
+    border: 1px solid #173e2d19;
+    border-top: 3px solid #163e2b;
+    border-radius: 12px;
+    box-shadow: 0 16px 48px -28px #183e2d60;
+  }
+  .signin-card h1 {
+    font-size: 26px;
+    line-height: 1.35;
+    letter-spacing: -0.025em;
+    color: #163e2b;
+    text-wrap: balance;
+  }
+  .signin-card h1 + p {
+    margin-top: 10px;
+    line-height: 1.65;
+  }
+  .signin-card input {
+    height: 50px;
+    font-size: 16px;
+    border-radius: 8px;
+    scroll-margin-block: 24px;
+  }
+  .signin-card button[type="submit"] {
+    height: 50px !important;
+    border-radius: 8px;
+    background: #163e2b;
+    color: #fffdf8;
+    font-size: 16px;
+  }
+  .signin-card button[aria-controls="signin-password"] {
+    color: #163e2b;
+  }
+  .signin-card button[type="submit"]:active {
+    background: #24573e;
+  }
+}
+@media (max-width: 430px) {
+  .signin-panel {
+    min-width: 0;
+  }
+  .signin-topbar > div > div > div:first-child {
+    display: none;
+  }
+}
