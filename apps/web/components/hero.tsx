@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
 import { getDictionary, getDirection, type SupportedLocale } from "@darb-rest/i18n";
-import { adminUrl } from "./admin-url";
 import { ArrowEnd } from "@darb-rest/icons";
 
 export function Hero({ locale }: { locale: SupportedLocale }) {
@@ -118,16 +117,14 @@ export function Hero({ locale }: { locale: SupportedLocale }) {
             {/* CTA Group */}
             <div className="hero-animate-delay-3 mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
               {/* Primary CTA */}
-              <a
-                href={adminUrl}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href={`/${locale}/get-started`}
                 className="inline-flex h-13 items-center justify-center gap-2.5 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-7 text-base font-semibold text-[var(--color-primary-fg)] shadow-lg transition-all hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--darb-green-dark)] active:translate-y-0"
                 style={{ transitionDuration: "var(--motion-fast)" }}
               >
                 <span>{dict.web.heroCta}</span>
                 <ArrowEnd direction={direction} size={18} />
-              </a>
+              </Link>
 
               {/* Secondary CTA */}
               <Link

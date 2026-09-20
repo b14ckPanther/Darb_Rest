@@ -27,14 +27,6 @@ export default async function ContactPage({
       officeDesc: "حيفا — الكرمل، إسرائيل",
       hoursTitle: "ساعات العمل",
       hoursDesc: "الأحد - الخميس: 9:00 ص - 6:00 م",
-      formTitle: "أرسل لنا رسالة",
-      formSubtitle: "سيتواصل معك أحد مستشارينا خلال يوم عمل واحد.",
-      nameLabel: "الاسم الكامل",
-      restaurantLabel: "اسم المطعم أو المقهى",
-      emailLabel: "البريد الإلكتروني",
-      phoneLabel: "رقم الهاتف",
-      messageLabel: "كيف يمكننا مساعدتك؟",
-      sendButton: "إرسال الرسالة",
       directEmail: "support@darb.co.il",
       directPhone: "+972 4 800 0000",
     },
@@ -51,14 +43,6 @@ export default async function ContactPage({
       officeDesc: "חיפה — כרמל, ישראל",
       hoursTitle: "שעות פעילות",
       hoursDesc: "ראשון - חמישי: 9:00 - 18:00",
-      formTitle: "שלח לנו פנייה",
-      formSubtitle: "נציג מטעמנו יחזור אליך בתוך יום עסקים אחד.",
-      nameLabel: "שם מלא",
-      restaurantLabel: "שם המסעדה או בית הקפה",
-      emailLabel: "כתובת דוא״ל",
-      phoneLabel: "מספר טלפון",
-      messageLabel: "כיצד נוכל לסייע?",
-      sendButton: "שלח פנייה",
       directEmail: "support@darb.co.il",
       directPhone: "+972 4 800 0000",
     },
@@ -75,14 +59,6 @@ export default async function ContactPage({
       officeDesc: "Haifa — Carmel, Israel",
       hoursTitle: "Operating Hours",
       hoursDesc: "Sunday – Thursday: 9:00 AM – 6:00 PM",
-      formTitle: "Send us a message",
-      formSubtitle: "One of our restaurant advisors will follow up within one business day.",
-      nameLabel: "Full Name",
-      restaurantLabel: "Restaurant / Café Name",
-      emailLabel: "Email Address",
-      phoneLabel: "Phone Number",
-      messageLabel: "How can we help you?",
-      sendButton: "Send Inquiry",
       directEmail: "support@darb.co.il",
       directPhone: "+972 4 800 0000",
     },
@@ -90,7 +66,7 @@ export default async function ContactPage({
 
   return (
     <>
-      <Header />
+      <Header solid />
       <main className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20 mb-4">
@@ -180,7 +156,7 @@ export default async function ContactPage({
 
           {/* Contact Inquiry Form Component */}
           <div className="lg:col-span-2">
-            <ContactForm locale={currentLocale} labels={content} />
+            <ContactForm locale={currentLocale} />
           </div>
         </div>
       </main>

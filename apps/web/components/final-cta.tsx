@@ -1,6 +1,6 @@
+import Link from "next/link";
 import React from "react";
 import { getDictionary, getDirection, type SupportedLocale } from "@darb-rest/i18n";
-import { adminUrl } from "./admin-url";
 import { ArrowEnd } from "@darb-rest/icons";
 
 export function FinalCta({ locale }: { locale: SupportedLocale }) {
@@ -41,16 +41,14 @@ export function FinalCta({ locale }: { locale: SupportedLocale }) {
           </p>
 
           <div className="mt-10">
-            <a
-              href={adminUrl}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href={`/${locale}/get-started`}
               className="inline-flex h-14 items-center justify-center gap-2.5 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-8 text-base font-semibold text-[var(--color-primary-fg)] shadow-lg transition-all hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--darb-green-deep)] active:translate-y-0"
               style={{ transitionDuration: "var(--motion-fast)" }}
             >
               <span>{dict.web.finalCta}</span>
               <ArrowEnd direction={direction} size={18} />
-            </a>
+            </Link>
           </div>
         </div>
       </div>

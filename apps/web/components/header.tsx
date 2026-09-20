@@ -8,7 +8,7 @@ import { adminUrl } from "./admin-url";
 import { IconClose, IconMenuBurger } from "@darb-rest/icons";
 import { LocaleSwitcher } from "./locale-switcher";
 
-export function Header() {
+export function Header({ solid = false }: { solid?: boolean }) {
   const { t, locale } = useTranslation();
   const direction = getDirection(locale);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -77,7 +77,7 @@ export function Header() {
       <header
         role="banner"
         className={`marketing-header fixed top-0 z-50 w-full transition-all ${
-          scrolled
+          scrolled || solid
             ? "bg-[var(--warm-ivory)]/95 backdrop-blur-lg shadow-[0_1px_0_var(--border-subtle)]"
             : "bg-transparent [&_nav_a]:text-white/85 [&_nav_a:hover]:text-white [&_a[target]]:text-white"
         }`}
@@ -129,7 +129,7 @@ export function Header() {
           <div className="hidden items-center gap-3 lg:flex">
             <LocaleSwitcher currentLocale={locale} />
             <a
-              href={adminUrl}
+              href={new URL(`/${locale}/auth/signin`, adminUrl).toString()}
               target="_blank"
               rel="noreferrer"
               className="text-sm font-medium text-[var(--fg-muted)] transition-colors hover:text-[var(--fg-default)]"
@@ -137,15 +137,13 @@ export function Header() {
             >
               {t("web.navSignIn")}
             </a>
-            <a
-              href={adminUrl}
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href={`/${locale}/get-started`}
               className="inline-flex h-10 items-center rounded-[var(--radius-md)] bg-[var(--color-primary)] px-5 text-sm font-semibold text-[var(--color-primary-fg)] transition-all hover:bg-[var(--color-primary-hover)] hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2"
               style={{ transitionDuration: "var(--motion-fast)" }}
             >
               {t("web.navGetStarted")}
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -222,7 +220,7 @@ export function Header() {
               <div className="my-4 h-px bg-[var(--border-subtle)]" />
 
               <a
-                href={adminUrl}
+                href={new URL(`/${locale}/auth/signin`, adminUrl).toString()}
                 target="_blank"
                 rel="noreferrer"
                 onClick={closeMobile}
@@ -234,15 +232,13 @@ export function Header() {
 
             {/* Sheet CTA */}
             <div className="border-t border-[var(--border-subtle)] p-4">
-              <a
-                href={adminUrl}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href={`/${locale}/get-started`}
                 onClick={closeMobile}
                 className="flex h-12 w-full items-center justify-center rounded-[var(--radius-md)] bg-[var(--color-primary)] text-sm font-semibold text-[var(--color-primary-fg)] transition-colors hover:bg-[var(--color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
               >
                 {t("web.navGetStarted")}
-              </a>
+              </Link>
             </div>
           </div>
         </>

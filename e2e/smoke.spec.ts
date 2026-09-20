@@ -68,7 +68,7 @@ test.describe("Darb REST Public Website Tests", () => {
     await expect(page.locator("header")).toBeVisible();
 
     // Verify navigation has CTA link
-    await expect(page.locator("body")).toContainText("Start with Darb REST");
+    await expect(page.locator("body")).toContainText("Get Started");
 
     // Verify hero CTA exists
     await expect(page.locator("body")).toContainText("Get Started");
@@ -91,9 +91,7 @@ test.describe("Darb REST Public Website Tests", () => {
     await expect(html).toHaveAttribute("lang", "en");
 
     // Verify English hero text
-    await expect(page.locator("body")).toContainText(
-      "A digital experience worthy of your restaurant",
-    );
+    await expect(page.locator("body")).toContainText("A premium digital restaurant experience");
   });
 
   test("Public Web switches to Hebrew RTL correctly", async ({ page }) => {
@@ -129,7 +127,7 @@ test.describe("Darb REST Public Website Tests", () => {
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("button", { name: /close menu/i })).toBeFocused();
     await page.keyboard.press("Shift+Tab");
-    await expect(dialog.getByRole("link", { name: "Start with Darb REST" })).toBeFocused();
+    await expect(dialog.getByRole("link", { name: "Get Started" })).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
     await expect(menuButton).toBeFocused();

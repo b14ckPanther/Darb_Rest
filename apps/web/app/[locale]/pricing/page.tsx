@@ -1,8 +1,8 @@
+import Link from "next/link";
 import React from "react";
 import { type SupportedLocale, isValidLocale, DEFAULT_LOCALE } from "@darb-rest/i18n";
 import { Header } from "../../../components/header";
 import { Footer } from "../../../components/footer";
-import { adminUrl } from "../../../components/admin-url";
 import { IconCheck, IconSparkles, IconStore, IconBuilding } from "@darb-rest/icons";
 
 export default async function PricingPage({
@@ -67,7 +67,7 @@ export default async function PricingPage({
       faqs: [
         {
           q: "هل يمكنني تجربة المنصة قبل الالتزام؟",
-          a: "نعم، يمكنك البدء فوراً وتجهيز المنيو الخاص بك وتجربته بالكامل على هاتفك قبل نشره للزبائن.",
+          a: "أرسل طلب الانضمام وسيراجعه فريقنا ويتواصل معك بشأن الوصول والخطوات التالية.",
         },
         {
           q: "هل أحتاج إلى خبرة تقنية لإدارة المنيو؟",
@@ -132,7 +132,7 @@ export default async function PricingPage({
       faqs: [
         {
           q: "האם ניתן לנסות את המערכת לפני התחייבות?",
-          a: "כן, ניתן להירשם, להקים את התפריט ולבדוק אותו ישירות בנייד לפני ההשקה לאורחים.",
+          a: "שלחו בקשת גישה. הצוות שלנו יבדוק את פרטי העסק ויצור קשר לגבי גישה והשלבים הבאים.",
         },
         {
           q: "האם דרוש ידע טכני לניהול התפריט?",
@@ -198,7 +198,7 @@ export default async function PricingPage({
       faqs: [
         {
           q: "Can I test the platform before going live?",
-          a: "Yes. You can configure your dishes, brand, and branches in the console and test the guest experience immediately on your phone.",
+          a: "Submit an access request. Our team will review your restaurant details and discuss access and next steps.",
         },
         {
           q: "Do I need technical knowledge to manage menus?",
@@ -214,7 +214,7 @@ export default async function PricingPage({
 
   return (
     <>
-      <Header />
+      <Header solid />
       <main className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         {/* Page Hero */}
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -280,8 +280,8 @@ export default async function PricingPage({
                 </div>
 
                 <div>
-                  <a
-                    href={adminUrl}
+                  <Link
+                    href={`/${currentLocale}/get-started?plan=${plan.code}`}
                     className={`inline-flex w-full items-center justify-center rounded-xl min-h-[44px] px-5 text-sm font-semibold transition-all duration-150 active:scale-[0.98] ${
                       isPopular
                         ? "bg-[var(--color-primary)] text-[var(--color-primary-fg)] hover:bg-[var(--color-primary-hover)] shadow-sm"
@@ -289,7 +289,7 @@ export default async function PricingPage({
                     }`}
                   >
                     {content.getStarted}
-                  </a>
+                  </Link>
                 </div>
               </div>
             );

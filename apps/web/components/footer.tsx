@@ -37,6 +37,7 @@ export function Footer({ locale }: { locale: SupportedLocale }) {
             <Link href={`/${locale}`}>
               <Image
                 src="/brand/darb-rest-logo-dark-transparent.webp"
+                unoptimized
                 alt="Darb REST"
                 width={130}
                 height={40}

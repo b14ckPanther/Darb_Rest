@@ -34,7 +34,7 @@ test.describe("UI Polish & Performance Regression Tests", () => {
   }) => {
     // Check public footer external brand link has lang='en'
     await page.goto("http://localhost:3000/ar");
-    const darbCoIl = page.locator("footer a[href='https://darb.co.il']");
+    const darbCoIl = page.locator("footer a[href='https://darb.co.il/en']");
     await expect(darbCoIl).toHaveAttribute("lang", "en");
 
     // Check admin dashboard overview
