@@ -29,6 +29,33 @@ export type Database = {
   };
   public: {
     Tables: {
+      restaurant_launch: {
+        Row: { business_id: string; is_public: boolean; updated_at: string };
+        Insert: { business_id: string; is_public?: boolean };
+        Update: { is_public?: boolean };
+        Relationships: [];
+      };
+      business_domains: {
+        Row: {
+          id: string;
+          business_id: string;
+          hostname: string;
+          verification_token: string;
+          verified_until: string | null;
+          active: boolean;
+          canonical: boolean;
+          created_at: string;
+        };
+        Insert: { business_id: string; hostname: string };
+        Update: { active?: boolean };
+        Relationships: [];
+      };
+      public_request_budgets: {
+        Row: { key: string; window_start: string; hits: number };
+        Insert: { key: string; window_start: string; hits: number };
+        Update: { hits?: number };
+        Relationships: [];
+      };
       business_feature_overrides: {
         Row: {
           business_id: string;
@@ -2069,6 +2096,18 @@ export type Database = {
         };
         Returns: undefined;
       };
+      set_restaurant_launch: {
+        Args: { p_business_id: string; p_public: boolean };
+        Returns: undefined;
+      };
+      manage_business_domain: {
+        Args: { p_business_id: string; p_hostname: string; p_action: string };
+        Returns: string;
+      };
+      verify_business_domain: { Args: { p_id: string; p_token: string }; Returns: boolean };
+      resolve_restaurant_host: { Args: { p_hostname: string }; Returns: string | null };
+      consume_public_budget: { Args: { p_key: string }; Returns: boolean };
+      restaurant_sitemap: { Args: { p_slug?: string; p_offset?: number }; Returns: Json };
       restaurant_analytics: {
         Args: { p_business_id: string; p_from: string; p_to: string; p_location_id?: string };
         Returns: Json;

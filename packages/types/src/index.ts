@@ -17,3 +17,4 @@ export * from "./templates";
 export * from "./template-catalog";
 
 export * from "./analytics";
+export * from "./launch";

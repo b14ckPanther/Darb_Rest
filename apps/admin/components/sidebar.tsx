@@ -37,6 +37,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   // Only show routes that actually exist
   const navItems = [
+    ...(canManageBranding(activeMembership?.role ?? "read_only")
+      ? [{ href: `/${locale}/launch`, label: t("launch.title"), icon: <IconLayers size={18} /> }]
+      : []),
     ...(canViewAnalytics(activeMembership?.role ?? "staff")
       ? [
           {

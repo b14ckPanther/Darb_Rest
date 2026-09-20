@@ -1,4 +1,32 @@
 export const en = {
+  launch: {
+    title: "Publishing & domains",
+    description: "Explore the menu, opening hours and restaurant ordering.",
+    instructions:
+      "Publish your restaurant when it is ready. To connect a domain, add its TXT ownership record, verify it, and configure your hosting provider and HTTPS before activation. Verification expires after seven days; renew it while the TXT record remains in DNS.",
+    unavailable: "Publishing settings are unavailable. Please try again later.",
+    saved: "Settings saved.",
+    failed: "Could not complete this action. Check ownership, DNS and HTTPS readiness, then retry.",
+    published: "Public restaurant",
+    private: "Unpublished restaurant",
+    publish: "Publish restaurant",
+    unpublish: "Unpublish restaurant",
+    fallback: "Open platform restaurant link",
+    hostname: "Domain hostname",
+    register: "Register domain",
+    active: "Active",
+    inactive: "Inactive",
+    verified: "Ownership verified",
+    pending: "Verification required",
+    canonical: "Use as canonical domain",
+    txt: "Create this DNS TXT record with the exact value shown:",
+    tls: "The domain is configured on the hosting platform and its HTTPS certificate is ready.",
+    verify: "Verify ownership",
+    activate: "Activate",
+    deactivate: "Deactivate",
+    remove: "Remove",
+  },
+
   analytics: {
     title: "Analytics",
     subtitle: "Understand demand, sales and service across your restaurant.",

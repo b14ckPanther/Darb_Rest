@@ -1,6 +1,34 @@
 import type { TranslationDictionary } from "./en";
 
 export const he: TranslationDictionary = {
+  launch: {
+    title: "פרסום ודומיינים",
+    description: "גלו את התפריט, שעות הפתיחה והזמינו מהמסעדה.",
+    instructions:
+      "פרסמו את המסעדה כשהיא מוכנה. לחיבור דומיין הוסיפו רשומת TXT להוכחת בעלות, אמתו אותה והגדירו אחסון ו־HTTPS לפני הפעלה. האימות פג לאחר שבעה ימים; חדשו אותו והשאירו את הרשומה ב־DNS.",
+    unavailable: "הגדרות הפרסום אינן זמינות. נסו שוב מאוחר יותר.",
+    saved: "ההגדרות נשמרו.",
+    failed: "הפעולה נכשלה. בדקו בעלות, DNS ומוכנות HTTPS ונסו שוב.",
+    published: "המסעדה מפורסמת",
+    private: "המסעדה אינה מפורסמת",
+    publish: "פרסום המסעדה",
+    unpublish: "ביטול פרסום",
+    fallback: "פתיחת קישור המסעדה בפלטפורמה",
+    hostname: "שם דומיין",
+    register: "רישום דומיין",
+    active: "פעיל",
+    inactive: "לא פעיל",
+    verified: "הבעלות אומתה",
+    pending: "נדרש אימות",
+    canonical: "הגדרה כדומיין קנוני",
+    txt: "צרו רשומת DNS TXT עם הערך המדויק הבא:",
+    tls: "הדומיין מוגדר בפלטפורמת האחסון ותעודת HTTPS מוכנה.",
+    verify: "אימות בעלות",
+    activate: "הפעלה",
+    deactivate: "השבתה",
+    remove: "הסרה",
+  },
+
   analytics: {
     title: "ניתוח נתונים",
     subtitle: "הבינו את הביקוש, המכירות והשירות במסעדה.",
