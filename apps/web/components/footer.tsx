@@ -121,7 +121,7 @@ export function Footer({ locale }: { locale: SupportedLocale }) {
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
           <p className="text-xs text-white/40">{dict.web.footerCopyright}</p>
           <a
-            href="https://darb.co.il"
+            href="https://darb.co.il/en"
             target="_blank"
             rel="noreferrer"
             className="text-xs text-white/40 transition-colors hover:text-white/60"

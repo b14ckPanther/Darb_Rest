@@ -723,7 +723,7 @@ export const en = {
     finalCtaDesc:
       "Join restaurants and cafés already using Darb REST to serve their guests better.",
     finalCta: "Get Started Free",
-    footerTagline: "The digital platform for modern restaurants and cafés.",
+    footerTagline: "Modern dining, powered by Darb.",
     footerProduct: "Product",
     footerCompany: "Company",
     footerLegal: "Legal",
