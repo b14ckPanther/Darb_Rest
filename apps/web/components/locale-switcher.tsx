@@ -83,7 +83,7 @@ export function LocaleSwitcher({
               onClick={() => handleLocaleChange(localeCode)}
               aria-current={isActive ? "true" : undefined}
               aria-label={`Switch language to ${config.name}`}
-              className={`px-2 py-1 text-xs font-semibold rounded-[var(--radius-xs)] transition-all cursor-pointer ${
+              className={`min-h-11 min-w-11 px-2 py-1 text-xs font-semibold rounded-[var(--radius-xs)] transition-all cursor-pointer ${
                 isActive
                   ? "bg-[var(--color-primary)] text-[var(--color-primary-fg)]"
                   : "text-[var(--fg-muted)] hover:text-[var(--fg-default)]"

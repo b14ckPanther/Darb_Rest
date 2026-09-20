@@ -76,7 +76,7 @@ export function Header() {
     <>
       <header
         role="banner"
-        className={`fixed top-0 z-50 w-full transition-all ${
+        className={`marketing-header fixed top-0 z-50 w-full transition-all ${
           scrolled
             ? "bg-[var(--warm-ivory)]/95 backdrop-blur-lg shadow-[0_1px_0_var(--border-subtle)]"
             : "bg-transparent [&_nav_a]:text-white/85 [&_nav_a:hover]:text-white [&_a[target]]:text-white"
@@ -98,7 +98,7 @@ export function Header() {
           {/* Logo */}
           <Link
             href={`/${locale}`}
-            className="relative shrink-0 rounded-md bg-[var(--warm-ivory)]/95 px-2 py-1"
+            className="relative flex min-h-11 shrink-0 items-center rounded-md bg-[var(--warm-ivory)]/95 px-2 py-1"
             aria-label="Darb REST"
           >
             <Image
@@ -106,7 +106,7 @@ export function Header() {
               alt="Darb REST"
               width={120}
               height={36}
-              className="h-8 w-auto object-contain sm:h-9"
+              className="h-7 w-auto object-contain sm:h-9"
               priority
             />
           </Link>
@@ -158,7 +158,7 @@ export function Header() {
               aria-controls="mobile-navigation"
               aria-expanded={mobileOpen}
               aria-label={mobileOpen ? t("web.navMenuClose") : t("web.navMenuOpen")}
-              className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-default)] transition-colors hover:bg-[var(--bg-surface-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+              className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-default)] transition-colors hover:bg-[var(--bg-surface-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
             >
               {mobileOpen ? <IconClose size={22} /> : <IconMenuBurger size={22} />}
             </button>
@@ -200,7 +200,7 @@ export function Header() {
                 type="button"
                 onClick={closeMobile}
                 aria-label={t("web.navMenuClose")}
-                className="flex h-10 w-10 items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-muted)] hover:bg-[var(--bg-surface-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
+                className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-md)] text-[var(--fg-muted)] hover:bg-[var(--bg-surface-elevated)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)]"
               >
                 <IconClose size={20} />
               </button>

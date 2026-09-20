@@ -9,7 +9,10 @@ export function Hero({ locale }: { locale: SupportedLocale }) {
   const direction = getDirection(locale);
 
   return (
-    <section className="relative min-h-[100svh] flex items-end overflow-hidden" aria-label="Hero">
+    <section
+      className="marketing-hero relative min-h-[100svh] flex items-end overflow-hidden"
+      aria-label="Hero"
+    >
       <picture className="absolute inset-0 hero-image-animate">
         {/* Mobile (< 768px): AVIF → WebP → PNG */}
         <source
@@ -78,7 +81,7 @@ export function Hero({ locale }: { locale: SupportedLocale }) {
       />
 
       {/* Hero Content */}
-      <div className="relative z-10 w-full pb-16 pt-32 sm:pb-20 lg:pb-24">
+      <div className="marketing-hero-content relative z-10 w-full pb-16 pt-32 sm:pb-20 lg:pb-24">
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <div className="max-w-2xl">
             {/* Eyebrow */}
