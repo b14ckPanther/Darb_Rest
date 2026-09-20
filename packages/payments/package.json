@@ -1,0 +1,20 @@
+{
+  "name": "@darb-rest/payments",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@darb-rest/config": "workspace:*",
+    "@types/node": "^22.13.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.0.0"
+  }
+}
