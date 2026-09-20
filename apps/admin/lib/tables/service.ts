@@ -1,7 +1,7 @@
 import "server-only";
 import { contentContext } from "../content/service";
 import { canManageTables, tableQrUrl } from "@darb-rest/types";
-import { PRODUCTION_DOMAIN } from "@darb-rest/config";
+import { publicOrigin } from "@darb-rest/config";
 export async function loadTables(locationId?: string) {
   const ctx = await contentContext();
   if (!ctx) return null;
@@ -39,10 +39,6 @@ export async function loadTables(locationId?: string) {
   };
 }
 export function qrUrl(locale: string, token: string) {
-  const origin =
-    process.env.NEXT_PUBLIC_WEB_URL ||
-    (process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : `https://${PRODUCTION_DOMAIN}`);
+  const origin = publicOrigin();
   return tableQrUrl(origin, locale, token);
 }

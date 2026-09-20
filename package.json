@@ -12,7 +12,8 @@
     "test:e2e": "playwright test",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,json,css,md}\"",
-    "seed:test-account": "node scripts/seed-test-account.mjs"
+    "seed:test-account": "node scripts/seed-test-account.mjs",
+    "smoke:deployment": "node scripts/deployment-smoke.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",

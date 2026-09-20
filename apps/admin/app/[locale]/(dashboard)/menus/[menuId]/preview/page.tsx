@@ -1,4 +1,4 @@
-import { PRODUCTION_DOMAIN } from "@darb-rest/config";
+import { publicOrigin } from "@darb-rest/config";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getDictionary, isValidLocale } from "@darb-rest/i18n";
@@ -50,7 +50,7 @@ export default async function PreviewPage({
             <a
               key={l.id}
               className="inline-flex min-h-11 items-center rounded-xl border px-4 text-sm"
-              href={`${process.env.NEXT_PUBLIC_WEB_URL || (process.env.NODE_ENV === "production" ? "https://" + PRODUCTION_DOMAIN : "http://localhost:3000")}/${locale}/order/${loaded.business.slug}/${l.slug}`}
+              href={`${publicOrigin()}/${locale}/order/${loaded.business.slug}/${l.slug}`}
             >
               {dict.ordering.publicLink} · {l.name[locale] || l.name.en}
             </a>

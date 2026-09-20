@@ -436,7 +436,7 @@ export function AppearanceEditor({
             className="min-h-11 rounded-xl border px-4 py-3"
             target="_blank"
             rel="noreferrer"
-            href={`${process.env.NEXT_PUBLIC_WEB_URL ?? (process.env.NODE_ENV === "production" ? "https://rest.darb.co.il" : "http://localhost:3000")}/${locale}/${businessSlug}?branch=${locations.find((l) => l.id === branch)?.slug ?? ""}`}
+            href={`${process.env.NEXT_PUBLIC_WEB_URL ?? "http://localhost:3000"}/${locale}/${businessSlug}?branch=${locations.find((l) => l.id === branch)?.slug ?? ""}`}
           >
             {L.publicLink}
           </a>
