@@ -537,3 +537,21 @@ Validation before operator application of migration 14:
   migration 14 objects. New domain/publication/budget database assertions are not yet certified.
 - Production DNS/TLS/ingress, deployment smoke checks and load testing remain operator launch
   gates. Phase 12 implementation is committed; production readiness is not yet certified.
+
+### Phase 12 — Validation after operator application of migration 14
+
+- Local launch database assertions: **22 passed**.
+- Full browser suite: **65 passed**, including the previously blocked launch controls and sitemap.
+- Additional local HTTP checks passed for verified custom-host resolution, cross-tenant rejection,
+  EN/AR/HE canonical/JSON-LD, sitemap/robots, unpublished public and legacy order routes, immediate
+  publication/unpublication, domain deactivation and platform fallback. Temporary publication/domain
+  fixture changes were restored afterward.
+- `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm format:check`, and a production build with
+  explicit HTTPS public/admin build-check origins pass. Real deployment origins are still required.
+- No application or schema correction was needed; the four Phase 12 commits remain valid.
+- No migrations or remote commands were executed. Phase 13 was not started.
+
+Local validation is complete. Actual DNS TXT/TLS provisioning and renewal, production ingress/IP
+trust, CDN/cache headers, deployed smoke checks, alerting and representative load/cross-browser
+checks remain launch gates. Local Next development responses use `no-cache, must-revalidate`;
+request-time publication changes were verified, but production hosting cache behavior was not.
