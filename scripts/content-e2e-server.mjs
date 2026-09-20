@@ -17,6 +17,7 @@ const password = "Local-phase4-test-only-2026!";
 const { data: users, error } = await client.auth.admin.listUsers();
 if (error) throw error;
 for (const [name, role] of [
+  ["owner", "owner"],
   ["editor", "editor"],
   ["reader", "read_only"],
   ["staff", "staff"],

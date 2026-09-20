@@ -18,13 +18,13 @@ export default defineConfig({
     {
       name: "chromium",
       testIgnore:
-        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch).spec.ts/,
+        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch|platform).spec.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
     {
       name: "content",
       testMatch:
-        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch).spec.ts/,
+        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch|platform).spec.ts/,
       use: { ...devices["Desktop Chrome"], baseURL: "http://localhost:3101" },
     },
   ],

@@ -565,3 +565,27 @@ loading to launch/canonical data. No schema or product phase changes.
 Validation: typecheck, lint, unit tests, configured production build, full E2E (**65 passed**) and
 format check pass. See [performance findings and measurements](PERFORMANCE.md) for query counts,
 local trace sizes, benchmark scope and remaining production measurements.
+
+## Platform administration — focused fix and audit
+
+The database already provided platform administrators and RLS privileges, but the app
+only exposed tenant navigation and a misleading Staff fallback. Added a canonical
+RPC-backed role check, a separate guarded platform console, zero-membership routing,
+and platform/restaurant navigation for dual-role accounts.
+
+The console includes global counts, paginated business search/detail and plans,
+plus confirmed activation/suspension and existing feature overrides. It uses the
+authenticated RLS client; no schema change, impersonation or remote operation was needed.
+
+Local validation: 12 transactional database assertions and 69 full browser tests pass.
+Browser coverage includes zero-membership administrators, dual roles, normal owner/staff
+denial, ordinary onboarding, revocation, and isolated local activation/suspension/override
+controls. EN/AR/HE layouts were checked at 390, 834 and 1440 pixels; authenticated
+screenshots were reviewed for mobile, tablet and desktop. Typecheck, lint, unit tests,
+configured production build and formatting checks pass.
+
+The existing founder account remains an operator QA gate: credentials exported in a
+separate terminal were not available to the validation process. A read-only,
+environment-driven helper is documented in [platform administration](PLATFORM-ADMIN.md).
+Sign-in and authenticated onboarding exist; signup, verification/resend and password
+reset UI remain registration gaps. No new roadmap phase was started.
