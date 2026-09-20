@@ -1,0 +1,173 @@
+/**
+ * Darb REST Platform Design Tokens
+ * Central visual tokens system: Colors, Radii, Typography, Shadows & Tenant Variables
+ */
+
+:root {
+  /* Surface & Background */
+  --bg-canvas: #fafafa;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f4f5f7;
+  --bg-surface-subtle: #f0f2f5;
+
+  /* Text & Foreground */
+  --fg-default: #0b0f19;
+  --fg-muted: #64748b;
+  --fg-subtle: #94a3b8;
+  --fg-inverted: #ffffff;
+
+  /* Borders & Dividers */
+  --border-default: #e2e8f0;
+  --border-subtle: #edf2f7;
+  --border-strong: #cbd5e1;
+
+  /* Brand / Platform Palette (Sharp Amber & Charcoal) */
+  --color-primary: #d97706;
+  --color-primary-hover: #b45309;
+  --color-primary-fg: #ffffff;
+
+  --color-secondary: #0f172a;
+  --color-secondary-hover: #1e293b;
+  --color-secondary-fg: #f8fafc;
+
+  --color-accent: #0284c7;
+  --color-accent-hover: #0369a1;
+  --color-accent-fg: #ffffff;
+
+  /* Semantic Feedback */
+  --color-success: #10b981;
+  --color-success-bg: #ecfdf5;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fffbeb;
+  --color-destructive: #ef4444;
+  --color-destructive-bg: #fef2f2;
+  --color-info: #3b82f6;
+  --color-info-bg: #eff6ff;
+
+  /* Focus Indicator */
+  --focus-ring: rgba(217, 119, 6, 0.4);
+
+  /* Geometry & Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* Elevation Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+  /* Business Tenant Overrides (Configured dynamically per business) */
+  --tenant-primary: var(--color-primary);
+  --tenant-primary-hover: var(--color-primary-hover);
+  --tenant-primary-fg: var(--color-primary-fg);
+  --tenant-accent: var(--color-accent);
+  --tenant-cover-overlay: rgba(11, 15, 25, 0.65);
+
+  /* ─── Public Website: Extended Palette ─── */
+  --darb-green-deep: #1a3c2a;
+  --darb-green-dark: #0d1f15;
+  --darb-green-mid: #244d36;
+  --darb-green-muted: #3a6b50;
+  --warm-ivory: #faf8f4;
+  --warm-bone: #f0ece4;
+  --warm-cream: #e8e2d8;
+  --graphite: #2a2d35;
+  --graphite-light: #3d414b;
+
+  /* ─── Motion System ─── */
+  --motion-fast: 180ms;
+  --motion-medium: 350ms;
+  --motion-slow: 600ms;
+  --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ─── Typography Scale (Responsive clamp) ─── */
+  --text-hero: clamp(2.25rem, 5vw + 0.5rem, 4rem);
+  --text-display: clamp(1.75rem, 3.5vw + 0.5rem, 3rem);
+  --text-heading: clamp(1.25rem, 2vw + 0.5rem, 2rem);
+  --text-subheading: clamp(1.1rem, 1.5vw + 0.4rem, 1.5rem);
+  --text-body-lg: clamp(1rem, 1vw + 0.25rem, 1.25rem);
+  --text-body: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+  --leading-hero: 1.1;
+  --leading-display: 1.15;
+  --leading-heading: 1.25;
+  --leading-body: 1.65;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+
+  /* ─── Section Spacing ─── */
+  --section-py: clamp(4rem, 8vw, 8rem);
+  --section-py-sm: clamp(3rem, 5vw, 5rem);
+  --content-max: 72rem;
+  --content-narrow: 48rem;
+  --content-px: clamp(1rem, 3vw, 2rem);
+}
+
+/* Dark Theme Tokens */
+.dark,
+[data-theme="dark"] {
+  --bg-canvas: #090b10;
+  --bg-surface: #11141c;
+  --bg-surface-elevated: #181b24;
+  --bg-surface-subtle: #1e222e;
+
+  --fg-default: #f3f5f9;
+  --fg-muted: #949db0;
+  --fg-subtle: #616a7d;
+  --fg-inverted: #090b10;
+
+  --border-default: #222633;
+  --border-subtle: #1a1d27;
+  --border-strong: #33394c;
+
+  --color-primary: #f59e0b;
+  --color-primary-hover: #d97706;
+  --color-primary-fg: #090b10;
+
+  --color-secondary: #f8fafc;
+  --color-secondary-hover: #e2e8f0;
+  --color-secondary-fg: #0f172a;
+
+  --color-accent: #38bdf8;
+  --color-accent-hover: #0284c7;
+  --color-accent-fg: #090b10;
+
+  --color-success-bg: #064e3b;
+  --color-warning-bg: #78350f;
+  --color-destructive-bg: #7f1d1d;
+  --color-info-bg: #1e3a8a;
+
+  --focus-ring: rgba(245, 158, 11, 0.45);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.45), 0 4px 6px -4px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+}
+
+/* Script-aware fallback for every element, including mixed-language values.
+   Ubuntu handles Latin; unsupported Arabic/Hebrew glyphs use Cairo/Heebo.
+   Explicit script fallbacks precede next/font system fallback aliases. */
+:root {
+  --font-multilingual: var(--font-ubuntu), var(--font-cairo), var(--font-heebo), sans-serif;
+}
+
+html,
+:lang(ar),
+:lang(he),
+:lang(en),
+.font-ar,
+.font-he,
+.font-en,
+[data-font] {
+  font-family: var(--font-multilingual);
+}
