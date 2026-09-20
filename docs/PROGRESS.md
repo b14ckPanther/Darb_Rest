@@ -502,3 +502,38 @@ Final validation: `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm build`,
 `pnpm test:e2e` (**59 passed**) and `pnpm format:check` all pass. Phase 11 validation is complete.
 Local Chromium screenshots were reviewed; physical-device/cross-browser and production-load
 validation remain limitations. No next phase was started.
+
+## Phase 12 — Production launch foundations (implementation; migration validation pending)
+
+- Added owner/admin publication controls, verified domain ownership and active/canonical domain
+  management, with exact-host binding and platform-link fallback through the existing engine.
+- Added localized restaurant metadata, social cards, canonical/alternate URLs, escaped Restaurant
+  JSON-LD, robots and a paginated published-branch sitemap. Private order/table context is noindex.
+- Public visibility checks cover menus, pages, QR, guest mutations and media. Managed media retains
+  authorization before bounded derivative reuse; public dish delivery no longer issues new signed
+  Storage URLs. Existing issued links expire according to their original lifetime.
+- Kept public HTML/media request-time/no-store, making the next request after publication read
+  current state without cross-app invalidation secrets or caching guest capabilities.
+- Added production origin/key validation, sanitized server-error events, response headers, a
+  distributed production mutation budget and operator-run deployment smoke tooling/checklists.
+- Migration `20260920000014_production_launch.sql` is authored only. No migrations, resets, pushes,
+  repairs, remote seed or remote schema commands were run. No deployment or live DNS mutation ran.
+- Live gateway integration and later roadmap work remain outside this phase.
+
+See [production architecture](PRODUCTION-ARCHITECTURE.md) and [custom domains](CUSTOM-DOMAINS.md).
+
+Validation before operator application of migration 14:
+
+- `pnpm typecheck`, `pnpm lint`, `pnpm test`, and `pnpm format:check` pass.
+- `pnpm build` passes with explicit public/admin HTTPS origins supplied for the build. An
+  unconfigured production build correctly rejects a missing public origin. Build-check origins
+  are placeholders and must be replaced for deployment.
+- Full `pnpm test:e2e`: **63 passed, 2 failed**. Both failures are migration-gated: the published
+  sitemap RPC and owner domain controls require migration 14. Existing ordering, payment,
+  tables/QR, operations, analytics and multilingual template regressions pass.
+- Fixed an existing kitchen E2E pagination wait to match the requested offset instead of racing
+  an unrelated realtime refresh; the real database kitchen workflow passes in the full rerun.
+- Local `supabase test db supabase/tests/launch.test.sql` was attempted and is blocked by absent
+  migration 14 objects. New domain/publication/budget database assertions are not yet certified.
+- Production DNS/TLS/ingress, deployment smoke checks and load testing remain operator launch
+  gates. Phase 12 implementation is committed; production readiness is not yet certified.

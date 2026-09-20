@@ -161,7 +161,10 @@ test("kitchen real database feed, live arrival and staff operations", async ({ p
       if (!(await next.isEnabled())) break;
       const [response] = await Promise.all([
         page.waitForResponse(
-          (r) => r.url().includes("/api/kitchen?") && r.request().method() === "GET",
+          (r) =>
+            r.url().includes("/api/kitchen?") &&
+            r.request().method() === "GET" &&
+            new URL(r.url()).searchParams.get("offset") === String((i + 1) * 50),
         ),
         next.click(),
       ]);

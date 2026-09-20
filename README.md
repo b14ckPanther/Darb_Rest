@@ -199,3 +199,7 @@ loyalty, accounting integrations and advanced forecasting are outside the implem
 - [Templates](docs/TEMPLATE-ARCHITECTURE.md), [managed branding](docs/BRANDING-MEDIA.md) and
   [self-service audit](docs/SELF-SERVICE-AUDIT.md)
 - [Analytics](docs/ANALYTICS-ARCHITECTURE.md) and [implementation progress](docs/PROGRESS.md)
+
+Production launch foundations are documented in [production architecture](docs/PRODUCTION-ARCHITECTURE.md)
+and [custom domains](docs/CUSTOM-DOMAINS.md). Migration 14 and deployment-specific DNS, TLS, ingress
+and smoke validation remain operator-controlled launch gates.
