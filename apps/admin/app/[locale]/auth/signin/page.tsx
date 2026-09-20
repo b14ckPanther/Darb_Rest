@@ -86,8 +86,9 @@ export default function SignInPage() {
             <Image
               src="/brand/darb-rest-logo-dark-transparent.webp"
               alt="Darb REST"
-              width={160}
-              height={48}
+              width={866}
+              height={288}
+              style={{ width: "auto" }}
               className="h-12 w-auto object-contain drop-shadow-md"
             />
           </div>
@@ -103,7 +104,8 @@ export default function SignInPage() {
             src="/brand/darb-rest-logo-header.png"
             alt="Darb REST"
             width={120}
-            height={36}
+            height={40}
+            style={{ width: "auto" }}
             className="h-8 w-auto object-contain lg:hidden"
           />
           <div className="lg:ms-auto">

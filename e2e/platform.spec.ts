@@ -60,7 +60,16 @@ test("platform privileges, zero memberships, tenant switching and normal account
         });
       const context = await browser.newContext(),
         page = await context.newPage();
+      const layoutWarnings: string[] = [];
+      page.on("console", (message) => {
+        if (/has either width or height modified|data-scroll-behavior/.test(message.text()))
+          layoutWarnings.push(message.text());
+      });
       await page.goto("http://localhost:3101/en/auth/signin");
+      expect(
+        await page.evaluate(() => getComputedStyle(document.documentElement).scrollBehavior),
+      ).toBe("auto");
+
       await page.locator("input[type=email]").fill(email);
       await page.locator("input[type=password]").fill(password);
       await page.locator("button[type=submit]").click();
@@ -130,6 +139,9 @@ test("platform privileges, zero memberships, tenant switching and normal account
                 (await api(`rest/v1/businesses?id=eq.${businessId}&select=status`))[0].status,
             )
             .toBe("active");
+          // Wait for the refreshed action result before editing another form.
+          // A database write can complete before the redirect has committed in the browser.
+          await expect(page.locator("main dd").filter({ hasText: /^Active$/ })).toBeVisible();
           const override = page.locator("form").filter({ has: page.locator("input[name=reason]") });
           await override.locator("input[name=limit]").fill("3");
           await override.locator("input[name=reason]").fill("Local platform control verification");
@@ -162,8 +174,31 @@ test("platform privileges, zero memberships, tenant switching and normal account
         await page.goto("http://localhost:3101/en/platform/plans");
         await expect(page.locator("main h1")).toHaveText("Plans & features");
         if (kind === "dual") {
+          await page.evaluate(() => {
+            const state = { missingConsole: false };
+            const observer = new MutationObserver(() => {
+              if (!document.querySelector("main")) state.missingConsole = true;
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+            Object.assign(window, { consoleTransition: { state, observer } });
+          });
           await page.getByRole("link", { name: "Restaurant console", exact: true }).click();
           await expect(page).toHaveURL(/\/en$/);
+          await expect(page.locator("main")).toBeVisible();
+          expect(
+            await page.evaluate(() => {
+              const check = (
+                window as unknown as {
+                  consoleTransition: {
+                    state: { missingConsole: boolean };
+                    observer: MutationObserver;
+                  };
+                }
+              ).consoleTransition;
+              check.observer.disconnect();
+              return check.state.missingConsole;
+            }),
+          ).toBe(false);
         }
         // A stale signed-in session loses platform access immediately after revocation.
         await api(`rest/v1/platform_admins?user_id=eq.${user.id}`, "DELETE");
@@ -195,6 +230,7 @@ test("platform privileges, zero memberships, tenant switching and normal account
           ).toHaveCount(0);
         }
       }
+      expect(layoutWarnings).toEqual([]);
       await context.close();
     }
     const anonymous = await browser.newPage();

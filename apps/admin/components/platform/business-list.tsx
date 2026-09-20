@@ -19,7 +19,7 @@ export async function BusinessList({
   let query = db
     .from("businesses")
     .select("id,name,slug,business_type,status,created_at,plan:plans(name),locations(count)", {
-      count: "exact",
+      ...(recent ? {} : { count: "exact" as const }),
     });
   const term = search
     .trim()

@@ -17,16 +17,23 @@ export default async function PlatformLayout({
     L = D.platform;
   const membership = await db
     .from("memberships")
-    .select("id", { count: "exact", head: true })
+    .select("id")
     .eq("user_id", user.id)
-    .eq("status", "active");
+    .eq("status", "active")
+    .limit(1);
   requireData(membership);
   return (
     <div className="min-h-[100svh] bg-[var(--bg-canvas)]">
       <header className="border-b border-[var(--border-subtle)] bg-[var(--warm-ivory)] px-5 py-4">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
           <Link href={`/${locale}/platform`}>
-            <Image src="/brand/darb-rest-logo-header.png" alt="Darb REST" width={120} height={36} />
+            <Image
+              src="/brand/darb-rest-logo-header.png"
+              alt="Darb REST"
+              width={120}
+              height={40}
+              style={{ width: 120, height: "auto" }}
+            />
           </Link>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[var(--darb-green-deep)]">{L.role}</p>
@@ -53,7 +60,7 @@ export default async function PlatformLayout({
               {label}
             </Link>
           ))}
-          {!!membership.count && (
+          {!!membership.data?.length && (
             <Link className="px-4 py-3 text-sm underline" href={`/${locale}`}>
               {L.tenant}
             </Link>

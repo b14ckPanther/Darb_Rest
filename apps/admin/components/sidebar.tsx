@@ -126,8 +126,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <Image
               src="/brand/darb-rest-logo-header.png"
               alt="Darb REST"
-              width={110}
-              height={32}
+              width={84}
+              height={28}
+              style={{ width: "auto" }}
               className="h-7 w-auto object-contain"
             />
           </Link>

@@ -1,7 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { getServerClient } from "@darb-rest/supabase/server";
+import { adminAuth } from "../auth";
 import { COOKIE_KEYS } from "@darb-rest/config";
 import {
   CONTENT_TABLES,
@@ -15,11 +15,12 @@ export const contentContext = cache(async () => {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   if (!url || url.includes("placeholder") || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
     return null;
-  const db = await getServerClient();
   const {
+    db,
     data: { user },
-  } = await db.auth.getUser();
-  if (!user) return null;
+    error: authError,
+  } = await adminAuth();
+  if (authError || !user) return null;
   const { data: memberships, error } = await db
     .from("memberships")
     .select("business_id,role")

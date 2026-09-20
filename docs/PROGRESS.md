@@ -589,3 +589,19 @@ separate terminal were not available to the validation process. A read-only,
 environment-driven helper is documented in [platform administration](PLATFORM-ADMIN.md).
 Sign-in and authenticated onboarding exist; signup, verification/resend and password
 reset UI remain registration gaps. No new roadmap phase was started.
+
+## Admin performance — platform and dashboard
+
+Measured real authenticated local routes before changing query scheduling. Removed the
+locale-wide loading fallback responsible for roughly 820 ms console switches; measured
+switches now take about 105 ms. Existing page-specific loaders remain. Parallelized tenant
+reads and overview panels, shared request-scoped Auth between server helpers, narrowed
+selections, and replaced an unused membership count with an existence check.
+
+Fixed logo aspect ratios and unnecessary global smooth scrolling. No persistent auth
+cache, schema changes or remote data mutations. All six validation commands pass,
+including 69 browser tests covering role revocation, tenant isolation and console continuity.
+
+See [admin performance measurements](ADMIN-PERFORMANCE.md) for full timings, query counts,
+instrumentation and limitations. Local Supabase response times are not a certification of
+remote-backed production latency; deployed authenticated traces and region checks remain.

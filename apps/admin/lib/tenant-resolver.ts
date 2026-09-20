@@ -1,9 +1,9 @@
 import { cache } from "react";
 import { cookies } from "next/headers";
-import { getServerClient } from "@darb-rest/supabase/server";
-import { resolveEntitlements } from "@darb-rest/supabase";
+import { adminAuth, platformRole } from "./auth";
+import { measureAdminTask } from "./performance";
+import { resolveEntitlements } from "@darb-rest/supabase/entitlements";
 import { COOKIE_KEYS } from "@darb-rest/config";
-import type { Database } from "@darb-rest/supabase";
 import type {
   TenantContext,
   AccessibleBusiness,
@@ -394,9 +394,8 @@ const SEED_USERS: Record<
  * - Active business cookie is validated against the user's verified active memberships.
  * - Never trusts client-supplied business IDs without membership authorization.
  */
-export const resolveTenantContext = cache(async (): Promise<TenantContext | null> => {
+async function resolveTenantContextUncached(): Promise<TenantContext | null> {
   const cookieStore = await cookies();
-  const supabase = await getServerClient();
 
   let userProfile: UserProfile | null;
   let membershipsList: Array<{
@@ -409,47 +408,26 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
 
   // 1. Check live Supabase Auth session
   const {
+    db: supabase,
     data: { user: authUser },
     error: authError,
-  } = await supabase.auth.getUser();
+  } = await adminAuth();
 
   if (authUser && !authError) {
-    // Fetch profile
-    const { data: profileRow } = (await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", authUser.id)
-      .maybeSingle()) as { data: Database["public"]["Tables"]["profiles"]["Row"] | null };
-
-    // Use the canonical security-definer check; fail closed on lookup errors.
-    const { data: platformAdmin, error: platformError } = await supabase.rpc("is_platform_admin", {
-      target_user_id: authUser.id,
-    });
-    if (platformError) throw Error("platform_role_unavailable");
-
-    userProfile = {
-      id: authUser.id,
-      email: authUser.email || "",
-      fullName: profileRow?.full_name ?? authUser.email?.split("@")[0] ?? "User",
-      phone: profileRow?.phone ?? undefined,
-      preferredLocale: (profileRow?.preferred_locale as "ar" | "he" | "en") ?? "ar",
-      isPlatformAdmin: platformAdmin === true,
-      createdAt: profileRow?.created_at ?? authUser.created_at,
-      updatedAt: profileRow?.updated_at ?? authUser.created_at,
-    };
-
-    // Fetch memberships
-    const { data: membershipRows } = (await supabase
-      .from("memberships")
-      .select(
-        `
-        id,
-        user_id,
+    // These reads depend only on the verified user, not on each other.
+    const [profile, platform, membership] = await Promise.all([
+      supabase
+        .from("profiles")
+        .select("full_name,phone,preferred_locale,created_at,updated_at")
+        .eq("id", authUser.id)
+        .maybeSingle(),
+      platformRole(authUser.id),
+      supabase
+        .from("memberships")
+        .select(
+          `
         business_id,
         role,
-        status,
-        created_at,
-        updated_at,
         business:businesses (
           id,
           slug,
@@ -466,19 +444,23 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
           disabled_at
         )
       `,
-      )
-      .eq("user_id", authUser.id)
-      .eq("status", "active")) as {
-      data: Array<{
-        id: string;
-        user_id: string;
-        business_id: string;
-        role: string;
-        status: string;
-        created_at: string;
-        updated_at: string;
-        business: Database["public"]["Tables"]["businesses"]["Row"] | null;
-      }> | null;
+        )
+        .eq("user_id", authUser.id)
+        .eq("status", "active"),
+    ]);
+    if (platform.error) throw Error("platform_role_unavailable");
+    if (profile.error || membership.error) throw Error("tenant_context_unavailable");
+    const profileRow = profile.data;
+    const membershipRows = membership.data;
+    userProfile = {
+      id: authUser.id,
+      email: authUser.email || "",
+      fullName: profileRow?.full_name ?? authUser.email?.split("@")[0] ?? "User",
+      phone: profileRow?.phone ?? undefined,
+      preferredLocale: (profileRow?.preferred_locale as "ar" | "he" | "en") ?? "ar",
+      isPlatformAdmin: platform.data === true,
+      createdAt: profileRow?.created_at ?? authUser.created_at,
+      updatedAt: profileRow?.updated_at ?? authUser.created_at,
     };
 
     if (membershipRows && membershipRows.length > 0) {
@@ -758,4 +740,8 @@ export const resolveTenantContext = cache(async (): Promise<TenantContext | null
     accessibleBusinesses,
     entitlements,
   };
-});
+}
+
+export const resolveTenantContext = cache(() =>
+  measureAdminTask("tenant.resolve", resolveTenantContextUncached),
+);

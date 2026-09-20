@@ -6,7 +6,7 @@ import type { Database } from "./types";
 /**
  * Creates a typed server Supabase client using Next.js async cookies
  */
-export async function getServerClient() {
+export async function getServerClient(options?: { fetch?: typeof fetch }) {
   const cookieStore = await cookies();
 
   const supabaseUrl =
@@ -15,6 +15,7 @@ export async function getServerClient() {
 
   // SSR 0.5 uses the older SupabaseClient generic signature; normalize its return type.
   return createSupabaseServerClient<Database>(supabaseUrl, supabaseAnonKey, {
+    ...(options?.fetch ? { global: { fetch: options.fetch } } : {}),
     cookies: {
       getAll() {
         return cookieStore.getAll();
