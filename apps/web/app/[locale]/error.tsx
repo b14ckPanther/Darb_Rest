@@ -1,0 +1,30 @@
+"use client";
+
+import React from "react";
+import { useTranslation } from "@darb-rest/i18n";
+import { Button, EmptyState } from "@darb-rest/ui";
+import { IconWarning } from "@darb-rest/icons";
+
+export default function ErrorBoundary({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="min-h-screen flex items-center justify-center p-6">
+      <EmptyState
+        icon={<IconWarning size={28} className="text-[var(--color-destructive)]" />}
+        title={t("common.error")}
+        description={t("emptyState.noDataDesc")}
+        action={
+          <Button variant="primary" onClick={() => reset()}>
+            {t("common.retry")}
+          </Button>
+        }
+      />
+    </div>
+  );
+}

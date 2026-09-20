@@ -1,0 +1,146 @@
+@import "tailwindcss";
+@import "../../../packages/ui/src/restaurant/templates.css";
+@source "../../../packages/ui/src";
+@import "../../../packages/design-tokens/src/styles/tokens.css";
+
+@layer base {
+  * {
+    border-color: var(--border-default);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--warm-ivory);
+    color: var(--fg-default);
+    font-family: inherit;
+    min-height: 100vh;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: var(--color-primary-fg);
+  }
+}
+
+/* ─── Motion Keyframes ─── */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes hero-image-reveal {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─── Scroll Reveal System ─── */
+@layer utilities {
+  .reveal-pending {
+    opacity: 0;
+    transform: translateY(24px);
+    transition:
+      opacity var(--motion-slow) var(--ease-premium),
+      transform var(--motion-slow) var(--ease-premium);
+  }
+
+  .reveal-pending.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-delay-1 {
+    transition-delay: 100ms;
+  }
+  .reveal-delay-2 {
+    transition-delay: 200ms;
+  }
+  .reveal-delay-3 {
+    transition-delay: 300ms;
+  }
+  .reveal-delay-4 {
+    transition-delay: 400ms;
+  }
+
+  .hero-animate {
+    animation: hero-reveal 800ms var(--ease-out-expo) both;
+  }
+
+  .hero-animate-delay-1 {
+    animation: hero-reveal 800ms var(--ease-out-expo) 150ms both;
+  }
+
+  .hero-animate-delay-2 {
+    animation: hero-reveal 800ms var(--ease-out-expo) 300ms both;
+  }
+
+  .hero-animate-delay-3 {
+    animation: hero-reveal 800ms var(--ease-out-expo) 450ms both;
+  }
+
+  .hero-image-animate {
+    animation: hero-image-reveal 1200ms var(--ease-out-expo) both;
+  }
+}
+
+/* ─── Reduced Motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .reveal,
+  .reveal.revealed {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .hero-animate,
+  .hero-animate-delay-1,
+  .hero-animate-delay-2,
+  .hero-animate-delay-3,
+  .hero-image-animate {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
