@@ -80,7 +80,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       label: t("navigation.settings"),
       icon: <IconSettings size={18} />,
     },
-  ];
+  ].filter((item) => !/\/(orders|tables|kitchen|operations|analytics)$/.test(item.href));
 
   const navItems = [
     ...(user.isPlatformAdmin

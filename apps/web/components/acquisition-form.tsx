@@ -1,7 +1,7 @@
 "use client";
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
+import { commercialLabels, getDictionary, type SupportedLocale } from "@darb-rest/i18n";
 import { IconCheck } from "@darb-rest/icons";
 import { submitAcquisition } from "../lib/acquisition-actions";
 
@@ -9,8 +9,10 @@ export function AcquisitionForm({
   locale,
   plan = "unsure",
   kind = "application",
+  plans = [],
 }: {
   locale: SupportedLocale;
+  plans?: import("@darb-rest/types").PublicCommercialPlan[];
   plan?: string;
   kind?: "application" | "inquiry";
 }) {
@@ -130,9 +132,15 @@ export function AcquisitionForm({
             <label className="grid gap-2 text-sm font-semibold">
               {L.requested_plan_code}
               <select name="requested_plan_code" className={control} defaultValue={plan}>
-                {(["unsure", "starter", "pro", "enterprise"] as const).map((p) => (
-                  <option key={p} value={p}>
-                    {L[p]}
+                <option value="unsure">{L.unsure}</option>
+                {plans.map((p) => (
+                  <option key={p.id} value={p.code}>
+                    {p.name[locale] || p.name.en} ·{" "}
+                    {p.price_is_starting ? commercialLabels[locale].from + " " : ""}
+                    {new Intl.NumberFormat(locale, { style: "currency", currency: "ILS" }).format(
+                      p.monthly_price_ils,
+                    )}{" "}
+                    / {commercialLabels[locale].monthly}
                   </option>
                 ))}
               </select>

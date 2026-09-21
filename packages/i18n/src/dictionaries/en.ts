@@ -18,7 +18,7 @@ export const en = {
     cafe: "Café",
     starter: "Starter",
     pro: "Pro",
-    enterprise: "Enterprise",
+    business: "Business",
     unsure: "Not sure yet",
     submit: "Send request",
     sending: "Sending…",
@@ -113,9 +113,8 @@ export const en = {
   },
   launch: {
     title: "Publishing & domains",
-    description: "Explore the menu, opening hours and restaurant ordering.",
-    instructions:
-      "Publish your restaurant when it is ready. To connect a domain, add its TXT ownership record, verify it, and configure your hosting provider and HTTPS before activation. Verification expires after seven days; renew it while the TXT record remains in DNS.",
+    description: "Explore the restaurant menu, hours and contact details.",
+    instructions: "Publish your restaurant menu when your content and branding are ready.",
     unavailable: "Publishing settings are unavailable. Please try again later.",
     saved: "Settings saved.",
     failed: "Could not complete this action. Check ownership, DNS and HTTPS readiness, then retry.",
@@ -223,10 +222,9 @@ export const en = {
     paletteBerry: "Berry",
     paletteInk: "Ink",
     closedOrdering:
-      "Closed for service. You may send an order now, but wait for restaurant acceptance before visiting. Orders are not scheduled.",
-    openOrdering: "Open for service. Orders are sent now and require restaurant acceptance.",
-    unknownOrdering:
-      "Service hours are not available. Orders are sent now; wait for restaurant acceptance before visiting.",
+      "The restaurant is closed. Contact it to confirm when your request can be handled.",
+    openOrdering: "Explore the menu and contact the restaurant through WhatsApp where available.",
+    unknownOrdering: "Please contact the restaurant to confirm its hours.",
     publicationState: "Publishing status",
     unsaved: "Unsaved changes — save a draft or publish.",
     savedState: "Draft saved.",
@@ -771,8 +769,7 @@ export const en = {
     customizePoint3: "Consistent across all branches",
     customizePoint4: "Business details and contact info",
     branchTitle: "One restaurant. Every location. One place to manage them.",
-    branchDesc:
-      "Whether you have one branch or twenty, keep your menus, branding, and operations aligned — effortlessly.",
+    branchDesc: "Business brings your branch menus, hours and branding together in one place.",
     branchPoint1: "Centralized branch management",
     branchPoint2: "Individual hours and addresses",
     branchPoint3: "Unified brand identity",
@@ -784,7 +781,7 @@ export const en = {
     menuPoint3: "Availability control",
     plansTitle: "Start simple. Grow when you are ready.",
     plansDesc:
-      "Begin with your digital menu. As your business grows, unlock ordering, payments, and more.",
+      "Start with a beautiful branded menu. Add WhatsApp requests with Pro and manage multiple locations with Business.",
     plansCtaText: "View Plans",
     finalCtaTitle: "Ready to bring your restaurant online?",
     finalCtaDesc:

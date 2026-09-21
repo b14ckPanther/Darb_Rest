@@ -1,7 +1,7 @@
 "use client";
 import { getDictionary } from "@darb-rest/i18n";
 import { useEffect, useState } from "react";
-import { OrderingMenu, type MenuPreviewProps, type RestaurantPresentation } from "@darb-rest/ui";
+import { RestaurantMenu, type MenuPreviewProps, type RestaurantPresentation } from "@darb-rest/ui";
 import { supportedAppearance } from "@darb-rest/types";
 import { appearanceSchema } from "@darb-rest/validation";
 export function AppearancePreview(p: MenuPreviewProps & { restaurant: RestaurantPresentation }) {
@@ -27,14 +27,7 @@ export function AppearancePreview(p: MenuPreviewProps & { restaurant: Restaurant
       <p className="bg-[#1a3c2a] p-3 text-center text-sm text-white">
         {dict.appearance.previewNote}
       </p>
-      <OrderingMenu
-        {...p}
-        restaurant={{ ...p.restaurant, settings, previewMedia: true }}
-        orderLabels={dict.ordering}
-        previewOnly
-        scope={`appearance-preview:${p.locations[0]?.id}`}
-        persist={async () => ({ ok: false, error: "forbidden" })}
-      />
+      <RestaurantMenu {...p} restaurant={{ ...p.restaurant, settings, previewMedia: true }} />
     </>
   );
 }

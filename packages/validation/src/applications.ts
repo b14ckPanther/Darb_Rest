@@ -11,7 +11,7 @@ const text = (max: number) =>
         return (code >= 32 && code !== 127) || [9, 10, 13].includes(code);
       }),
     );
-export const requestedPlanSchema = z.enum(["starter", "pro", "enterprise", "unsure"]);
+export const requestedPlanSchema = z.enum(["starter", "pro", "business", "unsure"]);
 const base = {
   full_name: text(120),
   business_name: text(160),

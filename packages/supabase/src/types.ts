@@ -40,7 +40,7 @@ export type Database = {
           city: string | null;
           business_type: "restaurant" | "cafe" | null;
           branch_count: number | null;
-          requested_plan_code: "starter" | "pro" | "enterprise" | null;
+          requested_plan_code: "starter" | "pro" | "business" | null;
           message: string;
           locale: "en" | "ar" | "he";
           status: "pending" | "approved" | "rejected";
@@ -153,6 +153,7 @@ export type Database = {
       };
       business_settings: {
         Row: {
+          whatsapp_number: string | null;
           accent_color: string | null;
           business_id: string;
           cancellation_policy: string | null;
@@ -169,6 +170,7 @@ export type Database = {
           website_url: string | null;
         };
         Insert: {
+          whatsapp_number?: string | null;
           accent_color?: string | null;
           business_id: string;
           cancellation_policy?: string | null;
@@ -185,6 +187,7 @@ export type Database = {
           website_url?: string | null;
         };
         Update: {
+          whatsapp_number?: string | null;
           accent_color?: string | null;
           business_id?: string;
           cancellation_policy?: string | null;
@@ -561,6 +564,7 @@ export type Database = {
       };
       locations: {
         Row: {
+          whatsapp_number: string | null;
           address_line1: string;
           address_line2: string | null;
           business_id: string;
@@ -582,6 +586,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          whatsapp_number?: string | null;
           address_line1: string;
           address_line2?: string | null;
           business_id: string;
@@ -603,6 +608,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          whatsapp_number?: string | null;
           address_line1?: string;
           address_line2?: string | null;
           business_id?: string;
@@ -1733,6 +1739,13 @@ export type Database = {
       };
       plans: {
         Row: {
+          monthly_price_ils: number | null;
+          yearly_price_ils: number | null;
+          price_is_starting: boolean;
+          display_order: number;
+          public_features: Json;
+          billing_note: Json;
+
           code: string;
           created_at: string;
           description: Json | null;
@@ -1742,6 +1755,13 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          monthly_price_ils?: number | null;
+          yearly_price_ils?: number | null;
+          price_is_starting?: boolean;
+          display_order?: number;
+          public_features?: Json;
+          billing_note?: Json;
+
           code: string;
           created_at?: string;
           description?: Json | null;
@@ -1751,6 +1771,13 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          monthly_price_ils?: number | null;
+          yearly_price_ils?: number | null;
+          price_is_starting?: boolean;
+          display_order?: number;
+          public_features?: Json;
+          billing_note?: Json;
+
           code?: string;
           created_at?: string;
           description?: Json | null;
@@ -1814,6 +1841,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      public_commercial_plans: { Args: Record<string, never>; Returns: Json };
       submit_restaurant_application: { Args: { p_input: Json }; Returns: undefined };
       review_restaurant_application: {
         Args: { p_id: string; p_status: string; p_internal_note: string; p_plan: string | null };

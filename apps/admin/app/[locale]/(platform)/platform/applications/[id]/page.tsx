@@ -1,7 +1,13 @@
+import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 import { ReviewButtons } from "../../../../../../components/platform/review-buttons";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDictionary, LOCALE_CONFIGS, type SupportedLocale } from "@darb-rest/i18n";
+import {
+  commercialLabels,
+  getDictionary,
+  LOCALE_CONFIGS,
+  type SupportedLocale,
+} from "@darb-rest/i18n";
 import { requirePlatform, requireData } from "../../../../../../lib/platform";
 import { reviewApplication } from "../../../../../../lib/actions/applications";
 export default async function Application({
@@ -26,6 +32,12 @@ export default async function Application({
       .maybeSingle(),
   );
   if (!r) notFound();
+  const plans = await getCommercialPlans();
+  const C = commercialLabels[locale];
+  const selected = plans.find((p) => p.code === r.requested_plan_code);
+  const planLabel = (p: (typeof plans)[number]) =>
+    `${p.name[locale] || p.name.en} · ${p.price_is_starting ? C.from + " " : ""}${new Intl.NumberFormat(locale, { style: "currency", currency: "ILS" }).format(p.monthly_price_ils)} / ${C.monthly}`;
+
   return (
     <>
       <Link
@@ -57,7 +69,10 @@ export default async function Application({
               [L.city, r.city],
               [L.business_type, r.business_type ? L[r.business_type] : null],
               [L.branch_count, r.branch_count?.toLocaleString(locale)],
-              [L.requested_plan_code, L[r.requested_plan_code ?? "unsure"]],
+              [
+                L.requested_plan_code,
+                selected ? planLabel(selected) : L[r.requested_plan_code ?? "unsure"],
+              ],
               [L.message, r.message],
               [L.created, new Date(r.created_at).toLocaleString(locale)],
               [L.reviewed, r.reviewed_at ? new Date(r.reviewed_at).toLocaleString(locale) : null],
@@ -84,9 +99,10 @@ export default async function Application({
                   name="requested_plan_code"
                   defaultValue={r.requested_plan_code ?? "unsure"}
                 >
-                  {(["unsure", "starter", "pro", "enterprise"] as const).map((p) => (
-                    <option key={p} value={p}>
-                      {L[p]}
+                  <option value="unsure">{L.unsure}</option>
+                  {plans.map((p) => (
+                    <option key={p.id} value={p.code}>
+                      {planLabel(p)}
                     </option>
                   ))}
                 </select>

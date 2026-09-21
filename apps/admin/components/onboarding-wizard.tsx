@@ -1,4 +1,5 @@
 "use client";
+import { commercialLabels } from "@darb-rest/i18n";
 
 import React, { useState, useEffect, useTransition } from "react";
 import { useTranslation, type SupportedLocale } from "@darb-rest/i18n";
@@ -37,6 +38,9 @@ import {
 import type { OnboardingDraft, BusinessType, DayOfWeek } from "@darb-rest/types";
 
 export interface PlanItem {
+  monthly_price_ils: number;
+  yearly_price_ils: number;
+  price_is_starting: boolean;
   id: string;
   code: string;
   name: Record<SupportedLocale, string>;
@@ -130,9 +134,12 @@ export function OnboardingWizard({
   );
 
   // Step 6: Plan Selection
-  const defaultPlanId =
-    availablePlans[1]?.id || availablePlans[0]?.id || "22222222-2222-2222-2222-222222222222";
-  const [selectedPlanId, setSelectedPlanId] = useState(initialDraft?.planId || defaultPlanId);
+  const defaultPlanId = availablePlans[0]?.id || "";
+  const [selectedPlanId, setSelectedPlanId] = useState(
+    availablePlans.some((p) => p.id === initialDraft?.planId)
+      ? initialDraft!.planId
+      : defaultPlanId,
+  );
 
   // Step 7: Creation state
   const [creationError, setCreationError] = useState<string | null>(null);
@@ -1049,6 +1056,19 @@ export function OnboardingWizard({
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-sm font-bold text-[var(--fg-default)]">
                             {planName}
+                            <span className="mt-2 block text-base font-normal">
+                              {plan.price_is_starting && commercialLabels[locale].from}{" "}
+                              {new Intl.NumberFormat(locale, {
+                                style: "currency",
+                                currency: "ILS",
+                              }).format(plan.monthly_price_ils)}{" "}
+                              {commercialLabels[locale].month} ·{" "}
+                              {new Intl.NumberFormat(locale, {
+                                style: "currency",
+                                currency: "ILS",
+                              }).format(plan.yearly_price_ils)}{" "}
+                              {commercialLabels[locale].year}
+                            </span>
                           </span>
                           {isSelected && (
                             <Badge variant="primary" className="text-[10px]">

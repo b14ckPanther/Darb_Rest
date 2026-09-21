@@ -1,3 +1,4 @@
+import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 import Link from "next/link";
 import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
 import { requestedPlanSchema } from "@darb-rest/validation";
@@ -22,6 +23,7 @@ export default async function GetStarted({
   const { locale } = await params,
     query = await searchParams,
     L = getDictionary(locale).acquisition;
+  const plans = await getCommercialPlans();
   const plan = requestedPlanSchema.safeParse(query.plan);
   return (
     <>
@@ -46,7 +48,11 @@ export default async function GetStarted({
             </Link>
           </div>
           <div className="rounded-xl bg-[var(--warm-bone)] p-5 sm:p-8">
-            <AcquisitionForm locale={locale} plan={plan.success ? plan.data : "unsure"} />
+            <AcquisitionForm
+              locale={locale}
+              plans={plans}
+              plan={plan.success && plans.some((p) => p.code === plan.data) ? plan.data : "unsure"}
+            />
           </div>
         </div>
       </main>

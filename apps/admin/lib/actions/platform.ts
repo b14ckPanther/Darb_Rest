@@ -1,7 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { FEATURE_FLAGS } from "@darb-rest/types";
+import { V1_FEATURE_FLAGS } from "@darb-rest/types";
 import { requirePlatform } from "../platform";
 export async function updatePlatformBusiness(form: FormData) {
   const locale = String(form.get("locale"));
@@ -30,7 +30,7 @@ export async function updatePlatformBusiness(form: FormData) {
       const reason = String(form.get("reason") ?? "").trim();
       const expires = String(form.get("expires") ?? "");
       if (
-        !FEATURE_FLAGS.includes(feature as (typeof FEATURE_FLAGS)[number]) ||
+        !V1_FEATURE_FLAGS.includes(feature as (typeof V1_FEATURE_FLAGS)[number]) ||
         (limit !== null && (!Number.isSafeInteger(limit) || limit < 0)) ||
         !reason ||
         reason.length > 500 ||

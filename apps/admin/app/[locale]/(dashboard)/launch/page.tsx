@@ -13,22 +13,16 @@ export default async function LaunchPage({
 }) {
   const { locale } = await params;
   if (!isValidLocale(locale)) notFound();
-  const L = getDictionary(locale).launch;
+  const dict = getDictionary(locale);
+  const L = dict.launch;
   const ctx = await contentContext();
   if (!ctx || !canManageBranding(ctx.role)) notFound();
-  const [site, domains] = await Promise.all([
-    ctx.db
-      .from("restaurant_launch")
-      .select("is_public")
-      .eq("business_id", ctx.business.id)
-      .maybeSingle(),
-    ctx.db
-      .from("business_domains")
-      .select("*")
-      .eq("business_id", ctx.business.id)
-      .order("created_at"),
-  ]);
-  if (site.error || domains.error) return <p role="alert">{L.unavailable}</p>;
+  const site = await ctx.db
+    .from("restaurant_launch")
+    .select("is_public")
+    .eq("business_id", ctx.business.id)
+    .maybeSingle();
+  if (site.error) return <p role="alert">{L.unavailable}</p>;
   const { result } = await searchParams;
   const hidden = (
     <>
@@ -52,6 +46,15 @@ export default async function LaunchPage({
         >
           {L.fallback}
         </a>
+        {ctx.locations.map((location) => (
+          <a
+            key={location.id}
+            className="block min-h-11 underline"
+            href={`/api/menu-qr?locale=${locale}&location=${location.id}`}
+          >
+            {dict.tables.downloadSvg} · {location.name[locale]}
+          </a>
+        ))}
         <form action={manageLaunch}>
           {hidden}
           <button
@@ -63,57 +66,6 @@ export default async function LaunchPage({
           </button>
         </form>
       </section>
-      <form action={manageLaunch} className="flex flex-wrap items-end gap-3 rounded-2xl border p-6">
-        {hidden}
-        <label className="min-w-0 flex-1">
-          {L.hostname}
-          <input
-            name="hostname"
-            required
-            maxLength={253}
-            dir="ltr"
-            placeholder="menu.restaurant.example"
-            className="mt-2 min-h-11 w-full rounded-xl border p-3"
-          />
-        </label>
-        <button name="action" value="register" className={button}>
-          {L.register}
-        </button>
-      </form>
-      {(domains.data ?? []).map((d) => (
-        <section key={d.id} className="space-y-3 rounded-2xl border bg-[var(--bg-surface)] p-6">
-          <h2 className="break-all text-lg font-semibold" dir="ltr">
-            {d.hostname}
-          </h2>
-          <p>
-            {d.active ? L.active : L.inactive} ·{" "}
-            {d.verified_until && Date.parse(d.verified_until) > Date.now() ? L.verified : L.pending}
-            {d.canonical ? ` · ${L.canonical}` : ""}
-          </p>
-          <p className="text-sm">{L.txt}</p>
-          <code className="block break-all text-sm" dir="ltr">
-            _darb-verification.{d.hostname}
-          </code>
-          <code className="block break-all text-sm" dir="ltr">
-            darb-rest={d.verification_token}
-          </code>
-          <form action={manageLaunch} className="space-y-3">
-            {hidden}
-            <input type="hidden" name="hostname" value={d.hostname} />
-            <label className="flex items-start gap-2 text-sm">
-              <input type="checkbox" name="tls" value="ready" />
-              {L.tls}
-            </label>
-            <div className="flex flex-wrap gap-2">
-              {(["verify", "activate", "canonical", "deactivate", "remove"] as const).map((a) => (
-                <button key={a} name="action" value={a} className={button}>
-                  {L[a]}
-                </button>
-              ))}
-            </div>
-          </form>
-        </section>
-      ))}
     </div>
   );
 }

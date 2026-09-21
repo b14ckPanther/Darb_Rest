@@ -16,6 +16,7 @@ export async function manageLaunch(form: FormData): Promise<void> {
     if (!ctx || !canManageBranding(ctx.role) || form.get("business") !== ctx.business.id)
       throw Error("forbidden");
     const action = String(form.get("action"));
+    if (action !== "publish" && action !== "unpublish") throw Error("dormant_capability");
     if (action === "publish" || action === "unpublish") {
       const { error } = await ctx.db.rpc("set_restaurant_launch", {
         p_business_id: ctx.business.id,

@@ -12,3 +12,7 @@ export * from "./operations";
 export * from "./appearance";
 
 export * from "./applications";
+
+export * from "./commercial";
+
+export * from "./whatsapp";

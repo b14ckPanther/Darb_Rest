@@ -39,8 +39,7 @@ export default async function TermsPage({
         },
       ],
       noticeTitle: "وثيقة الاتفاقية التجارية الرسمية",
-      noticeText:
-        "تخضع شروط الخدمة والاتفاقيات المؤسسية لمراجعة مستمرة. للحصول على نسخة رسمية مخصصة لسلسلتك أو لأي استفسار تجاري وقانوني، يرجى التواصل مع فريقنا.",
+      noticeText: "للاستفسار عن الباقات أو الشروط، يرجى التواصل مع فريقنا.",
       contactCta: "تواصل مع الإدارة القانونية",
     },
     he: {
@@ -68,8 +67,7 @@ export default async function TermsPage({
         },
       ],
       noticeTitle: "מסמך תנאי ההתקשרות הרשמי",
-      noticeText:
-        "הסכמי השירות והתנאים המשפטיים מתעדכנים מעת לעת. לקבלת עותק רשמי או לפניות משפטיות ועסקיות, ניתן ליצור קשר ישיר עם נציגינו.",
+      noticeText: "לשאלות על התוכניות או התנאים, צרו קשר עם הצוות שלנו.",
       contactCta: "פנה למחלקה המשפטית",
     },
     en: {
@@ -97,8 +95,7 @@ export default async function TermsPage({
         },
       ],
       noticeTitle: "Commercial Services Agreement Notice",
-      noticeText:
-        "For bespoke enterprise agreements, multi-unit SLAs, or legal compliance inquiries, please get in touch with our commercial operations team.",
+      noticeText: "For questions about our plans or terms, please contact our team.",
       contactCta: "Contact Legal & Operations",
     },
   }[currentLocale];

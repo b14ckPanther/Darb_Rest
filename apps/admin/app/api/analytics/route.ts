@@ -1,8 +1,10 @@
+const v1Dormant = () => true;
 import { NextRequest } from "next/server";
 import { loadAnalytics } from "../../../lib/analytics";
 import { csvCell } from "@darb-rest/types";
 import { getDictionary, isValidLocale } from "@darb-rest/i18n";
 export async function GET(request: NextRequest) {
+  if (v1Dormant()) return new Response(null, { status: 404 });
   const q = request.nextUrl.searchParams;
   const locale = q.get("locale") ?? "en";
   if (!isValidLocale(locale)) return new Response(null, { status: 400 });

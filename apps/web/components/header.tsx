@@ -102,9 +102,11 @@ export function Header({ solid = false }: { solid?: boolean }) {
             aria-label="Darb REST"
           >
             <Image
-              src="/brand/darb-rest-logo-header.png"
+              src="/brand/optimized/darb-rest-logo-header.webp"
+              unoptimized
+              style={{ width: "auto" }}
               alt="Darb REST"
-              width={120}
+              width={108}
               height={36}
               className="h-7 w-auto object-contain sm:h-9"
               priority
@@ -188,9 +190,11 @@ export function Header({ solid = false }: { solid?: boolean }) {
             {/* Sheet Header */}
             <div className="flex h-16 items-center justify-between px-5">
               <Image
-                src="/brand/darb-rest-logo-header.png"
+                src="/brand/optimized/darb-rest-logo-header.webp"
+                unoptimized
+                style={{ width: "auto" }}
                 alt="Darb REST"
-                width={100}
+                width={90}
                 height={30}
                 className="h-7 w-auto object-contain"
               />

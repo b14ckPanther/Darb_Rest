@@ -1,3 +1,4 @@
+const v1Dormant = () => true;
 import QRCode from "qrcode";
 import { contentContext } from "../../../../../lib/content/service";
 import { qrUrl } from "../../../../../lib/tables/service";
@@ -5,6 +6,7 @@ import { canManageTables } from "@darb-rest/types";
 import { isValidLocale } from "@darb-rest/i18n";
 export const runtime = "nodejs";
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  if (v1Dormant()) return new Response(null, { status: 404 });
   const { id } = await params;
   const query = new URL(request.url).searchParams,
     locale = query.get("locale") ?? "en";

@@ -14,3 +14,5 @@ export * from "./menu-preview";
 export * from "./ordering-menu";
 export * from "./restaurant/registry";
 export * from "./restaurant/menu";
+
+export * from "./whatsapp-menu";

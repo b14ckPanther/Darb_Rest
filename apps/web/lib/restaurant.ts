@@ -1,4 +1,5 @@
 import "server-only";
+import { v1Context } from "./v1-context";
 import { publicBusiness } from "./launch";
 import { cache } from "react";
 import {
@@ -41,9 +42,11 @@ export const loadRestaurant = cache(async (slug: string, branchSlug?: string) =>
   // Safe default while the operator prepares migration 10; never read draft for public rendering.
   if (appearance.error && !["42P01", "PGRST205"].includes(appearance.error.code))
     throw appearance.error;
-  const branch = branchSlug
-    ? branches.data?.find((b) => b.slug === branchSlug)
-    : branches.data?.[0];
+  const firstBranch = branches.data?.[0];
+  if (!firstBranch) return null;
+  const access = await v1Context(business.id, firstBranch.id);
+  const availableBranches = access.multiLocation ? (branches.data ?? []) : [firstBranch];
+  const branch = branchSlug ? availableBranches.find((b) => b.slug === branchSlug) : firstBranch;
   if (!branch) return null;
   const hours = await db
     .from("location_operating_hours")
@@ -78,7 +81,7 @@ export const loadRestaurant = cache(async (slug: string, branchSlug?: string) =>
     settings,
     profile,
     branch: { id: branch.id, slug: branch.slug, name: branch.name as ContentName },
-    branches: (branches.data ?? []).map((b) => ({
+    branches: availableBranches.map((b) => ({
       id: b.id,
       slug: b.slug,
       name: b.name as ContentName,

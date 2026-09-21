@@ -1,4 +1,5 @@
 "use server";
+import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 
 import { encodeDevMemberships, decodeDevMemberships } from "../dev-memberships";
 import { cookies } from "next/headers";
@@ -331,6 +332,8 @@ export async function completeOnboarding(
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const isRealSupabase = supabaseUrl && !supabaseUrl.includes("placeholder");
 
+  const selectedPlan = (await getCommercialPlans()).find((p) => p.id === data.planId);
+  if (!selectedPlan) return { success: false };
   // 1. Authenticate user server-side
   let userId: string | null = null;
   let userEmail: string | null = null;
@@ -435,7 +438,7 @@ export async function completeOnboarding(
     defaultLocale: data.defaultLocale,
     timezone: data.timezone,
     currency: data.currency,
-    planId: data.planId || "11111111-1111-1111-1111-111111111111", // Default to starter
+    planId: selectedPlan.id, // Default to starter
     onboardingStep: 7,
     createdAt: now,
     updatedAt: now,
@@ -478,47 +481,16 @@ export async function completeOnboarding(
     updatedAt: now,
   };
 
-  const defaultEntitlements: PlanEntitlement[] = [
-    {
-      id: `pe-${businessId}-1`,
-      planId: newBusiness.planId!,
-      featureKey: "digital_menu",
-      enabled: true,
-      limitValue: null,
-      createdAt: now,
-      updatedAt: now,
-    },
-    {
-      id: `pe-${businessId}-2`,
-      planId: newBusiness.planId!,
-      featureKey: "qr_codes",
-      enabled: true,
-      limitValue: null,
-      createdAt: now,
-      updatedAt: now,
-    },
-    {
-      id: `pe-${businessId}-3`,
-      planId: newBusiness.planId!,
-      featureKey: "multi_location",
-      enabled:
-        data.planId === "22222222-2222-2222-2222-222222222222" ||
-        data.planId === "33333333-3333-3333-3333-333333333333",
-      limitValue: data.planId === "33333333-3333-3333-3333-333333333333" ? 25 : 3,
-      createdAt: now,
-      updatedAt: now,
-    },
-  ];
-
-  // Store in dynamic session memberships cookie
-  let dynamicMemberships: Array<{
-    userEmail: string;
-    business: Business;
-    role: "owner";
-    locations: BranchLocation[];
-    planEntitlements: PlanEntitlement[];
-    overrides: [];
-  }> = [];
+  const defaultEntitlements: PlanEntitlement[] = selectedPlan.entitlements.map((e) => ({
+    id: crypto.randomUUID(),
+    planId: selectedPlan.id,
+    featureKey: e.feature_key as PlanEntitlement["featureKey"],
+    enabled: e.enabled,
+    limitValue: e.limit_value,
+    createdAt: now,
+    updatedAt: now,
+  }));
+  let dynamicMemberships: ReturnType<typeof decodeDevMemberships> = [];
 
   const existingDynamic = cookieStore.get("darb_rest_dynamic_memberships")?.value;
   if (existingDynamic) {

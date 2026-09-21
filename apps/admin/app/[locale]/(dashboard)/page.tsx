@@ -87,14 +87,6 @@ export default async function AdminDashboardPage({
         : undefined,
     },
     {
-      label: dict.admin.featureOnlineOrdering,
-      enabled: entitlements.online_ordering.enabled,
-    },
-    {
-      label: dict.admin.featureTableOrdering,
-      enabled: entitlements.table_ordering.enabled,
-    },
-    {
       label: dict.admin.featureCustomBranding,
       enabled: entitlements.custom_branding.enabled,
     },

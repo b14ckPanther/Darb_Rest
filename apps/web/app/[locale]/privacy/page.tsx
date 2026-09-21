@@ -87,7 +87,7 @@ export default async function PrivacyPage({
           desc: "Your restaurant data, branch setups, menus, and images remain your intellectual property and are never shared or sold to advertising brokers.",
         },
         {
-          title: "Enterprise-Grade Encryption",
+          title: "Data Encryption",
           desc: "All web traffic and database storage utilize standard TLS/SSL encryption and modern cryptographic security controls.",
         },
         {

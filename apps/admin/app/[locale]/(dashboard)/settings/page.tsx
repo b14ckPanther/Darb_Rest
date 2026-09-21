@@ -1,3 +1,5 @@
+import { WhatsappSettings } from "../../../../components/whatsapp-settings";
+import { commercialLabels } from "@darb-rest/i18n";
 import React from "react";
 import { cookies } from "next/headers";
 import { resolveTenantContext } from "../../../../lib/tenant-resolver";
@@ -115,11 +117,44 @@ export default async function SettingsPage({ params }: { params: Promise<{ local
     }
   }
 
+  const db = await getServerClient();
+  const [destination, branches, plan] = await Promise.all([
+    db
+      .from("business_settings")
+      .select("whatsapp_number")
+      .eq("business_id", context.activeBusiness.id)
+      .maybeSingle(),
+    db
+      .from("locations")
+      .select("id,name,whatsapp_number")
+      .eq("business_id", context.activeBusiness.id)
+      .eq("status", "active"),
+    db.from("businesses").select("plans(code)").eq("id", context.activeBusiness.id).single(),
+  ]);
+  const whatsappRows = [
+    {
+      id: null as string | null,
+      name: commercialLabels[currentLocale].whatsapp,
+      number: destination.data?.whatsapp_number ?? "",
+    },
+    ...(plan.data?.plans?.code === "business" && context.entitlements.multi_location.enabled
+      ? (branches.data ?? []).map((b) => ({
+          id: b.id,
+          name: (b.name as Record<string, string>)[currentLocale] || String(b.id),
+          number: b.whatsapp_number ?? "",
+        }))
+      : []),
+  ];
   return (
-    <BusinessSettingsForm
-      business={context.activeBusiness}
-      userRole={context.activeMembership?.role || "staff"}
-      initialSettings={initialSettings}
-    />
+    <>
+      <BusinessSettingsForm
+        business={context.activeBusiness}
+        userRole={context.activeMembership?.role || "staff"}
+        initialSettings={initialSettings}
+      />
+      {["owner", "admin", "manager"].includes(context.activeMembership?.role ?? "") && (
+        <WhatsappSettings locale={currentLocale} rows={whatsappRows} />
+      )}
+    </>
   );
 }

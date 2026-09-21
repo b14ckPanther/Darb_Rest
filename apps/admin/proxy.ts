@@ -6,6 +6,8 @@ const PUBLIC_FILE = /\.(.*)$/;
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  if (/^\/(en|ar|he)\/(orders|tables|kitchen|operations|analytics)(\/|$)/.test(pathname))
+    return new NextResponse(null, { status: 404 });
 
   // Skip static files, auth handlers, api routes, and internal Next.js paths
   if (

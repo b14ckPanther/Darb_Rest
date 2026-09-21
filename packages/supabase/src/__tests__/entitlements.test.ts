@@ -73,7 +73,7 @@ describe("Entitlement Resolution Engine", () => {
         id: "bfo-1",
         businessId: "biz-1",
         featureKey: "online_ordering",
-        enabled: true, // Special enterprise agreement granted early
+        enabled: true, // Legacy override must not restore a dormant capability
         limitValue: null,
         reason: "Trial agreement",
         createdAt: new Date().toISOString(),
@@ -93,8 +93,8 @@ describe("Entitlement Resolution Engine", () => {
 
     const resolved = resolveEntitlements(planEntitlements, overrides);
 
-    expect(canUseFeature(resolved, "online_ordering")).toBe(true);
-    expect(resolved.online_ordering.source).toBe("override");
+    expect(canUseFeature(resolved, "online_ordering")).toBe(false);
+    expect(resolved.online_ordering.source).toBe("default");
     expect(canUseFeature(resolved, "multi_location")).toBe(true);
     expect(getFeatureLimit(resolved, "multi_location")).toBe(5);
   });
@@ -129,6 +129,6 @@ describe("Entitlement Resolution Engine", () => {
     const resolved = resolveEntitlements(planEntitlements, overrides);
 
     expect(canUseFeature(resolved, "advanced_analytics")).toBe(false);
-    expect(resolved.advanced_analytics.source).toBe("plan");
+    expect(resolved.advanced_analytics.source).toBe("default");
   });
 });

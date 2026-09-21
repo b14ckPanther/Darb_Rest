@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
-import { localizedContent, type ContentName, FEATURE_FLAGS } from "@darb-rest/types";
+import { localizedContent, type ContentName, V1_FEATURE_FLAGS } from "@darb-rest/types";
 import { requirePlatform, requireData, platformPage } from "../../../../../../lib/platform";
 import { updatePlatformBusiness } from "../../../../../../lib/actions/platform";
 export default async function BusinessDetail({
@@ -19,7 +19,7 @@ export default async function BusinessDetail({
     q = await searchParams,
     page = platformPage(q.page);
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
-  const [business, branches, members, overrides, launch, domains] = await Promise.all([
+  const [business, branches, members, overrides, launch] = await Promise.all([
     db
       .from("businesses")
       .select(
@@ -43,17 +43,12 @@ export default async function BusinessDetail({
       .from("business_feature_overrides")
       .select("feature_key,enabled,limit_value,reason,expires_at")
       .eq("business_id", id)
+      .in("feature_key", [...V1_FEATURE_FLAGS])
       .order("feature_key")
       .range((page - 1) * 25, page * 25 - 1),
     db.from("restaurant_launch").select("is_public").eq("business_id", id).maybeSingle(),
-    db
-      .from("business_domains")
-      .select("hostname,active,canonical,verified_until")
-      .eq("business_id", id)
-      .order("id")
-      .range((page - 1) * 25, page * 25 - 1),
   ]);
-  [business, branches, members, overrides, launch, domains].forEach((r) => {
+  [business, branches, members, overrides, launch].forEach((r) => {
     if (r.error) throw Error("platform_query_failed");
   });
   const b = requireData(business);
@@ -150,24 +145,6 @@ export default async function BusinessDetail({
           ))}
         </section>
         <section className={card}>
-          <h2 className="text-xl font-semibold">{L.domains}</h2>
-          {domains.data?.map((v) => (
-            <div key={v.hostname} className="space-y-2 border-t pt-3">
-              <p className="break-all" lang="en" dir="ltr">
-                {v.hostname}
-              </p>
-              <p>
-                {v.active ? D.launch.active : D.launch.inactive} ·{" "}
-                {v.verified_until && Date.parse(v.verified_until) > Date.now()
-                  ? D.launch.verified
-                  : D.launch.pending}
-                {v.canonical ? ` · ${D.launch.canonical}` : ""}
-              </p>
-            </div>
-          ))}
-          {!domains.data?.length && <p>{L.empty}</p>}
-        </section>
-        <section className={card}>
           <h2 className="text-xl font-semibold">{L.overrides}</h2>
           {overrides.data?.map((v) => (
             <div key={v.feature_key} className="space-y-1 border-t pt-3 text-sm">
@@ -190,9 +167,9 @@ export default async function BusinessDetail({
       </div>
       <nav className="flex gap-5">
         {page > 1 && <Link href={`?page=${page - 1}`}>{L.previous}</Link>}
-        {[branches.data, members.data, overrides.data, domains.data].some(
-          (rows) => rows?.length === 25,
-        ) && <Link href={`?page=${page + 1}`}>{L.next}</Link>}
+        {[branches.data, members.data, overrides.data].some((rows) => rows?.length === 25) && (
+          <Link href={`?page=${page + 1}`}>{L.next}</Link>
+        )}
       </nav>
       <form action={updatePlatformBusiness} className={card}>
         <h2 className="text-xl font-semibold">{L.overrides}</h2>
@@ -203,7 +180,7 @@ export default async function BusinessDetail({
           <label>
             {L.feature}
             <select name="feature" className="mt-2 block w-full rounded-lg border p-3" lang="en">
-              {FEATURE_FLAGS.map((f) => (
+              {V1_FEATURE_FLAGS.map((f) => (
                 <option key={f}>{f}</option>
               ))}
             </select>

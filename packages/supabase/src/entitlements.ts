@@ -1,5 +1,6 @@
 import {
   FEATURE_FLAGS,
+  V1_FEATURE_FLAGS,
   type FeatureFlag,
   type PlanEntitlement,
   type BusinessFeatureOverride,
@@ -65,6 +66,9 @@ export function resolveEntitlements(
     };
   }
 
+  for (const key of FEATURE_FLAGS)
+    if (!(V1_FEATURE_FLAGS as readonly string[]).includes(key))
+      resolved[key] = { enabled: false, limitValue: null, source: "default" };
   return resolved;
 }
 

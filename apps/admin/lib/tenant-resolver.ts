@@ -1,3 +1,4 @@
+import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 import { decodeDevMemberships } from "./dev-memberships";
 import { cache } from "react";
 import { cookies } from "next/headers";
@@ -716,6 +717,19 @@ async function resolveTenantContextUncached(): Promise<TenantContext | null> {
     activeEntry?.overrides ?? [],
   );
 
+  if (activeBusiness) {
+    const plan = (await getCommercialPlans()).find((p) => p.id === activeBusiness.planId);
+    if (!plan) {
+      for (const key of Object.keys(entitlements) as (keyof typeof entitlements)[])
+        entitlements[key] = { enabled: false, limitValue: null, source: "default" };
+    } else {
+      if (plan.code !== "business")
+        entitlements.multi_location = { enabled: false, limitValue: 1, source: "plan" };
+      if (plan.code === "starter")
+        for (const key of ["cart", "whatsapp_ordering", "reservation_requests"] as const)
+          entitlements[key] = { enabled: false, limitValue: null, source: "plan" };
+    }
+  }
   return {
     user: userProfile,
     activeBusiness,

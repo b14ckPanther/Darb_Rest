@@ -8,12 +8,14 @@ import { GUEST_COOKIE, guestDb, loadGuestDraft } from "./guest-orders";
 import { paymentProvider, processPaymentWebhook } from "./payments";
 import { signTestWebhook } from "@darb-rest/payments";
 import { createHash } from "node:crypto";
+const dormant = () => true;
 export async function saveGuestOrder(
   businessSlug: string,
   locationSlug: string,
   raw: unknown,
   tableToken: string | null = null,
 ): Promise<OrderResult> {
+  if (dormant()) return { ok: false, error: "unavailable" };
   try {
     await publicMutationBudget();
     if (!(await assertPublicBusiness(businessSlug))) return { ok: false, error: "unavailable" };
@@ -109,6 +111,7 @@ export async function checkoutGuestOrder(
   method: "restaurant" | "online",
   tableToken: string | null = null,
 ): Promise<OrderResult> {
+  if (dormant()) return { ok: false, error: "unavailable" };
   try {
     await publicMutationBudget();
     if (!(await assertPublicBusiness(businessSlug))) return { ok: false, error: "unavailable" };
@@ -192,6 +195,7 @@ export async function simulatePayment(
   id: string,
   status: "paid" | "failed" | "cancelled" | "refunded",
 ): Promise<boolean> {
+  if (dormant()) return false;
   const provider = paymentProvider();
   if (
     !provider?.testOnly ||

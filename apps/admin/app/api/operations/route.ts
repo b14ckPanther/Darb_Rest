@@ -1,6 +1,8 @@
+const v1Dormant = () => true;
 import { NextRequest, NextResponse } from "next/server";
 import { fetchOperations, fetchStationKitchen } from "../../../lib/actions/operations";
 export async function GET(request: NextRequest) {
+  if (v1Dormant()) return new Response(null, { status: 404 });
   const q = request.nextUrl.searchParams;
   const result =
     q.get("view") === "orders"
