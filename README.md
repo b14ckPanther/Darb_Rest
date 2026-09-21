@@ -4,45 +4,32 @@ Darb REST is a multilingual, multi-tenant restaurant and café platform within t
 ecosystem. It is an independent product with a public restaurant application, an owner/staff
 console and a dedicated database and authorization model.
 
-The platform connects restaurant content and branding to guest ordering and branch operations.
-Owners manage the public experience through controlled settings, while a shared engine handles
-pricing, availability, checkout, table context and operational state.
+Darb REST v1 gives restaurants a premium digital presence with owner-managed menus,
+branding and multilingual templates. Pro adds customer requests through WhatsApp; Business
+adds centralized management across locations.
 
 ## Product capabilities
 
-- **Self-service restaurant websites:** eight structurally distinct templates, real-data previews,
-  mobile/tablet/desktop preview modes, draft/publish boundaries and managed logo/cover uploads.
-  Curated palettes, hero emphasis, focal points, navigation, cards, density and footer controls
-  provide customization without arbitrary scripts, styles or fonts.
-- **Multilingual experience:** Arabic, Hebrew and English, RTL/LTR layouts and Cairo, Heebo and
-  Ubuntu typography, including mixed-language restaurant content.
-- **Menu management:** menus, categories, dishes, imagery, variants, required/optional modifiers,
-  dietary/allergen information, branch assignments, price overrides and availability controls.
-- **Guest ordering:** account-free item configuration, carts, draft orders, dine-in and takeaway.
-  The server recalculates totals and stores item/configuration/price snapshots.
-- **Checkout foundations:** pay at restaurant, provider-neutral payment adapters, payment records,
-  signature verification, idempotent callbacks and guest payment states. A local test provider is
-  available; live online payments remain disabled until a supported gateway is configured.
-- **Tables and QR:** branch-owned tables, opaque revocable QR tokens, validated dine-in context,
-  downloadable codes and printable cards.
-- **Kitchen operations:** branch-scoped live order boards, polling recovery, validated transitions,
-  cancellation reasons, preparation stations, item routing, rush priority, staff assignments,
-  table states and audit history. Printer events are an abstraction, not a hardware integration.
-- **Multi-branch access:** business memberships and role-based controls backed by database checks
-  and row-level security. Branch rosters do not grant independent tenant access.
-- **Analytics:** date/branch filters, order value and collected payments, payment and fulfillment
-  breakdowns, top items, busy periods, service timings, branch comparisons and daily CSV export.
-  Monetary figures remain separated by currency; these are operational reports, not accounting.
+- Eight controlled templates with draft/publish previews, managed logo/cover uploads,
+  palettes, crop/focal controls, navigation, cards and density options.
+- Arabic, Hebrew and English with native RTL/LTR and Cairo/Heebo/Ubuntu typography.
+- Menus, categories, dishes, photos, variants/modifiers, dietary information and availability.
+- Starter includes complete branding, all templates and menu QR access for one location.
+- Pro adds a session cart with server-revalidated totals and structured WhatsApp order and
+  reservation requests. Requests are not stored orders or confirmed bookings.
+- Business adds branch-specific menus/settings and WhatsApp destinations with tenant RBAC.
+- Commercial prices and localized plan copy are database-driven and editable by Platform Admin
+  without redeployment. Monthly and yearly prices are independently configured.
 
-Restaurants can use the same system for a dining room with kitchen stations, a café with drink
-variants, or a compact takeaway menu. Templates change presentation without duplicating ordering
-logic or changing operational records.
+See [the v1 commercial model](docs/V1-COMMERCIAL-MODEL.md) for the authoritative scope.
+Earlier ordering/payment/KDS/table-operation/analytics/custom-domain implementations remain
+**dormant technical foundations**, not available v1 subscription benefits.
 
 ## Architecture
 
 ```text
 Guest application ─┐
-                   ├─ Shared types, validation, presentation and payment contracts
+                   ├─ Shared types, validation, presentation and validation contracts
 Owner/staff console┘                         │
                                   Authenticated server boundaries
                                              │
@@ -111,8 +98,7 @@ supabase status
 Populate each application's ignored file with the **local** API URL and keys reported by the
 local runtime. Never commit real environment values or paste service-role keys into public
 configuration. The `NEXT_PUBLIC_*` values are browser-visible; `SUPABASE_SERVICE_ROLE_KEY`
-is server-only. Optional payment settings are documented in the example and
-[payment architecture](docs/PAYMENT-ARCHITECTURE.md).
+is server-only. Dormant payment settings must remain unset for the v1 production deployment.
 
 Reconstruct the local database from canonical migrations and development seed data:
 
@@ -179,15 +165,13 @@ RLS, history reconciliation and the established workflow.
 
 ## Current status and roadmap
 
-Implementation and local validation cover the canonical roadmap through **Phase 11: Analytics &
-Business Intelligence**, including the Phase 10.x template and self-service increment. The latest
-validation record includes 59 browser tests and 27 analytics database assertions. This is local
-Chromium and fixture-based evidence, not a claim of production load or cross-browser certification.
+The current release is the locked **Darb REST v1** commercial model. Migrations 16 and 17
+align the catalog and revoke legacy operational entry points. The retained phase history is
+not the subscription offering. See [progress](docs/PROGRESS.md) for validation evidence.
 
-Future work remains governed by [the canonical progress record](docs/PROGRESS.md). Deployment
-hardening, production performance measurement, broader device/browser coverage and selecting a
-live payment gateway remain practical integration work. Inventory, delivery, reservations,
-loyalty, accounting integrations and advanced forecasting are outside the implemented scope.
+Future work stays subject to explicit roadmap approval. Live payments, stored online ordering,
+KDS, inventory, delivery and booking engines are not activated by this release. WhatsApp
+requests require the customer to open WhatsApp and send; delivery is not tracked by Darb.
 
 ## Engineering documentation
 

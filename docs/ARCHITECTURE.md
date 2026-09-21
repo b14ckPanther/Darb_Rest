@@ -1,5 +1,9 @@
 # Darb REST: System Architecture Blueprint
 
+> Current commercial scope: [Darb REST v1](V1-COMMERCIAL-MODEL.md). Operational,
+> payment, table-order and custom-domain sections below document retained technical
+> foundations. They are dormant, not current subscription capabilities.
+
 ## 1. Project Purpose & Scope
 
 **Darb REST** is an independent, multi-tenant digital restaurant and café engine under the Darb brand family. It powers digital menus, QR ordering, takeaway, table service, and full back-of-house operations.

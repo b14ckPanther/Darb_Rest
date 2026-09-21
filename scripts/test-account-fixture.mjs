@@ -91,8 +91,8 @@ export function buildFixture(userId, mediaPaths, tokens, now = new Date()) {
   put("plans", {
     id: plan,
     code: "test-account-full",
-    name: text("Development Full Access", "تطوير كامل", "פיתוח מלא"),
-    is_active: true,
+    name: text("Dormant development fixtures", "بيانات تطوير مؤجلة", "נתוני פיתוח לא פעילים"),
+    is_active: false,
   });
   for (const feature of [
     "digital_menu",
@@ -533,6 +533,16 @@ export function buildFixture(userId, mediaPaths, tokens, now = new Date()) {
       );
     }
   });
+  // Keep historical operations fixtures, but all interactive businesses use the v1 catalog.
+  sql.push(
+    `DO $$ BEGIN IF NOT EXISTS(SELECT 1 FROM public.plans WHERE code='business') THEN RAISE EXCEPTION 'Apply commercial migrations before seeding'; END IF; END $$;`,
+  );
+  sql.push(
+    `UPDATE public.businesses SET plan_id=(SELECT id FROM public.plans WHERE code='business') WHERE plan_id=${quote(plan)};`,
+  );
+  sql.push(
+    `UPDATE public.business_settings SET whatsapp_number='+972501234567' WHERE business_id=${quote(B)};`,
+  );
   sql.push("COMMIT;");
   return sql.join("\n");
 }

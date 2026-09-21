@@ -1,5 +1,9 @@
 # Ordering core — Phase 5
 
+> Current commercial scope: [Darb REST v1](V1-COMMERCIAL-MODEL.md). Operational,
+> payment, table-order and custom-domain sections below document retained technical
+> foundations. They are dormant, not current subscription capabilities.
+
 ## Entry points
 
 - Guests: /[locale]/order/[businessSlug]/[locationSlug] in apps/web. No account required.

@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { getDictionary } from "../packages/i18n/src";
 import { TEMPLATE_CATALOG } from "../packages/types/src/template-catalog";
 for (const locale of ["en", "ar", "he"] as const) {
-  test(`${locale} bounded composition, brand differentiation and cart preservation`, async ({
+  test(`${locale} bounded composition, brand differentiation and read-only preview`, async ({
     page,
   }) => {
     test.setTimeout(120000);
@@ -49,12 +49,6 @@ for (const locale of ["en", "ar", "he"] as const) {
       .locator("[data-template]")
       .evaluate((el) => getComputedStyle(el).getPropertyValue("--rt-primary"));
     const ids = await frame.locator(".rt-section").evaluateAll((els) => els.map((el) => el.id));
-    await frame
-      .locator("article")
-      .first()
-      .getByRole("button", { name: O.add, exact: true })
-      .click();
-    await frame.getByRole("dialog").locator("button[type=submit]").click();
     for (const template of TEMPLATE_CATALOG) {
       await page.locator(`[data-template-choice="${template.id}"]`).click();
       await expect(frame.locator("[data-template]")).toHaveAttribute("data-template", template.id);
@@ -69,12 +63,7 @@ for (const locale of ["en", "ar", "he"] as const) {
           .toBe(true);
       }
       await expect(frame.locator("html")).toHaveAttribute("dir", locale === "en" ? "ltr" : "rtl");
-      await frame.getByRole("button", { name: O.review, exact: true }).click();
-      await expect(frame.getByRole("dialog").locator("article")).toHaveCount(1);
-      await frame
-        .getByRole("dialog")
-        .getByRole("button", { name: O.continue, exact: true })
-        .click();
+      await expect(frame.getByRole("button", { name: O.add, exact: true })).toHaveCount(0);
     }
     await page.locator('[data-template-choice="signature"]').click();
     await page.getByRole("button", { name: L.paletteInk, exact: true }).click();

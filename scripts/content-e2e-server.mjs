@@ -47,6 +47,13 @@ for (const [name, role] of [
   );
   if (membership) throw membership;
 }
+const commercial = await client.from("plans").select("id").eq("code", "business").single();
+if (commercial.error) throw commercial.error;
+const assigned = await client
+  .from("businesses")
+  .update({ plan_id: commercial.data.id })
+  .eq("id", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+if (assigned.error) throw assigned.error;
 if (process.argv.includes("--fixtures-only")) process.exit(0);
 const adminRequire = createRequire(new URL("../apps/admin/package.json", import.meta.url));
 const child = spawn(

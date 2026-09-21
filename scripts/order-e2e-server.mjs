@@ -21,8 +21,6 @@ const child = spawn(
       NEXT_PUBLIC_SUPABASE_ANON_KEY: status.ANON_KEY,
       SUPABASE_SERVICE_ROLE_KEY: status.SERVICE_ROLE_KEY,
       DARB_TEST_DIST: ".next-phase5",
-      PAYMENT_PROVIDER: "local-test",
-      PAYMENT_TEST_WEBHOOK_SECRET: "Local-only-payment-webhook-test-secret-2026",
     },
     stdio: "inherit",
   },

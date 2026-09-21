@@ -1,5 +1,14 @@
 # Darb REST: Database Architecture & Multi-Tenant Schema
 
+## Current commercial contract
+
+[V1-COMMERCIAL-MODEL.md](V1-COMMERCIAL-MODEL.md) is the commercial source of truth.
+Operator-applied migrations 16/17 add the editable plan catalog and revoke dormant
+operational entry points. `public_commercial_plans()` supplies active localized plans;
+Platform Admin writes commercial fields separately from entitlements. Public requests
+read current values without a deployment-time price snapshot. WhatsApp carts/reservation
+requests create no order or payment records. Existing operational tables are retained.
+
 ## 1. Overview & Entity Hierarchy
 
 Darb REST models multi-tenancy strictly through decoupled memberships:

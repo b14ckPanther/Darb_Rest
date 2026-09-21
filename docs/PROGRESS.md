@@ -1,12 +1,32 @@
 # Darb REST: Roadmap & Progress
 
-## V1 commercial alignment — in progress
+## V1 commercial alignment — implemented and locally validated
 
-The locked [v1 commercial model](V1-COMMERCIAL-MODEL.md) supersedes previous
-commercial promises. Migration 16, local seed alignment and database contract tests
-are prepared but not applied. Application pricing/editor, v1 feature gates, WhatsApp
-flows, copy, fixtures and cross-surface QA remain pending. Previous phase completion
-records describe retained technical foundations, not the v1 subscription offering.
+The locked [v1 commercial model](V1-COMMERCIAL-MODEL.md) supersedes earlier commercial
+promises. Migrations 16 and 17 were applied locally by the operator; this continuation
+runs no migrations and creates no additional schema changes.
+
+- Active DB catalog shared by pricing, homepage, onboarding, applications and review.
+- Platform Admin edits independent monthly/yearly values, From, active/order, localized
+  descriptions/features/billing notes; separate validated v1 entitlements and limits.
+- Starter branding/templates and one location; Pro session cart/WhatsApp requests;
+  Business multi-location and explicitly configured branch destinations.
+- Server-revalidated WhatsApp totals; reservation requests are not confirmed bookings.
+- Dormant operations hidden, endpoints disabled, revoked grants preserved. Menu QR
+  downloads remain available without table operations. Historical modules/data remain.
+- EN/AR/HE commercial copy updated; active Enterprise naming removed.
+- Local commercial/application database tests: 33 assertions passed.
+- Typecheck, lint, unit tests, production builds and formatting passed. Builds supplied
+  explicit non-customer HTTPS site origins; no deployment or production test was performed.
+- Full active v1 E2E suite: 55 passed. AR/HE/EN pricing, all eight templates and overflow
+  checks cover 375/390/393/430/768/834/1024/1440px. Saved pricing and configuration screenshots
+  were inspected. Local Chromium coverage does not certify physical iOS/Android or WhatsApp delivery.
+- QA found a marketing logo optimizer/hostname interaction; header now serves its existing
+  optimized WebP directly without relaxing hostname validation.
+- Browser tests now use local Supabase on all four QA ports and serialize shared fixture
+  mutations. Legacy operational suites remain archived in place, excluded from v1 runs.
+
+Previous phase records below describe retained technical foundations, not current plans.
 
 ## Phase 1: Production Monorepo Foundation (Complete)
 

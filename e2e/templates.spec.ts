@@ -11,7 +11,7 @@ async function login(page: Page, role = "admin") {
   await expect(page).toHaveURL(/\/en$/);
 }
 for (const locale of ["en", "ar", "he"] as const)
-  test(`${locale} live real-data template preview, shared cart and responsive layouts`, async ({
+  test(`${locale} live real-data template preview, read-only preview and responsive layouts`, async ({
     page,
   }) => {
     test.setTimeout(120000);
@@ -50,24 +50,7 @@ for (const locale of ["en", "ar", "he"] as const)
           fullPage: true,
         });
       }
-      await frame
-        .locator("article")
-        .first()
-        .getByRole("button", { name: O.add, exact: true })
-        .click();
-      await page
-        .locator("iframe")
-        .evaluate((el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
-      await frame.getByRole("dialog").locator("button[type=submit]").click();
-      await frame.getByRole("button", { name: O.review, exact: true }).click();
-      await expect(
-        frame.getByRole("dialog").getByRole("button", { name: O.saveDraft, exact: true }),
-      ).toBeDisabled();
-      await frame.getByRole("dialog").getByRole("button", { name: O.remove, exact: true }).click();
-      await frame
-        .getByRole("dialog")
-        .getByRole("button", { name: O.continue, exact: true })
-        .click();
+      await expect(frame.getByRole("button", { name: O.add, exact: true })).toHaveCount(0);
     }
     await page
       .getByLabel(L.branch, { exact: true })
@@ -123,7 +106,6 @@ test("appearance persistence and managed branding (requires migrations 10 and 11
     await page.getByRole("button", { name: L.publish, exact: true }).click();
     await expect(page.getByRole("status")).toHaveText(L.published);
     for (const locale of ["en", "ar", "he"] as const) {
-      const O = getDictionary(locale).ordering;
       for (const branch of ["haifa-port", "akko-old-city"]) {
         await guest.setViewportSize({ width: 390, height: 844 });
         await guest.goto(`http://localhost:3100/${locale}/darb-bistro?branch=${branch}`);
@@ -136,42 +118,11 @@ test("appearance persistence and managed branding (requires migrations 10 and 11
         expect(await guest.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
           true,
         );
-        await guest
-          .locator("article")
-          .first()
-          .getByRole("button", { name: O.add, exact: true })
-          .click();
-        await guest.getByRole("dialog").locator("button[type=submit]").click();
-        await guest.getByRole("button", { name: O.review, exact: true }).click();
-        await expect(guest.getByRole("dialog").locator("article")).toHaveCount(1);
-        await guest
-          .getByRole("dialog")
-          .getByRole("button", { name: O.remove, exact: true })
-          .click();
+        await expect(
+          guest.getByRole("button", { name: /Continue to checkout|Confirm order/ }),
+        ).toHaveCount(0);
       }
     }
-    await guest.goto("http://localhost:3100/en/darb-bistro?branch=haifa-port");
-    await guest
-      .locator("article")
-      .first()
-      .getByRole("button", { name: "Add to cart", exact: true })
-      .click();
-    await guest.getByRole("dialog").locator("button[type=submit]").click();
-    await guest.getByRole("button", { name: "Review order", exact: true }).click();
-    const dialog = guest.getByRole("dialog");
-    await dialog.getByLabel("Your name", { exact: true }).fill(`Template ${template.id}`);
-    await dialog.getByRole("radio", { name: "Takeaway", exact: true }).check();
-    await dialog.getByLabel("Phone number", { exact: true }).fill("+972501234567");
-    await dialog.getByRole("button", { name: "Save draft", exact: true }).click();
-    await expect(dialog.getByRole("status")).toContainText("Draft saved");
-    await guest.reload();
-    await guest.getByRole("button", { name: "Review order", exact: true }).click();
-    await expect(dialog.getByLabel("Your name", { exact: true })).toHaveValue(
-      `Template ${template.id}`,
-    );
-    await dialog.getByRole("button", { name: "Continue to checkout", exact: true }).click();
-    await dialog.getByRole("button", { name: "Confirm order", exact: true }).click();
-    await expect(guest.getByRole("heading", { name: "Your order has been sent" })).toBeVisible();
   }
   // Leave the local demonstration business on the default template.
   await page.locator('[data-template-choice="signature"]').click();

@@ -8,78 +8,20 @@ async function login(page: Page, role = "admin") {
   await page.locator("button[type=submit]").click();
   await expect(page).toHaveURL(/\/en$/);
 }
-test("cart, saved draft, confirmation and QR survive real locale navigation", async ({
-  page,
-  browser,
-}) => {
-  test.setTimeout(90000);
+test("dormant operations are unavailable through routes and APIs", async ({ page }) => {
   await login(page, "manager");
-  await page.goto("/en/tables");
-  const name = "Polish " + Date.now();
-  await page.getByRole("button", { name: "Add table", exact: true }).click();
-  await page.getByLabel("Table name or number").fill(name);
-  await page.getByRole("button", { name: "Save table", exact: true }).click();
-  const card = page
-    .locator("article")
-    .filter({ has: page.getByRole("heading", { name, exact: true }) });
-  await card.getByRole("link", { name: "View QR", exact: true }).click();
-  const qr = (await page
-    .getByRole("link", { name: "Open menu", exact: true })
-    .getAttribute("href"))!;
-  const token = qr.split("/").pop()!;
-  const guest = await browser.newPage({ viewport: { width: 390, height: 844 } });
-  await guest.goto(`${web}/en/q/${token}`);
-  await expect(guest.getByText(name, { exact: true })).toBeVisible();
-  await expect(guest.locator("[data-ordering-hours]")).toContainText("acceptance");
-  await guest.getByRole("link", { name: "Haifa Port Branch", exact: true }).click();
-  expect(new URL(guest.url()).searchParams.get("table")).toBe(token);
-  await guest
-    .locator("article")
-    .first()
-    .getByRole("button", { name: "Add to cart", exact: true })
-    .click();
-  await guest.getByRole("dialog").locator("button[type=submit]").click();
-  await guest.getByRole("link", { name: "العربية", exact: true }).click();
-  await guest
-    .getByRole("button", { name: getDictionary("ar").ordering.review, exact: true })
-    .click();
-  await expect(guest.getByRole("dialog").locator("article")).toHaveCount(1);
-  await guest.getByRole("dialog").locator("input[autocomplete=name]").fill("Polish guest");
-  await guest
-    .getByRole("button", { name: getDictionary("ar").ordering.saveDraft, exact: true })
-    .click();
-  await expect(guest).toHaveURL(/order=/);
-  const id = new URL(guest.url()).searchParams.get("order")!;
-  await guest
-    .getByRole("dialog")
-    .getByRole("button", { name: getDictionary("ar").ordering.continue, exact: true })
-    .click();
-  await guest.getByRole("link", { name: "עברית", exact: true }).click();
-  await guest
-    .getByRole("button", { name: getDictionary("he").ordering.review, exact: true })
-    .click();
-  await expect(guest.getByRole("dialog").locator("input[autocomplete=name]")).toHaveValue(
-    "Polish guest",
-  );
-  await guest.getByRole("dialog").locator("button[type=submit]").click();
-  await guest.getByRole("dialog").locator("button[type=submit]").click();
-  await expect(guest.getByRole("dialog")).toHaveCount(0);
-  await guest.getByRole("link", { name: "English", exact: true }).click();
-  await expect(
-    guest.getByRole("heading", { name: "Your order has been sent", exact: true }),
-  ).toBeVisible();
-  expect(new URL(guest.url()).searchParams.get("order")).toBe(id);
-  expect(new URL(guest.url()).searchParams.get("table")).toBe(token);
-  await expect(guest.getByText(name, { exact: true })).toBeVisible();
-  await page.goto("/en/tables");
-  page.once("dialog", (d) => d.accept());
-  await card.getByRole("button", { name: "Revoke QR", exact: true }).click();
-  await expect(card.getByRole("link", { name: "View QR" })).toHaveCount(0);
-  await guest.reload();
-  await expect(
-    guest.getByRole("heading", { name: "This table link is unavailable", exact: true }),
-  ).toBeVisible();
-  await guest.close();
+  for (const route of ["orders", "tables", "kitchen", "operations", "analytics"]) {
+    const r = await page.goto(`/en/${route}`);
+    expect(r?.status()).toBe(404);
+  }
+  for (const route of ["kitchen", "operations", "analytics"]) {
+    expect((await page.request.get(`/api/${route}`)).status()).toBe(404);
+  }
+  expect(
+    (await page.request.post(`${web}/api/payments/webhooks/local-test`, { data: {} })).status(),
+  ).toBe(404);
+  await page.goto(`${web}/en/q/invalid`);
+  await expect(page.locator("h1")).toHaveText(getDictionary("en").tables.invalidQr);
 });
 test("managed branding permissions reject editors, foreign paths and invalid files", async ({
   page,

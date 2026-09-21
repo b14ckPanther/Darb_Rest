@@ -1,5 +1,9 @@
 # Checkout and payments — Phase 6
 
+> Current commercial scope: [Darb REST v1](V1-COMMERCIAL-MODEL.md). Operational,
+> payment, table-order and custom-domain sections below document retained technical
+> foundations. They are dormant, not current subscription capabilities.
+
 ## Customer and operator flows
 
 The public guest menu now progresses through cart review → checkout → payment outcome.

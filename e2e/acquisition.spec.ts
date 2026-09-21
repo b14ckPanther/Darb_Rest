@@ -16,7 +16,7 @@ for (const locale of ["en", "ar", "he"]) {
     ).toBeNull();
     expect(await page.locator(`a[href$="/${locale}/auth/signin"]`).count()).toBeGreaterThan(0);
     await page.goto(`http://localhost:3000/${locale}/pricing`);
-    for (const plan of ["starter", "pro", "enterprise"])
+    for (const plan of ["starter", "pro", "business"])
       await expect(page.locator(`a[href="/${locale}/get-started?plan=${plan}"]`)).toBeVisible();
     await page.locator(`a[href="/${locale}/get-started?plan=pro"]`).click();
     await expect(page.locator("select[name=requested_plan_code]")).toHaveValue("pro");

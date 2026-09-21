@@ -34,10 +34,16 @@ test("launch controls require migration 14 and owner-level permission", async ({
   await page.locator("button[type=submit]").click();
   await expect(page).toHaveURL(/\/en$/);
   await page.goto("/en/launch");
-  await expect(
-    page.locator("input[name=hostname]"),
-    "Operator must apply migration 14",
-  ).toBeVisible();
+  await expect(page.locator("input[name=hostname]")).toHaveCount(0);
+  await expect(page.locator("button[name=action]")).toBeVisible();
+  const qr = await page.locator('a[href^="/api/menu-qr?"]').first().getAttribute("href");
+  const download = await page.request.get(qr!);
+  expect(download.status()).toBe(200);
+  expect(download.headers()["content-type"]).toContain("image/svg+xml");
+  expect(await download.text()).toContain("<svg");
+  expect(
+    (await page.request.get("/api/menu-qr?location=ffffffff-ffff-ffff-ffff-ffffffffffff")).status(),
+  ).toBe(404);
 });
 test("untrusted hostname fails closed and forwarded headers cannot choose a tenant", async ({
   request,

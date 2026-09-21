@@ -95,7 +95,7 @@ test.describe("UI Polish & Performance Regression Tests", () => {
     await settingsLink.click();
 
     // Verify settings form elements appear
-    await expect(page.locator("form")).toBeVisible();
+    await expect(page.locator("form").first()).toBeVisible();
     await expect(page.locator("text=rest.darb.co.il/darb-bistro")).toBeVisible();
 
     const duration = Date.now() - startTime;

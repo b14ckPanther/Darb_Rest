@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { execFileSync } from "node:child_process";
 
 const EMOJI_REGEX = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F1E6}-\u{1F1FF}]/u;
 
@@ -118,6 +119,26 @@ test.describe("Phase 3: Business & Branch Onboarding Flow", () => {
     await nextBtn.click();
 
     // 9. Step 6: Plan Selection
+    const db = JSON.parse(
+      execFileSync("supabase", ["status", "-o", "json"], {
+        encoding: "utf8",
+        stdio: ["ignore", "pipe", "pipe"],
+      }),
+    );
+    if (!/^http:\/\/(127\.0\.0\.1|localhost):/.test(db.API_URL))
+      throw Error("Local database required");
+    const response = await page.request.post(`${db.API_URL}/rest/v1/rpc/public_commercial_plans`, {
+      headers: { apikey: db.ANON_KEY },
+      data: {},
+    });
+    const plans = await response.json();
+    for (const plan of plans) {
+      for (const price of [plan.monthly_price_ils, plan.yearly_price_ils])
+        await expect(page.locator("body")).toContainText(
+          new Intl.NumberFormat("ar", { style: "currency", currency: "ILS" }).format(price),
+        );
+    }
+
     await expect(page.locator("body")).toContainText("اختر الباقة التجارية");
     await expect(page.locator("body")).toContainText("الباقة الاحترافية");
     await nextBtn.click();

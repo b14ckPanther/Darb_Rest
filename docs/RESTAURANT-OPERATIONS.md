@@ -1,5 +1,9 @@
 # Restaurant operations — Phase 9
 
+> Current commercial scope: [Darb REST v1](V1-COMMERCIAL-MODEL.md). Operational,
+> payment, table-order and custom-domain sections below document retained technical
+> foundations. They are dormant, not current subscription capabilities.
+
 ## Scope and entry point
 
 The branch-scoped admin `/[locale]/operations` workspace extends the existing KitchenBoard.

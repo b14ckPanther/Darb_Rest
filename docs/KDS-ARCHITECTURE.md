@@ -1,5 +1,9 @@
 # Kitchen and order operations — Phase 8
 
+> Current commercial scope: [Darb REST v1](V1-COMMERCIAL-MODEL.md). Operational,
+> payment, table-order and custom-domain sections below document retained technical
+> foundations. They are dormant, not current subscription capabilities.
+
 ## Scope and permission boundary
 
 `/[locale]/kitchen` is a branch-scoped operational board for owner, admin, manager and staff.
