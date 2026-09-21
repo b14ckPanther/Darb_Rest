@@ -11,7 +11,9 @@
     "./server": "./src/server.ts",
     "./admin": "./src/admin.ts",
     "./entitlements": "./src/entitlements.ts",
-    "./commercial": "./src/commercial.ts"
+    "./commercial": "./src/commercial.ts",
+    "./customer-mail": "./src/customer-mail.ts",
+    "./customer-messages": "./src/customer-messages.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -22,7 +24,8 @@
     "@darb-rest/config": "workspace:*",
     "@darb-rest/types": "workspace:*",
     "@supabase/ssr": "^0.5.2",
-    "@supabase/supabase-js": "^2.49.1"
+    "@supabase/supabase-js": "^2.49.1",
+    "@darb-rest/i18n": "workspace:*"
   },
   "peerDependencies": {
     "next": "^16.0.0"

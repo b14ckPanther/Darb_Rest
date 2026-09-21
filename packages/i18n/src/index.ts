@@ -6,3 +6,5 @@ export * from "./context";
 export { commercialLabels } from "./commercial";
 
 export { commercialFeatureLabels } from "./commercial";
+
+export { activationLabels } from "./activation";

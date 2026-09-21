@@ -288,6 +288,9 @@ importers:
       '@darb-rest/config':
         specifier: workspace:*
         version: link:../config
+      '@darb-rest/i18n':
+        specifier: workspace:*
+        version: link:../i18n
       '@darb-rest/types':
         specifier: workspace:*
         version: link:../types

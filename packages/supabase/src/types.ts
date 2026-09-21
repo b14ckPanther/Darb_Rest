@@ -29,6 +29,446 @@ export type Database = {
   };
   public: {
     Tables: {
+      platform_billing_settings: {
+        Row: {
+          bank_account_holder: string;
+          bank_account_number: string;
+          bank_branch: string;
+          bank_enabled: boolean;
+          bank_iban: string;
+          bank_instructions: Json;
+          bank_name: string;
+          bank_number: string;
+          bit_enabled: boolean;
+          bit_instructions: Json;
+          bit_phone: string;
+          id: boolean;
+          payment_due_days: number;
+          sender_name: string;
+          support_email: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          bank_account_holder?: string;
+          bank_account_number?: string;
+          bank_branch?: string;
+          bank_enabled?: boolean;
+          bank_iban?: string;
+          bank_instructions?: Json;
+          bank_name?: string;
+          bank_number?: string;
+          bit_enabled?: boolean;
+          bit_instructions?: Json;
+          bit_phone?: string;
+          id?: boolean;
+          payment_due_days?: number;
+          sender_name?: string;
+          support_email?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          bank_account_holder?: string;
+          bank_account_number?: string;
+          bank_branch?: string;
+          bank_enabled?: boolean;
+          bank_iban?: string;
+          bank_instructions?: Json;
+          bank_name?: string;
+          bank_number?: string;
+          bit_enabled?: boolean;
+          bit_instructions?: Json;
+          bit_phone?: string;
+          id?: boolean;
+          payment_due_days?: number;
+          sender_name?: string;
+          support_email?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      customer_agreements: {
+        Row: {
+          agreed_amount_ils: number;
+          application_id: string;
+          approved_at: string;
+          approved_by: string;
+          billing_cycle: string;
+          business_name: string;
+          catalog_amount_ils: number;
+          currency: string;
+          customer_email: string;
+          customer_name: string;
+          id: string;
+          locale: string;
+          payment_due_at: string;
+          payment_reference: string;
+          plan_code: string;
+          plan_id: string;
+          plan_name: Json;
+        };
+        Insert: {
+          agreed_amount_ils: number;
+          application_id: string;
+          approved_at?: string;
+          approved_by: string;
+          billing_cycle: string;
+          business_name: string;
+          catalog_amount_ils: number;
+          currency?: string;
+          customer_email: string;
+          customer_name: string;
+          id?: string;
+          locale: string;
+          payment_due_at: string;
+          payment_reference?: string;
+          plan_code: string;
+          plan_id: string;
+          plan_name: Json;
+        };
+        Update: {
+          agreed_amount_ils?: number;
+          application_id?: string;
+          approved_at?: string;
+          approved_by?: string;
+          billing_cycle?: string;
+          business_name?: string;
+          catalog_amount_ils?: number;
+          currency?: string;
+          customer_email?: string;
+          customer_name?: string;
+          id?: string;
+          locale?: string;
+          payment_due_at?: string;
+          payment_reference?: string;
+          plan_code?: string;
+          plan_id?: string;
+          plan_name?: Json;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customer_agreements_application_id_fkey";
+            columns: ["application_id"];
+            isOneToOne: true;
+            referencedRelation: "restaurant_applications";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "customer_agreements_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "plans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      manual_customer_payments: {
+        Row: {
+          accounting_reference: string;
+          agreement_id: string;
+          confirmed_at: string | null;
+          confirmed_by: string | null;
+          created_at: string;
+          currency: string;
+          expected_amount_ils: number;
+          external_reference: string;
+          id: string;
+          internal_note: string;
+          method: string | null;
+          paid_amount_ils: number | null;
+          payment_reference: string;
+          period_end: string | null;
+          period_start: string | null;
+          purpose: string;
+          status: string;
+        };
+        Insert: {
+          accounting_reference?: string;
+          agreement_id: string;
+          confirmed_at?: string | null;
+          confirmed_by?: string | null;
+          created_at?: string;
+          currency?: string;
+          expected_amount_ils: number;
+          external_reference?: string;
+          id?: string;
+          internal_note?: string;
+          method?: string | null;
+          paid_amount_ils?: number | null;
+          payment_reference: string;
+          period_end?: string | null;
+          period_start?: string | null;
+          purpose?: string;
+          status?: string;
+        };
+        Update: {
+          accounting_reference?: string;
+          agreement_id?: string;
+          confirmed_at?: string | null;
+          confirmed_by?: string | null;
+          created_at?: string;
+          currency?: string;
+          expected_amount_ils?: number;
+          external_reference?: string;
+          id?: string;
+          internal_note?: string;
+          method?: string | null;
+          paid_amount_ils?: number | null;
+          payment_reference?: string;
+          period_end?: string | null;
+          period_start?: string | null;
+          purpose?: string;
+          status?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "manual_customer_payments_agreement_id_fkey";
+            columns: ["agreement_id"];
+            isOneToOne: false;
+            referencedRelation: "customer_agreements";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "manual_customer_payments_agreement_id_payment_reference_fkey";
+            columns: ["agreement_id", "payment_reference"];
+            isOneToOne: false;
+            referencedRelation: "customer_agreements";
+            referencedColumns: ["id", "payment_reference"];
+          },
+        ];
+      };
+      customer_activations: {
+        Row: {
+          activated_at: string | null;
+          agreement_id: string;
+          business_id: string | null;
+          created_at: string;
+          instruction_token_expires_at: string | null;
+          instruction_token_hash: string | null;
+          invite_attempt_id: string | null;
+          invite_attempts: number;
+          invite_claimed_at: string | null;
+          invite_error_code: string | null;
+          invite_sent_at: string | null;
+          invite_state: string;
+          onboarded_at: string | null;
+          updated_at: string;
+          user_id: string | null;
+        };
+        Insert: {
+          activated_at?: string | null;
+          agreement_id: string;
+          business_id?: string | null;
+          created_at?: string;
+          instruction_token_expires_at?: string | null;
+          instruction_token_hash?: string | null;
+          invite_attempt_id?: string | null;
+          invite_attempts?: number;
+          invite_claimed_at?: string | null;
+          invite_error_code?: string | null;
+          invite_sent_at?: string | null;
+          invite_state?: string;
+          onboarded_at?: string | null;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Update: {
+          activated_at?: string | null;
+          agreement_id?: string;
+          business_id?: string | null;
+          created_at?: string;
+          instruction_token_expires_at?: string | null;
+          instruction_token_hash?: string | null;
+          invite_attempt_id?: string | null;
+          invite_attempts?: number;
+          invite_claimed_at?: string | null;
+          invite_error_code?: string | null;
+          invite_sent_at?: string | null;
+          invite_state?: string;
+          onboarded_at?: string | null;
+          updated_at?: string;
+          user_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customer_activations_agreement_id_fkey";
+            columns: ["agreement_id"];
+            isOneToOne: true;
+            referencedRelation: "customer_agreements";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "customer_activations_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: true;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      customer_subscriptions: {
+        Row: {
+          agreed_amount_ils: number;
+          agreement_id: string;
+          billing_cycle: string;
+          business_id: string;
+          created_at: string;
+          currency: string;
+          current_period_end: string | null;
+          current_period_start: string | null;
+          id: string;
+          plan_id: string;
+          started_at: string | null;
+          status: string;
+          updated_at: string;
+        };
+        Insert: {
+          agreed_amount_ils: number;
+          agreement_id: string;
+          billing_cycle: string;
+          business_id: string;
+          created_at?: string;
+          currency?: string;
+          current_period_end?: string | null;
+          current_period_start?: string | null;
+          id?: string;
+          plan_id: string;
+          started_at?: string | null;
+          status: string;
+          updated_at?: string;
+        };
+        Update: {
+          agreed_amount_ils?: number;
+          agreement_id?: string;
+          billing_cycle?: string;
+          business_id?: string;
+          created_at?: string;
+          currency?: string;
+          current_period_end?: string | null;
+          current_period_start?: string | null;
+          id?: string;
+          plan_id?: string;
+          started_at?: string | null;
+          status?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customer_subscriptions_agreement_id_fkey";
+            columns: ["agreement_id"];
+            isOneToOne: true;
+            referencedRelation: "customer_agreements";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "customer_subscriptions_business_id_fkey";
+            columns: ["business_id"];
+            isOneToOne: true;
+            referencedRelation: "businesses";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "customer_subscriptions_plan_id_fkey";
+            columns: ["plan_id"];
+            isOneToOne: false;
+            referencedRelation: "plans";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      customer_mail_outbox: {
+        Row: {
+          agreement_id: string | null;
+          application_id: string;
+          attempts: number;
+          claim_id: string | null;
+          claimed_at: string | null;
+          created_at: string;
+          deduplication_key: string;
+          error_code: string | null;
+          id: string;
+          kind: string;
+          provider_reference: string | null;
+          sent_at: string | null;
+          state: string;
+          updated_at: string;
+        };
+        Insert: {
+          agreement_id?: string | null;
+          application_id: string;
+          attempts?: number;
+          claim_id?: string | null;
+          claimed_at?: string | null;
+          created_at?: string;
+          deduplication_key: string;
+          error_code?: string | null;
+          id?: string;
+          kind: string;
+          provider_reference?: string | null;
+          sent_at?: string | null;
+          state?: string;
+          updated_at?: string;
+        };
+        Update: {
+          agreement_id?: string | null;
+          application_id?: string;
+          attempts?: number;
+          claim_id?: string | null;
+          claimed_at?: string | null;
+          created_at?: string;
+          deduplication_key?: string;
+          error_code?: string | null;
+          id?: string;
+          kind?: string;
+          provider_reference?: string | null;
+          sent_at?: string | null;
+          state?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "customer_mail_outbox_agreement_id_fkey";
+            columns: ["agreement_id"];
+            isOneToOne: false;
+            referencedRelation: "customer_agreements";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "customer_mail_outbox_application_id_fkey";
+            columns: ["application_id"];
+            isOneToOne: false;
+            referencedRelation: "restaurant_applications";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      customer_commercial_audit: {
+        Row: {
+          action: string;
+          actor_id: string | null;
+          id: number;
+          occurred_at: string;
+          record_id: string;
+          record_table: string;
+        };
+        Insert: {
+          action: string;
+          actor_id?: string | null;
+          id?: never;
+          occurred_at?: string;
+          record_id: string;
+          record_table: string;
+        };
+        Update: {
+          action?: string;
+          actor_id?: string | null;
+          id?: never;
+          occurred_at?: string;
+          record_id?: string;
+          record_table?: string;
+        };
+        Relationships: [];
+      };
+
       restaurant_applications: {
         Row: {
           id: string;
@@ -47,11 +487,12 @@ export type Database = {
           reviewed_by: string | null;
           reviewed_at: string | null;
           internal_note: string;
+          customer_safe_message: string;
           created_at: string;
           updated_at: string;
         };
         Insert: never;
-        Update: never;
+        Update: Partial<Database["public"]["Tables"]["restaurant_applications"]["Row"]>;
         Relationships: [];
       };
       restaurant_launch: {
@@ -1841,6 +2282,27 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      approve_customer_application: {
+        Args: {
+          p_amount?: number;
+          p_application: string;
+          p_confirm_starting?: boolean;
+          p_cycle: string;
+          p_plan: string;
+        };
+        Returns: string;
+      };
+      confirm_customer_payment: {
+        Args: {
+          p_amount: number;
+          p_external_reference?: string;
+          p_method: string;
+          p_note?: string;
+          p_payment: string;
+        };
+        Returns: undefined;
+      };
+
       public_commercial_plans: { Args: Record<string, never>; Returns: Json };
       submit_restaurant_application: { Args: { p_input: Json }; Returns: undefined };
       review_restaurant_application: {
