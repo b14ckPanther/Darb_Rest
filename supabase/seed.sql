@@ -4,72 +4,11 @@
 -- ==============================================================================
 
 -- LOCAL DEVELOPMENT ONLY. Mock dev sessions do not require auth.users or memberships.
--- Apply after migrations 1–3 via supabase db reset --local; never seed the linked project.
+-- Apply after all canonical migrations via supabase db reset --local; never seed the linked project.
 BEGIN;
 
--- 1. Default Commercial Plans
-INSERT INTO public.plans (id, code, name, description, is_active) VALUES
-  (
-    '11111111-1111-1111-1111-111111111111',
-    'starter',
-    '{"ar": "الباقة الأساسية", "he": "תוכנית בסיסית", "en": "Starter Plan"}'::jsonb,
-    '{"ar": "مثالية للمقاهي الصغيرة وعربات الطعام", "he": "אידיאלי לבתי קפה קטנים ועגלות קפה", "en": "Ideal for small cafés and food carts"}'::jsonb,
-    TRUE
-  ),
-  (
-    '22222222-2222-2222-2222-222222222222',
-    'pro',
-    '{"ar": "الباقة الاحترافية", "he": "תוכנית מקצועית", "en": "Pro Plan"}'::jsonb,
-    '{"ar": "للمطاعم والمقاهي المتنامية مع فروع متعددة", "he": "למסעדות ובתי קפה בצמיחה עם סניפים", "en": "For growing restaurants and cafés with multiple branches"}'::jsonb,
-    TRUE
-  ),
-  (
-    '33333333-3333-3333-3333-333333333333',
-    'enterprise',
-    '{"ar": "باقة المؤسسات", "he": "תוכנית ארגונית", "en": "Enterprise Plan"}'::jsonb,
-    '{"ar": "سلاسل المطاعم الكبرى مع تخصيص غير محدود", "he": "לרשתות מסעדות גדולות עם התאמה ללא הגבלה", "en": "Large culinary chains with full customizations"}'::jsonb,
-    TRUE
-  )
-ON CONFLICT (code) DO NOTHING;
-
--- 2. Plan Entitlements
--- Starter Plan Entitlements
-INSERT INTO public.plan_entitlements (plan_id, feature_key, enabled, limit_value) VALUES
-  ((SELECT id FROM public.plans WHERE code = 'starter'), 'digital_menu', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'starter'), 'qr_codes', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'starter'), 'multi_location', FALSE, 1),
-  ((SELECT id FROM public.plans WHERE code = 'starter'), 'online_ordering', FALSE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'starter'), 'online_payments', FALSE, NULL)
-ON CONFLICT (plan_id, feature_key) DO UPDATE
-SET enabled = EXCLUDED.enabled, limit_value = EXCLUDED.limit_value;
-
--- Pro Plan Entitlements
-INSERT INTO public.plan_entitlements (plan_id, feature_key, enabled, limit_value) VALUES
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'digital_menu', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'qr_codes', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'multi_location', TRUE, 3),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'online_ordering', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'table_ordering', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'takeaway', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'online_payments', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'pro'), 'custom_branding', TRUE, NULL)
-ON CONFLICT (plan_id, feature_key) DO UPDATE
-SET enabled = EXCLUDED.enabled, limit_value = EXCLUDED.limit_value;
-
--- Enterprise Plan Entitlements
-INSERT INTO public.plan_entitlements (plan_id, feature_key, enabled, limit_value) VALUES
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'digital_menu', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'qr_codes', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'multi_location', TRUE, 25),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'online_ordering', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'table_ordering', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'takeaway', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'online_payments', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'custom_branding', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'advanced_analytics', TRUE, NULL),
-  ((SELECT id FROM public.plans WHERE code = 'enterprise'), 'custom_domains', TRUE, NULL)
-ON CONFLICT (plan_id, feature_key) DO UPDATE
-SET enabled = EXCLUDED.enabled, limit_value = EXCLUDED.limit_value;
+-- Commercial defaults and entitlements are initialized once by migration 16.
+-- Do not overwrite administrator-edited prices or re-enable dormant features here.
 
 -- 3. Sample Multi-Tenant Businesses (Restaurant & Café)
 INSERT INTO public.businesses (id, slug, name, legal_name, business_type, status, plan_id) VALUES
@@ -80,7 +19,7 @@ INSERT INTO public.businesses (id, slug, name, legal_name, business_type, status
     'Darb Bistro Ltd',
     'restaurant',
     'active',
-    (SELECT id FROM public.plans WHERE code = 'pro')
+    (SELECT id FROM public.plans WHERE code = 'business')
   ),
   (
     'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',

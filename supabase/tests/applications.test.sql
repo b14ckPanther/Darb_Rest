@@ -1,4 +1,4 @@
--- Run against LOCAL Supabase after migration 15 has been applied by the operator.
+-- Run against LOCAL Supabase after migration 16 has been applied by the operator.
 BEGIN;
 CREATE EXTENSION IF NOT EXISTS pgtap WITH SCHEMA extensions;
 SET search_path=public,extensions;
@@ -24,8 +24,8 @@ SELECT is((SELECT count(*)::integer FROM restaurant_applications),0,'Ordinary us
 SELECT throws_ok($$SELECT public.review_restaurant_application((SELECT id FROM application_test_id),'approved','Unauthorized','pro')$$,'42501','forbidden','Tenant cannot approve');
 SELECT set_config('request.jwt.claim.sub','ec150000-0000-4000-8000-000000000001',true);
 SELECT is((SELECT count(*)::integer FROM restaurant_applications WHERE id IN (SELECT id FROM application_test_id)),1,'Platform admin can list and view');
-SELECT lives_ok($$SELECT public.review_restaurant_application((SELECT id FROM application_test_id),'approved','Checked','enterprise')$$,'Platform admin approves and changes plan');
-SELECT ok((SELECT status='approved' AND reviewed_by=auth.uid() AND reviewed_at IS NOT NULL AND requested_plan_code='enterprise' FROM restaurant_applications WHERE id IN (SELECT id FROM application_test_id)),'Decision records reviewer, time and plan');
+SELECT lives_ok($$SELECT public.review_restaurant_application((SELECT id FROM application_test_id),'approved','Checked','business')$$,'Platform admin approves and changes plan');
+SELECT ok((SELECT status='approved' AND reviewed_by=auth.uid() AND reviewed_at IS NOT NULL AND requested_plan_code='business' FROM restaurant_applications WHERE id IN (SELECT id FROM application_test_id)),'Decision records reviewer, time and plan');
 SELECT throws_ok($$SELECT public.review_restaurant_application((SELECT id FROM application_test_id),'rejected','Second review',NULL)$$,'40001','already_reviewed_or_missing','Duplicate review cannot overwrite decision');
 RESET ROLE;
 INSERT INTO restaurant_applications(kind,full_name,business_name,email,phone,city,business_type,branch_count,locale) VALUES ('application','Reject QA','Reject QA','reject@qa.example','0501234567','Nazareth','restaurant',1,'he');

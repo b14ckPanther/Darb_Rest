@@ -1,5 +1,13 @@
 # Darb REST: Roadmap & Progress
 
+## V1 commercial alignment — in progress
+
+The locked [v1 commercial model](V1-COMMERCIAL-MODEL.md) supersedes previous
+commercial promises. Migration 16, local seed alignment and database contract tests
+are prepared but not applied. Application pricing/editor, v1 feature gates, WhatsApp
+flows, copy, fixtures and cross-surface QA remain pending. Previous phase completion
+records describe retained technical foundations, not the v1 subscription offering.
+
 ## Phase 1: Production Monorepo Foundation (Complete)
 
 - [x] Turborepo 2 + pnpm workspaces initialization
