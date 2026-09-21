@@ -1,5 +1,12 @@
 # Darb REST: Roadmap & Progress
 
+## Customer activation and manual billing — database prerequisite
+
+Migration 18 and local contract tests are prepared for operator application. See
+[CUSTOMER-ACTIVATION.md](CUSTOMER-ACTIVATION.md). This is not a completed activation
+release: billing UI, email adapters, Auth invites/password setup and locked onboarding UI
+remain pending. No migration, email, external configuration or push was executed.
+
 ## V1 commercial alignment — implemented and locally validated
 
 The locked [v1 commercial model](V1-COMMERCIAL-MODEL.md) supersedes earlier commercial
