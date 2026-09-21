@@ -1,5 +1,15 @@
 # Darb REST: Roadmap & Progress
 
+## Customer Account Settings — verified-email prerequisite
+
+Migration 18 was operator-applied and its 16 contract assertions passed again locally.
+A new rollback regression fails because changing an activated user's verified Auth email
+breaks subsequent activation/onboarding updates. Migration 19 narrowly fixes stable account
+identity after activation; it is prepared, not applied. Existing email checks before activation,
+immutable agreement terms, paid-access checks and account binding remain intact.
+Application implementation is paused at the user's mandatory migration boundary; see
+[CUSTOMER-ACTIVATION.md](CUSTOMER-ACTIVATION.md). No emails or invitations were sent.
+
 ## Customer activation and manual billing — database prerequisite
 
 Migration 18 and local contract tests are prepared for operator application. See

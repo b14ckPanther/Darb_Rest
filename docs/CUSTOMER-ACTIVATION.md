@@ -11,6 +11,29 @@ Auth invitation/callback, password setup, agreed-price snapshot, manual ledger o
 subscription UI. Current onboarding accepts a plan from the client. The database contract
 below closes that creation boundary; its matching application still needs implementation.
 
+## Account email-change prerequisite (migration 19)
+
+The Account Settings continuation exposed a migration-18 conflict: after a verified
+customer changes their Auth email, every activation update still compares it with the
+immutable application email. A local rollback regression reproduced
+`customer_identity_mismatch`; the existing 16 assertions passed and this new case failed.
+This would also roll back the subscription/business link during onboarding.
+
+Migration 19 preserves the original-email check for initial association and activation.
+After activation, the immutable Auth user UUID is the identity boundary. A verified new
+login email may differ from the historical agreement recipient; the agreement snapshot is
+never rewritten. Account reassignment and activation reset remain prohibited, payment is
+still required, and the Auth account must still have a verified email.
+
+Migration 19 is prepared only. No migration was run. UI, provider, invite/password and
+Account Settings implementation remain pending at the required manual boundary. Run:
+
+```bash
+supabase migration list --local
+supabase migration up --local
+supabase test db --local supabase/tests/customer-activation.test.sql supabase/tests/customer-activation-identity.test.sql
+```
+
 ## Separate lifecycle records
 
 - Application: existing pending/approved/rejected review record.
