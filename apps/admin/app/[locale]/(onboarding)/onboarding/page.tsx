@@ -1,5 +1,9 @@
 import { getServerClient } from "@darb-rest/supabase/server";
-import { getAdminClient } from "@darb-rest/supabase/admin";
+import { customerAgreement } from "../../../../lib/customer-activation";
+import { platformRole } from "../../../../lib/auth";
+import { activationLabels } from "@darb-rest/i18n";
+import Link from "next/link";
+import { localizedJson } from "@darb-rest/supabase/customer-mail";
 import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 import React from "react";
 import { getOnboardingDraft } from "../../../../lib/actions/onboarding";
@@ -19,25 +23,52 @@ export default async function OnboardingPage({ params }: { params: Promise<{ loc
   // 1. Retrieve draft if present
   let initialDraft = await getOnboardingDraft();
 
-  const availablePlans: PlanItem[] = (await getCommercialPlans()).map((p) => ({
+  let availablePlans: PlanItem[] = (await getCommercialPlans()).map((p) => ({
     ...p,
     description: p.description ?? {},
     features: p.public_features,
   }));
 
   const auth = await (await getServerClient()).auth.getUser();
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY && auth.data.user?.email && !initialDraft?.planId) {
-    const approved = await getAdminClient()
-      .from("restaurant_applications")
-      .select("requested_plan_code")
-      .eq("email", auth.data.user.email.toLowerCase())
-      .eq("kind", "application")
-      .eq("status", "approved")
-      .order("reviewed_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    const plan = availablePlans.find((p) => p.code === approved.data?.requested_plan_code);
-    if (plan) initialDraft = { ...initialDraft, planId: plan.id };
+  let lockedAgreement:
+    { name: string; cycle: "monthly" | "yearly"; amount: number; reference: string } | undefined;
+  if (auth.data.user && !(await platformRole(auth.data.user.id)).data) {
+    const record = await customerAgreement(auth.data.user.id);
+    if (!record?.activation.activated_at)
+      return (
+        <div className="mx-auto max-w-lg space-y-5 p-6">
+          <p>{activationLabels[currentLocale].requiredActivation}</p>
+          <Link
+            className="inline-flex min-h-12 underline"
+            href={`/${currentLocale}/auth/accept-invite`}
+          >
+            {activationLabels[currentLocale].activate}
+          </Link>
+        </div>
+      );
+    const a = record.agreement;
+    lockedAgreement = {
+      name: localizedJson(a.plan_name, currentLocale),
+      cycle: a.billing_cycle as "monthly" | "yearly",
+      amount: a.agreed_amount_ils,
+      reference: a.payment_reference,
+    };
+    initialDraft = { ...initialDraft, planId: a.plan_id };
+    availablePlans = [
+      {
+        id: a.plan_id,
+        code: a.plan_code,
+        name: {
+          en: localizedJson(a.plan_name, "en"),
+          ar: localizedJson(a.plan_name, "ar"),
+          he: localizedJson(a.plan_name, "he"),
+        },
+        monthly_price_ils: 0,
+        yearly_price_ils: 0,
+        price_is_starting: false,
+        features: [],
+      },
+    ];
   }
   return (
     <div className="py-4 max-w-4xl mx-auto">
@@ -49,6 +80,7 @@ export default async function OnboardingPage({ params }: { params: Promise<{ loc
       </div>
 
       <OnboardingWizard
+        lockedAgreement={lockedAgreement}
         initialDraft={initialDraft}
         availablePlans={availablePlans}
         userLocale={currentLocale}

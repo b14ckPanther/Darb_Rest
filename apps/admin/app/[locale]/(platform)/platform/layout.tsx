@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
+import { activationLabels, getDictionary, type SupportedLocale } from "@darb-rest/i18n";
 import { requirePlatform, requireData } from "../../../../lib/platform";
 import { LocaleSwitcher } from "../../../../components/locale-switcher";
 export default async function PlatformLayout({
@@ -53,6 +53,7 @@ export default async function PlatformLayout({
             ["/businesses", L.businesses],
             ["/users", D.acquisition.users],
             ["/plans", L.plans],
+            ["/billing", activationLabels[locale].billing],
           ].map(([path, label]) => (
             <Link
               className="rounded-lg border border-[var(--border-subtle)] px-4 py-3 text-sm font-semibold hover:bg-[var(--bg-surface)]"

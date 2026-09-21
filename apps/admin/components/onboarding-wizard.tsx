@@ -1,5 +1,5 @@
 "use client";
-import { commercialLabels } from "@darb-rest/i18n";
+import { activationLabels, commercialLabels } from "@darb-rest/i18n";
 
 import React, { useState, useEffect, useTransition } from "react";
 import { useTranslation, type SupportedLocale } from "@darb-rest/i18n";
@@ -49,6 +49,12 @@ export interface PlanItem {
 }
 
 export interface OnboardingWizardProps {
+  lockedAgreement?: {
+    name: string;
+    cycle: "monthly" | "yearly";
+    amount: number;
+    reference: string;
+  };
   initialDraft?: Partial<OnboardingDraft> | null;
   availablePlans: PlanItem[];
   userLocale: SupportedLocale;
@@ -65,6 +71,7 @@ const DEFAULT_HOURS = [
 ];
 
 export function OnboardingWizard({
+  lockedAgreement,
   initialDraft,
   availablePlans,
   userLocale,
@@ -1012,7 +1019,25 @@ export function OnboardingWizard({
         )}
 
         {/* Step 6: Commercial Plan Selection */}
-        {currentStep === 6 && (
+        {currentStep === 6 && lockedAgreement && (
+          <>
+            <CardHeader>
+              <CardTitle>{activationLabels[locale].locked}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-xl font-bold">{lockedAgreement.name}</p>
+              <p>
+                {activationLabels[locale][lockedAgreement.cycle]} ·{" "}
+                {new Intl.NumberFormat(locale, { style: "currency", currency: "ILS" }).format(
+                  lockedAgreement.amount,
+                )}
+              </p>
+              <p dir="ltr">{lockedAgreement.reference}</p>
+              <p>{activationLabels[locale].approvedBy}</p>
+            </CardContent>
+          </>
+        )}
+        {currentStep === 6 && !lockedAgreement && (
           <>
             <CardHeader className="pb-4">
               <div className="flex items-center gap-2.5">

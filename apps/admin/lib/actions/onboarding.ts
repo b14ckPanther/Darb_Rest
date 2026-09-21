@@ -1,4 +1,6 @@
 "use server";
+import { customerAgreement } from "../customer-activation";
+import { platformRole } from "../auth";
 import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 
 import { encodeDevMemberships, decodeDevMemberships } from "../dev-memberships";
@@ -333,7 +335,7 @@ export async function completeOnboarding(
   const isRealSupabase = supabaseUrl && !supabaseUrl.includes("placeholder");
 
   const selectedPlan = (await getCommercialPlans()).find((p) => p.id === data.planId);
-  if (!selectedPlan) return { success: false };
+
   // 1. Authenticate user server-side
   let userId: string | null = null;
   let userEmail: string | null = null;
@@ -366,6 +368,13 @@ export async function completeOnboarding(
   if (!userId || !userEmail) {
     return { success: false, error: "Unauthorized: You must be logged in to create a business." };
   }
+
+  if (usesRealAuth && !(await platformRole(userId)).data) {
+    const record = await customerAgreement(userId);
+    if (!record?.activation.activated_at || data.planId !== record.agreement.plan_id)
+      return { success: false };
+    data.planId = record.agreement.plan_id;
+  } else if (!selectedPlan) return { success: false };
 
   const businessId = crypto.randomUUID();
   const locationId = crypto.randomUUID();
@@ -427,6 +436,7 @@ export async function completeOnboarding(
   }
   if (process.env.NODE_ENV === "production") return { success: false };
 
+  if (!selectedPlan) return { success: false };
   // 3. Register created tenant in dynamic store for seamless non-production access
   const newBusiness: Business = {
     id: businessId,

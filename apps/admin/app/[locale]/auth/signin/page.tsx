@@ -47,7 +47,10 @@ export default function SignInPage() {
         return;
       }
 
-      window.location.href = `/${currentLocale}`;
+      window.location.href =
+        new URLSearchParams(window.location.search).get("next") === "activation"
+          ? `/${currentLocale}/auth/accept-invite`
+          : `/${currentLocale}`;
     } catch {
       if (
         process.env.NODE_ENV !== "production" &&

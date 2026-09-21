@@ -1,5 +1,10 @@
 import { getCommercialPlans } from "@darb-rest/supabase/commercial";
-import { ReviewButtons } from "../../../../../../components/platform/review-buttons";
+import {
+  CommercialApproval,
+  ActionButton,
+} from "../../../../../../components/platform/commercial-approval";
+import { ActivationWorkflow } from "../../../../../../components/platform/activation-workflow";
+import { activationLabels } from "@darb-rest/i18n";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -9,7 +14,7 @@ import {
   type SupportedLocale,
 } from "@darb-rest/i18n";
 import { requirePlatform, requireData } from "../../../../../../lib/platform";
-import { reviewApplication } from "../../../../../../lib/actions/applications";
+import { commercialAction } from "../../../../../../lib/actions/customer-activation";
 export default async function Application({
   params,
   searchParams,
@@ -32,6 +37,9 @@ export default async function Application({
       .maybeSingle(),
   );
   if (!r) notFound();
+  const agreement = requireData(
+    await db.from("customer_agreements").select("id").eq("application_id", id).maybeSingle(),
+  );
   const plans = await getCommercialPlans();
   const C = commercialLabels[locale];
   const selected = plans.find((p) => p.code === r.requested_plan_code);
@@ -49,10 +57,16 @@ export default async function Application({
       <h1 className="text-3xl font-bold">{L.details}</h1>
       {s.result && (
         <p role={s.result === "saved" ? "status" : "alert"}>
-          {s.result === "saved" ? L.saved : L.reviewFailed}
+          {s.result === "saved" || s.result === "sent"
+            ? L.saved
+            : s.result === "unavailable"
+              ? activationLabels[locale].unavailable
+              : s.result === "unknown"
+                ? activationLabels[locale].unknown
+                : L.reviewFailed}
         </p>
       )}
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className={`grid gap-6 ${!agreement || r.internal_note ? "lg:grid-cols-2" : ""}`}>
         <section className="space-y-5 rounded-xl border bg-[var(--bg-surface)] p-6">
           <h2 dir="auto" className="text-2xl font-bold">
             {r.business_name}
@@ -60,7 +74,7 @@ export default async function Application({
           <p>
             {L[r.status]} · {r.kind === "inquiry" ? L.inquiries : L.applications}
           </p>
-          <dl className="grid gap-4">
+          <dl className="grid gap-4 sm:grid-cols-2">
             {[
               [L.full_name, r.full_name],
               [L.language, LOCALE_CONFIGS[r.locale].nativeName],
@@ -86,50 +100,38 @@ export default async function Application({
             ))}
           </dl>
         </section>
-        <section className="space-y-5 rounded-xl bg-[var(--warm-bone)] p-6">
+        <section
+          className="space-y-5 rounded-xl bg-[var(--warm-bone)] p-6"
+          hidden={!!agreement && !r.internal_note}
+        >
           <h2 className="text-xl font-bold">{L.review}</h2>
-          {r.status === "pending" ? (
-            <form action={reviewApplication} className="space-y-5">
-              <input type="hidden" name="locale" value={locale} />
-              <input type="hidden" name="id" value={id} />
-              <label className="grid gap-2">
-                {L.requested_plan_code}
-                <select
-                  className="min-h-12 rounded-lg border bg-white px-3"
-                  name="requested_plan_code"
-                  defaultValue={r.requested_plan_code ?? "unsure"}
-                >
-                  <option value="unsure">{L.unsure}</option>
-                  {plans.map((p) => (
-                    <option key={p.id} value={p.code}>
-                      {planLabel(p)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="grid gap-2">
-                {L.internal_note}
-                <textarea
-                  name="internal_note"
-                  rows={5}
-                  maxLength={2000}
-                  className="w-full rounded-lg border bg-white p-3"
-                  dir="auto"
-                />
-              </label>
-              <ReviewButtons approve={L.approve} reject={L.reject} sending={L.sending} />
-            </form>
-          ) : (
+          {r.status !== "rejected" && !agreement && (
             <>
-              <p>{L.internal_note}</p>
-              <p dir="auto" className="whitespace-pre-wrap break-words">
-                {r.internal_note || "—"}
-              </p>
+              {r.kind === "application" && (
+                <CommercialApproval plans={plans} id={id} locale={locale} selected={selected?.id} />
+              )}
+              <form action={commercialAction} className="grid gap-4 border-t pt-5">
+                <input type="hidden" name="locale" value={locale} />
+                <input type="hidden" name="id" value={id} />
+                <input type="hidden" name="action" value="reject" />
+                <label className="grid gap-2">
+                  {activationLabels[locale].safeMessage}
+                  <textarea name="safeMessage" maxLength={1000} className="rounded-lg border p-3" />
+                </label>
+                <label className="grid gap-2">
+                  {L.internal_note}
+                  <textarea name="note" maxLength={2000} className="rounded-lg border p-3" />
+                </label>
+                <ActionButton label={L.reject} />
+              </form>
             </>
           )}
-          <p className="text-sm leading-relaxed text-[var(--fg-muted)]">{L.inviteNotice}</p>
+          <p dir="auto" className="whitespace-pre-wrap">
+            {r.internal_note}
+          </p>
         </section>
       </div>
+      <ActivationWorkflow applicationId={id} locale={locale} />
     </>
   );
 }

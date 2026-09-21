@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
+import { activationLabels, getDictionary, type SupportedLocale } from "@darb-rest/i18n";
 import { requirePlatform, requireData, platformPage } from "../../../../../lib/platform";
 export default async function Applications({
   params,
@@ -43,6 +43,46 @@ export default async function Applications({
     .order("id")
     .range((page - 1) * size, page * size - 1);
   const rows = requireData(result) ?? [];
+  const agreements = rows.length
+    ? (requireData(
+        await db
+          .from("customer_agreements")
+          .select("id,application_id")
+          .in(
+            "application_id",
+            rows.map((r) => r.id),
+          ),
+      ) ?? [])
+    : [];
+  const ids = agreements.map((a) => a.id);
+  const [activations, payments] = ids.length
+    ? await Promise.all([
+        db
+          .from("customer_activations")
+          .select("agreement_id,invite_state,activated_at,business_id")
+          .in("agreement_id", ids),
+        db
+          .from("manual_customer_payments")
+          .select("agreement_id,status")
+          .in("agreement_id", ids)
+          .eq("purpose", "initial")
+          .eq("status", "confirmed"),
+      ])
+    : [null, null];
+  const accounts = activations ? (requireData(activations) ?? []) : [],
+    paid = payments ? (requireData(payments) ?? []) : [];
+  const lifecycle = (r: (typeof rows)[number]) => {
+    const a = agreements.find((a) => a.application_id === r.id),
+      c = accounts.find((c) => c.agreement_id === a?.id),
+      A = activationLabels[locale];
+    if (!a) return L[r.status];
+    if (c?.business_id) return A.active;
+    if (c?.activated_at) return A.activated;
+    if (c?.invite_state === "sent") return A.invite;
+    if (c?.invite_state === "existing_account") return A.existing_account;
+    if (paid.some((p) => p.agreement_id === a.id)) return A.confirmed;
+    return A.awaiting;
+  };
   const href = (p: number) =>
     `/${locale}/platform/applications?${new URLSearchParams({ q: term, status: s.status ?? "", kind: s.kind ?? "", page: String(p) })}`;
   return (
@@ -97,7 +137,7 @@ export default async function Applications({
               <h2 dir="auto" className="text-xl font-bold">
                 {r.business_name}
               </h2>
-              <span className="text-sm font-semibold">{L[r.status]}</span>
+              <span className="text-sm font-semibold">{lifecycle(r)}</span>
             </div>
             <p dir="auto">{r.full_name}</p>
             <p className="text-sm text-[var(--fg-muted)]">

@@ -14,6 +14,8 @@ export async function reviewApplication(form: FormData) {
   });
   if (!parsed.success) redirect(`/${locale}/platform/applications?result=failed`);
   const v = parsed.data;
+  // Commercial approval must snapshot terms through the dedicated approval RPC.
+  if (v.status === "approved") redirect(`/${locale}/platform/applications/${v.id}?result=failed`);
   const { error } = await db.rpc("review_restaurant_application", {
     p_id: v.id,
     p_status: v.status,

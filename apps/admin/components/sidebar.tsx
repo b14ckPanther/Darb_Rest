@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useTranslation, getDirection } from "@darb-rest/i18n";
+import { activationLabels, useTranslation, getDirection } from "@darb-rest/i18n";
 import {
   IconMenu,
   IconLayers,
@@ -79,6 +79,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       href: `/${locale}/settings`,
       label: t("navigation.settings"),
       icon: <IconSettings size={18} />,
+    },
+    {
+      href: `/${locale}/account`,
+      label: activationLabels[locale].account,
+      icon: <IconUser size={18} />,
     },
   ].filter((item) => !/\/(orders|tables|kitchen|operations|analytics)$/.test(item.href));
 
