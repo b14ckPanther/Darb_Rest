@@ -18,6 +18,10 @@ const child = spawn(process.execPath, [require.resolve("next/dist/bin/next"), "d
   env: {
     ...process.env,
     NODE_ENV: "development",
+    TRANSACTIONAL_EMAIL_PROVIDER: "",
+    RESEND_API_KEY: "",
+    TRANSACTIONAL_EMAIL_ENDPOINT: "",
+    TRANSACTIONAL_EMAIL_TOKEN: "",
     NEXT_PUBLIC_SUPABASE_URL: config.API_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: config.ANON_KEY,
     SUPABASE_SERVICE_ROLE_KEY: config.SERVICE_ROLE_KEY,

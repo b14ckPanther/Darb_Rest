@@ -29,9 +29,9 @@ SELECT throws_ok($$SELECT approve_customer_application('ec180000-0000-4000-8000-
 SELECT throws_ok($$SELECT confirm_customer_payment((SELECT id FROM manual_customer_payments WHERE agreement_id=(SELECT id FROM customer_agreements WHERE application_id='ec180000-0000-4000-8000-000000000003')),1,'bit','','')$$,'22023','invalid_payment','Partial amount cannot activate');
 SELECT lives_ok($$SELECT confirm_customer_payment((SELECT id FROM manual_customer_payments WHERE agreement_id=(SELECT id FROM customer_agreements WHERE application_id='ec180000-0000-4000-8000-000000000003')),1821.40,'bit','test sender','test internal')$$,'Explicit payment confirmation');
 SELECT throws_ok($$SELECT confirm_customer_payment((SELECT id FROM manual_customer_payments WHERE agreement_id=(SELECT id FROM customer_agreements WHERE application_id='ec180000-0000-4000-8000-000000000003')),1821.40,'bit','','')$$,'40001','already_confirmed_or_void','Duplicate payment confirmation rejected');
-SELECT is((SELECT status FROM customer_subscriptions LIMIT 1),NULL::text,'Payment alone creates no business/subscription');
+SELECT is((SELECT status FROM customer_subscriptions WHERE agreement_id=(SELECT id FROM customer_agreements WHERE application_id='ec180000-0000-4000-8000-000000000003')),NULL::text,'Payment alone creates no business/subscription');
 RESET ROLE;
 SELECT throws_ok($$UPDATE customer_agreements SET agreed_amount_ils=1$$,'22023','immutable_agreement','Agreement is immutable even for maintenance writes');
-SELECT is((SELECT count(*)::integer FROM customer_commercial_audit WHERE record_table='manual_customer_payments' AND action='UPDATE'),1,'Payment action audited');
+SELECT is((SELECT count(*)::integer FROM customer_commercial_audit WHERE record_table='manual_customer_payments' AND action='UPDATE' AND record_id=(SELECT id::text FROM manual_customer_payments WHERE agreement_id=(SELECT id FROM customer_agreements WHERE application_id='ec180000-0000-4000-8000-000000000003'))),1,'Payment action audited');
 SELECT * FROM finish();
 ROLLBACK;

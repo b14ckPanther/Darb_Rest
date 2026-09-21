@@ -17,6 +17,10 @@ const child = spawn(
     env: {
       ...process.env,
       NODE_ENV: "development",
+      TRANSACTIONAL_EMAIL_PROVIDER: "",
+      RESEND_API_KEY: "",
+      TRANSACTIONAL_EMAIL_ENDPOINT: "",
+      TRANSACTIONAL_EMAIL_TOKEN: "",
       NEXT_PUBLIC_SUPABASE_URL: status.API_URL,
       NEXT_PUBLIC_SUPABASE_ANON_KEY: status.ANON_KEY,
       SUPABASE_SERVICE_ROLE_KEY: status.SERVICE_ROLE_KEY,

@@ -21,14 +21,14 @@ export default defineConfig({
     {
       name: "chromium",
       testIgnore:
-        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch|platform).spec.ts/,
+        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch|platform|activation).spec.ts/,
       use: { ...devices["Desktop Chrome"] },
     },
     {
       name: "content",
       testIgnore: /(ordering|payments|tables|kitchen|operations|analytics).spec.ts/,
       testMatch:
-        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch|platform).spec.ts/,
+        /(content|ordering|payments|tables|kitchen|operations|templates|polish|excellence|analytics|launch|platform|activation).spec.ts/,
       use: { ...devices["Desktop Chrome"], baseURL: "http://localhost:3101" },
     },
   ],

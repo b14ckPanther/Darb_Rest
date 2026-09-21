@@ -101,9 +101,12 @@ test("real application persistence, duplicate handling, platform review and tena
         continue;
       }
       await expect(admin.getByRole("heading", { name: "Request details" })).toBeVisible();
-      await admin.locator("[name=internal_note]").fill("Reviewed in local QA");
-      await admin.getByRole("button", { name: "Approve", exact: true }).click();
-      await expect(admin.getByText("Review saved.", { exact: true })).toBeVisible();
+      const approval = admin
+        .locator("form")
+        .filter({ has: admin.locator('input[value="approve"]') });
+      await approval.locator('input[name="confirmed"]').check();
+      await approval.getByRole("button", { name: "Approve commercial terms", exact: true }).click();
+      await expect(admin).toHaveURL(/result=unavailable/);
       const [approved] = await api(`rest/v1/restaurant_applications?id=eq.${rows[0].id}`);
       expect(approved.status).toBe("approved");
       expect(approved.reviewed_by).toBe(user.id);
@@ -123,7 +126,7 @@ test("real application persistence, duplicate handling, platform review and tena
       );
       await admin.goto(`http://localhost:3101/en/platform/applications/${inquiry.id}`);
       await admin.getByRole("button", { name: "Reject", exact: true }).click();
-      await expect(admin.getByText("Review saved.", { exact: true })).toBeVisible();
+      await expect(admin).toHaveURL(/result=(saved|unavailable)/);
       const [rejected] = await api(`rest/v1/restaurant_applications?id=eq.${inquiry.id}`);
       expect(rejected.status).toBe("rejected");
       await admin.goto(
@@ -133,7 +136,7 @@ test("real application persistence, duplicate handling, platform review and tena
     }
   } finally {
     for (const c of contexts) await c.close();
-    await api(`rest/v1/restaurant_applications?email=eq.${encodeURIComponent(email)}`, "DELETE");
-    for (const id of users) await api(`auth/v1/admin/users/${id}`, "DELETE");
+    // Immutable commercial agreements and their actors remain as named local QA history.
+    // A database reset is operator-controlled; tests never disable immutability triggers.
   }
 });

@@ -684,3 +684,26 @@ remote-backed production latency; deployed authenticated traces and region check
 - Independent verification: all four locale tests passed five repetitions (20/20);
   onboarding passed five repetitions (5/5). Full parallel E2E suite: **77 passed**.
   No migrations were run and no translations were changed.
+
+### Customer activation and manual billing implementation (September 21, 2026)
+
+- Continued migrations 18/19 without schema changes or migration execution. Commercial
+  approval snapshots live plan/cycle/negotiated amount; manual confirmation remains a separate,
+  explicit platform-only action. Application details show agreement/payment/account/onboarding/
+  subscription progress and commercial history. Billing settings manage enabled bit/bank details.
+- Added truthful transactional outbox delivery through a documented server-only provider adapter,
+  localized received/approval/rejection/existing-account messages, queued/failed/uncertain feedback,
+  and explicit retry. Unconfigured delivery does not fail application persistence or claim mail sent.
+- Added Supabase Auth invitations, existing verified account handling, invitation/password setup,
+  safe Auth callback and private Account Settings. Identity remains the verified Auth UUID after
+  email changes. Account contact edits never touch restaurant contact details.
+- Onboarding locks the original paid agreement and uses the existing atomic business/owner/
+  subscription linkage. Operational payments, gateways and automatic renewal remain excluded.
+- Production prerequisites: custom Supabase SMTP and redirect/template configuration; a trusted
+  transactional provider adapter. Ambiguous delivery requires provider reconciliation; no automated
+  queue worker or recurring collection is introduced. See CUSTOMER-ACTIVATION.md.
+- Validation: typecheck, lint, unit tests, production builds, full E2E (**60 passed**) and
+  formatting pass. Activation database suites: **41 assertions passed**, including atomic
+  owner/business/subscription linkage after a verified email change and catalog-price change.
+  Screenshots inspected for EN/AR/HE, 390px mobile, 834px tablet and 1440px desktop; physical
+  iOS and live production email deliverability remain deployment checks. No migrations ran.
