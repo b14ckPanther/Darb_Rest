@@ -1,0 +1,102 @@
+.switch {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: min(100%, 21rem);
+  margin-inline: auto;
+  padding: 5px;
+  border: 1px solid #1a3c2a20;
+  border-radius: 14px;
+  background: var(--warm-bone);
+  box-shadow: inset 0 1px 3px #1a3c2a08;
+}
+.indicator {
+  position: absolute;
+  z-index: -1;
+  top: 5px;
+  bottom: 5px;
+  left: 5px;
+  width: calc((100% - 10px) / 2);
+  border-radius: 10px;
+  background: var(--darb-green-deep);
+  box-shadow:
+    0 3px 9px #12332626,
+    inset 0 1px 0 #ffffff26;
+}
+.switch button {
+  min-height: 48px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  transition: color 180ms ease;
+}
+.switch button[aria-pressed="true"] {
+  color: white;
+}
+.switch button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 4px;
+}
+.card {
+  isolation: isolate;
+  transform-style: preserve-3d;
+  background-image: linear-gradient(145deg, #fff8, transparent 55%);
+}
+.sheen {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+.price {
+  position: relative;
+  display: block;
+  perspective: 650px;
+  min-height: 3.2rem;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.amount {
+  display: block;
+  width: fit-content;
+  font-size: clamp(2.15rem, 3.1vw, 2.6rem);
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+  transform-origin: 50% 50%;
+  backface-visibility: hidden;
+  will-change: auto;
+}
+.period {
+  display: block;
+  margin-top: 3px;
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+}
+.cta {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    background-color 220ms ease;
+}
+@media (hover: hover) {
+  .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px #173b2926;
+  }
+}
+.cta:active {
+  transform: translateY(1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .switch button,
+  .cta {
+    transition: none;
+  }
+  .cta:hover,
+  .cta:active {
+    transform: none;
+  }
+}
