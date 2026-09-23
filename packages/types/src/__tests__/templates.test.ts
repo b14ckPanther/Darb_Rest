@@ -6,6 +6,9 @@ import {
   safePublicUrl,
   restaurantOpen,
   restaurantMenuModel,
+  resolveSemanticTheme,
+  semanticThemeToCssVars,
+  sameAppearance,
   type RestaurantProfile,
 } from "../templates";
 import { TEMPLATE_CATALOG, supportedAppearance } from "../template-catalog";
@@ -28,6 +31,10 @@ describe("template foundations", () => {
     expect(
       supportedAppearance({ ...DEFAULT_APPEARANCE, template: "night", density: "compact" }),
     ).toBe(false);
+    const caramel = TEMPLATE_CATALOG.find((t) => t.id === "caramel");
+    expect(caramel).toBeDefined();
+    expect(caramel?.tags).toContain("warm");
+    expect(caramel?.densities).toContain("balanced");
   });
   it("always chooses accessible ink even for pale brand colors", () => {
     for (let n = 0; n < 256; n += 7) {
@@ -95,5 +102,80 @@ describe("template foundations", () => {
     expect(restaurantMenuModel(data, "other").sections).toHaveLength(0);
     data.menu_item_location_overrides[0]!.is_visible_override = false;
     expect(restaurantMenuModel(data, "branch").sections[0]?.items).toHaveLength(0);
+  });
+
+  it("resolves semantic theme defaults and tenant overrides cleanly", () => {
+    // Caramel default resolution
+    const caramelDefault = resolveSemanticTheme("caramel");
+    expect(caramelDefault.primary).toBe("#f07a12");
+    expect(caramelDefault.accent).toBe("#ffc44d");
+    expect(caramelDefault.pageBackground).toBe("#fff6e3");
+    expect(caramelDefault.cardBackground).toBe("#fffdf6");
+    expect(caramelDefault.buttonBackground).toBe("#2a1208");
+
+    // Caramel custom override
+    const caramelCustom = resolveSemanticTheme("caramel", {
+      ...DEFAULT_APPEARANCE,
+      template: "caramel",
+      theme: {
+        pageBackground: "#1a1a1a",
+        cardBackground: "#2a2a2a",
+        primary: "#3b82f6",
+      },
+    });
+    expect(caramelCustom.pageBackground).toBe("#1a1a1a");
+    expect(caramelCustom.cardBackground).toBe("#2a2a2a");
+    expect(caramelCustom.primary).toBe("#3b82f6");
+    expect(caramelCustom.buttonBackground).toBe("#3b82f6");
+    expect(caramelCustom.accent).toBe("#ffc44d"); // Inherited from caramel base
+
+    // CSS variables emission
+    const cssVars = semanticThemeToCssVars(caramelCustom);
+    expect(cssVars["--rt-page-bg"]).toBe("#1a1a1a");
+    expect(cssVars["--rt-card-bg"]).toBe("#2a2a2a");
+    expect(cssVars["--rt-primary"]).toBe("#3b82f6");
+    expect(cssVars["--rt-btn-bg"]).toBe("#3b82f6");
+    expect(cssVars["--rt-border"]).toBeDefined();
+    expect(cssVars["--rt-open"]).toBeDefined();
+    expect(cssVars["--rt-closed"]).toBeDefined();
+
+    // sameAppearance tracking of theme changes
+    const appA = { ...DEFAULT_APPEARANCE, template: "caramel" };
+    const appB = {
+      ...DEFAULT_APPEARANCE,
+      template: "caramel",
+      theme: { pageBackground: "#000000" },
+    };
+    expect(sameAppearance(appA, appB)).toBe(false);
+    expect(sameAppearance(appB, { ...appB })).toBe(true);
+
+    // Key-ordering invariance in sameAppearance
+    const appC = {
+      ...DEFAULT_APPEARANCE,
+      template: "caramel",
+      theme: { primary: "#ff0000", accent: "#00ff00", pageBackground: "#ffffff" },
+    };
+    const appD = {
+      ...DEFAULT_APPEARANCE,
+      template: "caramel",
+      theme: { pageBackground: "#ffffff", primary: "#ff0000", accent: "#00ff00" },
+    };
+    expect(sameAppearance(appC, appD)).toBe(true);
+
+    // Verify all 9 templates in TEMPLATE_CATALOG resolve their default semantic theme cleanly
+    for (const item of TEMPLATE_CATALOG) {
+      const theme = resolveSemanticTheme(item.id);
+      expect(theme.primary).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.accent).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.pageBackground).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.cardBackground).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.border).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.navBackground).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.activeCategoryBackground).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.buttonBackground).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.priceText).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.modalBackground).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(theme.footerBackground).toMatch(/^#[0-9a-f]{6}$/i);
+    }
   });
 });

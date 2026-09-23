@@ -4,17 +4,19 @@ import {
   restaurantMenuModel,
   resolvedLayout,
   brandingUrl,
-  readableInk,
   safePublicUrl,
   restaurantOpen,
   formatMenuPrice,
   localizedContent,
+  resolveSemanticTheme,
+  semanticThemeToCssVars,
   type AppearanceSettings,
   type RestaurantProfile,
 } from "@darb-rest/types";
 import { ContentText, type MenuPreviewProps } from "../menu-preview";
 import { RestaurantImage } from "./image";
 import { restaurantTemplate } from "./registry";
+import { CaramelMenu } from "./caramel";
 export interface RestaurantPresentation {
   previewMedia?: boolean;
   settings: AppearanceSettings;
@@ -28,6 +30,9 @@ export function RestaurantMenu({
   const { settings, profile, labels: L } = restaurant;
   const layout = resolvedLayout(settings);
   const template = restaurantTemplate(settings.template);
+  if (template.id === "caramel") {
+    return <CaramelMenu restaurant={restaurant} {...p} />;
+  }
   const [selected, setSelected] = useState("");
   const [now, setNow] = useState<Date | null>(null);
   useEffect(() => {
@@ -38,12 +43,9 @@ export function RestaurantMenu({
   const model = restaurantMenuModel(p.data, p.branchId ?? p.locations[0]?.id ?? "", selected);
   const sections = model.sections.filter((section) => section.items.length > 0);
   const opened = now ? restaurantOpen(profile, now) : null;
-  const primary = /^#[0-9a-f]{6}$/i.test(settings.primary) ? settings.primary : "#1a3c2a";
-  const accent = /^#[0-9a-f]{6}$/i.test(settings.accent) ? settings.accent : "#d5b17a";
+  const resolvedTheme = resolveSemanticTheme(template.id, settings);
   const style = {
-    "--rt-primary": primary,
-    "--rt-ink": readableInk(primary),
-    "--rt-accent": accent,
+    ...semanticThemeToCssVars(resolvedTheme),
   } as React.CSSProperties;
   const information = (
     <div className="rt-info">
