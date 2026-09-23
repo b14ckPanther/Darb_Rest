@@ -132,6 +132,7 @@ function Bakery(p: HeroProps) {
     </header>
   );
 }
+import { CaramelHero } from "./caramel";
 export interface RestaurantTemplate extends TemplateMetadata {
   Hero: React.ComponentType<HeroProps>;
   className: string;
@@ -145,6 +146,7 @@ const heroes: Record<string, RestaurantTemplate["Hero"]> = {
   bold: Bold,
   night: Night,
   bakery: Bakery,
+  caramel: CaramelHero,
 };
 export const RESTAURANT_TEMPLATES: readonly RestaurantTemplate[] = TEMPLATE_CATALOG.map((t) => ({
   ...t,
