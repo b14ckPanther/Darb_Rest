@@ -82,7 +82,7 @@ export function WhatsappMenu({
     setUrl("");
   }
   return (
-    <>
+    <div className={`whatsapp-menu ${restaurant.settings.template === "caramel" ? "caramel-flow" : ""}`}>
       <RestaurantMenu
         {...p}
         restaurant={restaurant}
@@ -361,6 +361,6 @@ export function WhatsappMenu({
           </form>
         </RequestSheet>
       )}
-    </>
+    </div>
   );
 }

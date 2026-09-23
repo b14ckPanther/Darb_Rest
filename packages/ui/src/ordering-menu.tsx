@@ -243,7 +243,7 @@ export function OrderingMenu({
       /* Show a complete estimate only after choices are valid. */
     }
   return (
-    <div className="space-y-5 pb-24">
+    <div className={`space-y-5 pb-24 ${restaurant?.settings.template === "caramel" ? "caramel-flow" : ""}`}>
       {tableContext && !done && (
         <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-2 rounded-2xl border bg-white px-5 py-4">
           <p className="font-semibold">
