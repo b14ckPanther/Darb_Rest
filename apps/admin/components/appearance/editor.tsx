@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { getDictionary, useTranslation } from "@darb-rest/i18n";
+import { getDictionary, useTranslation, LOCALE_CONFIGS } from "@darb-rest/i18n";
 import { RESTAURANT_TEMPLATES, ContentText } from "@darb-rest/ui";
 import {
   templateDefinition,
@@ -8,6 +8,11 @@ import {
   resolvedLayout,
   sameAppearance,
   brandingUrl,
+  resolveSemanticTheme,
+  contrastRatio,
+  TEMPLATE_DEFAULT_THEMES,
+  type SemanticTheme,
+  type ResolvedSemanticTheme,
   type AppearanceSettings,
   type ContentName,
 } from "@darb-rest/types";
@@ -141,6 +146,223 @@ export function AppearanceEditor({
       setBusy(false);
     }
   }
+  const PALETTES = [
+    {
+      label: L.paletteForest,
+      primary: "#1a3c2a",
+      accent: "#d5b17a",
+      theme: {
+        primary: "#1a3c2a",
+        accent: "#d5b17a",
+        pageBackground: "#faf8f4",
+        cardBackground: "#ffffff",
+        alternateSurface: "#f2efe9",
+        text: "#242720",
+        textMuted: "#5a5e54",
+        border: "#d9d9ce",
+        navBackground: "#faf8f4",
+        activeCategoryBackground: "#1a3c2a",
+        activeCategoryText: "#ffffff",
+        buttonBackground: "#1a3c2a",
+        buttonText: "#ffffff",
+        priceBackground: "#faf8f4",
+        priceText: "#1a3c2a",
+        heroOverlay: "#000000",
+        openStatus: "#1b8f4a",
+        closedStatus: "#8f2430",
+        modalBackground: "#ffffff",
+        modalText: "#242720",
+        footerBackground: "#1a3c2a",
+        footerText: "#ffffff",
+      },
+    },
+    {
+      label: L.paletteClay,
+      primary: "#803d29",
+      accent: "#e3b57f",
+      theme: {
+        primary: "#803d29",
+        accent: "#e3b57f",
+        pageBackground: "#faf7f5",
+        cardBackground: "#ffffff",
+        alternateSurface: "#f5ede8",
+        text: "#291e1c",
+        textMuted: "#6e5852",
+        border: "#dfd2cc",
+        navBackground: "#faf7f5",
+        activeCategoryBackground: "#803d29",
+        activeCategoryText: "#ffffff",
+        buttonBackground: "#803d29",
+        buttonText: "#ffffff",
+        priceBackground: "#faf7f5",
+        priceText: "#803d29",
+        heroOverlay: "#291e1c",
+        openStatus: "#1b8f4a",
+        closedStatus: "#8f2430",
+        modalBackground: "#ffffff",
+        modalText: "#291e1c",
+        footerBackground: "#2c1c18",
+        footerText: "#ffffff",
+      },
+    },
+    {
+      label: L.paletteBerry,
+      primary: "#632f4b",
+      accent: "#dec0cb",
+      theme: {
+        primary: "#632f4b",
+        accent: "#dec0cb",
+        pageBackground: "#fbf7f9",
+        cardBackground: "#ffffff",
+        alternateSurface: "#f4e9ef",
+        text: "#281b23",
+        textMuted: "#685560",
+        border: "#decad4",
+        navBackground: "#fbf7f9",
+        activeCategoryBackground: "#632f4b",
+        activeCategoryText: "#ffffff",
+        buttonBackground: "#632f4b",
+        buttonText: "#ffffff",
+        priceBackground: "#fbf7f9",
+        priceText: "#632f4b",
+        heroOverlay: "#281b23",
+        openStatus: "#1b8f4a",
+        closedStatus: "#8f2430",
+        modalBackground: "#ffffff",
+        modalText: "#281b23",
+        footerBackground: "#2b1420",
+        footerText: "#ffffff",
+      },
+    },
+    {
+      label: L.paletteInk,
+      primary: "#25344d",
+      accent: "#b5c9d3",
+      theme: {
+        primary: "#25344d",
+        accent: "#b5c9d3",
+        pageBackground: "#f5f7fa",
+        cardBackground: "#ffffff",
+        alternateSurface: "#eaf0f5",
+        text: "#19212e",
+        textMuted: "#4e5d73",
+        border: "#cfd7e3",
+        navBackground: "#f5f7fa",
+        activeCategoryBackground: "#25344d",
+        activeCategoryText: "#ffffff",
+        buttonBackground: "#25344d",
+        buttonText: "#ffffff",
+        priceBackground: "#f5f7fa",
+        priceText: "#25344d",
+        heroOverlay: "#19212e",
+        openStatus: "#1b8f4a",
+        closedStatus: "#8f2430",
+        modalBackground: "#ffffff",
+        modalText: "#19212e",
+        footerBackground: "#101724",
+        footerText: "#ffffff",
+      },
+    },
+    {
+      label: L.paletteCaramel,
+      primary: "#f07a12",
+      accent: "#ffc44d",
+      theme: {
+        primary: "#f07a12",
+        accent: "#ffc44d",
+        pageBackground: "#fff6e3",
+        cardBackground: "#fffdf6",
+        alternateSurface: "#ffe9b8",
+        text: "#2b1106",
+        textMuted: "#8d4316",
+        border: "#eedfce",
+        navBackground: "#fff6e3",
+        activeCategoryBackground: "#f07a12",
+        activeCategoryText: "#ffffff",
+        buttonBackground: "#2a1208",
+        buttonText: "#fffdf6",
+        priceBackground: "#ffe9b8",
+        priceText: "#c2410c",
+        heroOverlay: "#2b1106",
+        openStatus: "#1b8f4a",
+        closedStatus: "#8f2430",
+        modalBackground: "#fffdf9",
+        modalText: "#2b1106",
+        footerBackground: "#2a1208",
+        footerText: "#fffdf6",
+      },
+    },
+  ];
+
+  function getTokenOrigin(key: keyof SemanticTheme | "primary" | "accent") {
+    const isPrimaryOrAccent = key === "primary" || key === "accent";
+    const templateDef =
+      TEMPLATE_DEFAULT_THEMES[settings.template] ?? TEMPLATE_DEFAULT_THEMES.signature!;
+    if (isPrimaryOrAccent) {
+      const val = key === "primary" ? settings.primary : settings.accent;
+      if (val === templateDef[key] && settings.theme?.[key] === undefined) {
+        return "default";
+      }
+      const isPreset = PALETTES.some(
+        (p) => p.primary === settings.primary && p.accent === settings.accent,
+      );
+      return isPreset ? "preset" : "custom";
+    }
+    if (!settings.theme || settings.theme[key] === undefined) {
+      return "default";
+    }
+    const val = settings.theme[key];
+    const isPreset = PALETTES.some(
+      (p) => p.theme[key] === val && p.primary === settings.primary,
+    );
+    return isPreset ? "preset" : "custom";
+  }
+
+  function getContrastWarning(
+    key: keyof SemanticTheme | "primary" | "accent",
+    resolved: ResolvedSemanticTheme,
+  ) {
+    const fgPairs: Record<string, keyof ResolvedSemanticTheme> = {
+      text: "pageBackground",
+      buttonText: "buttonBackground",
+      activeCategoryText: "activeCategoryBackground",
+      priceText: "priceBackground",
+      footerText: "footerBackground",
+    };
+    const bgPairs: Record<string, keyof ResolvedSemanticTheme> = {
+      pageBackground: "text",
+      buttonBackground: "buttonText",
+      activeCategoryBackground: "activeCategoryText",
+      priceBackground: "priceText",
+      footerBackground: "footerText",
+    };
+
+    if (fgPairs[key]) {
+      const bgToken = fgPairs[key]!;
+      const ratio = contrastRatio(resolved[key as keyof ResolvedSemanticTheme], resolved[bgToken]);
+      if (ratio < 4.5) {
+        return { ratio };
+      }
+    } else if (bgPairs[key]) {
+      const fgToken = bgPairs[key]!;
+      const ratio = contrastRatio(resolved[fgToken], resolved[key as keyof ResolvedSemanticTheme]);
+      if (ratio < 4.5) {
+        return { ratio };
+      }
+    }
+    return null;
+  }
+
+  function resetGroupTokens(tokens: readonly (keyof SemanticTheme)[]) {
+    if (!settings.theme) return;
+    const updatedTheme: SemanticTheme = { ...settings.theme };
+    for (const t of tokens) {
+      delete updatedTheme[t];
+    }
+    setSettings({ ...settings, theme: updatedTheme });
+    setMessage("");
+  }
+
   const width = { mobile: 390, tablet: 834, desktop: 1280 }[device] ?? 390;
   return (
     <div className="mx-auto max-w-[1600px] space-y-8">
@@ -256,18 +478,18 @@ export function AppearanceEditor({
         className="scroll-mt-40 rounded-2xl border bg-[var(--bg-surface)] p-5"
       >
         <h2 className="mb-5 text-xl font-semibold">{L.customize}</h2>
-        <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label={L.palette}>
-          {[
-            { label: L.paletteForest, primary: "#1a3c2a", accent: "#d5b17a" },
-            { label: L.paletteClay, primary: "#803d29", accent: "#e3b57f" },
-            { label: L.paletteBerry, primary: "#632f4b", accent: "#dec0cb" },
-            { label: L.paletteInk, primary: "#25344d", accent: "#b5c9d3" },
-          ].map((palette) => (
+        <div className="mb-6 flex flex-wrap items-center gap-2" role="group" aria-label={L.palette}>
+          {PALETTES.map((palette) => (
             <button
               key={palette.primary}
               disabled={busy}
               onClick={() => {
-                setSettings({ ...settings, primary: palette.primary, accent: palette.accent });
+                setSettings({
+                  ...settings,
+                  primary: palette.primary,
+                  accent: palette.accent,
+                  theme: { ...palette.theme },
+                });
                 setMessage("");
               }}
               className="inline-flex min-h-11 items-center gap-2 rounded-full border px-4"
@@ -280,30 +502,233 @@ export function AppearanceEditor({
               {palette.label}
             </button>
           ))}
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              const def =
+                TEMPLATE_DEFAULT_THEMES[settings.template] ?? TEMPLATE_DEFAULT_THEMES.signature!;
+              setSettings({
+                ...settings,
+                primary: def.primary,
+                accent: def.accent,
+                theme: { ...def },
+              });
+              setMessage("");
+            }}
+            className="inline-flex min-h-11 items-center rounded-full border border-dashed px-4 text-sm font-medium hover:bg-black/5"
+          >
+            {L.resetTemplateDefaults}
+          </button>
         </div>
-        <fieldset disabled={busy} className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {(["primary", "accent"] as const).map((key) => (
-            <label key={key} className="text-sm">
-              {L[key]}
-              <div className="mt-2 flex gap-2">
-                <input
-                  type="color"
-                  aria-label={L[key]}
-                  value={settings[key]}
-                  onChange={(e) => setSettings({ ...settings, [key]: e.target.value })}
-                  className="h-12 w-16"
-                />
-                <input
-                  aria-label={L[key] + " HEX"}
-                  value={settings[key]}
-                  maxLength={7}
-                  onChange={(e) => setSettings({ ...settings, [key]: e.target.value })}
-                  className="min-h-12 min-w-0 flex-1 rounded-xl border px-3"
-                  dir="ltr"
-                />
+
+        {/* Brand Colors - Immediately Visible */}
+        {(() => {
+          return (
+            <div className="mb-6 rounded-xl border p-4">
+              <h3 className="mb-4 text-base font-semibold">{L.themeGroupBrand}</h3>
+              <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2">
+                {(["primary", "accent"] as const).map((key) => {
+                  const tokenLabel = key === "primary" ? L.theme_primary : L.theme_accent;
+                  const value = key === "primary" ? settings.primary : settings.accent;
+                  const origin = getTokenOrigin(key);
+                  return (
+                    <label key={key} className="text-sm">
+                      <div className="mb-1 flex items-center justify-between">
+                        <span>{tokenLabel}</span>
+                        <span
+                          className={`inline-block rounded px-2 py-0.5 text-[11px] font-medium ${
+                            origin === "default"
+                              ? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                              : origin === "preset"
+                                ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                : "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                          }`}
+                        >
+                          {origin === "default"
+                            ? L.originDefault
+                            : origin === "preset"
+                              ? L.originPreset
+                              : L.originCustom}
+                        </span>
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          aria-label={tokenLabel}
+                          value={value}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const updatedTheme: SemanticTheme = {
+                              ...(settings.theme ?? {}),
+                              [key]: val,
+                            };
+                            const next = { ...settings, theme: updatedTheme, [key]: val };
+                            setSettings(next);
+                          }}
+                          className="h-12 w-16"
+                        />
+                        <input
+                          aria-label={tokenLabel + " HEX"}
+                          value={value}
+                          maxLength={7}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const updatedTheme: SemanticTheme = {
+                              ...(settings.theme ?? {}),
+                              [key]: val,
+                            };
+                            const next = { ...settings, theme: updatedTheme, [key]: val };
+                            setSettings(next);
+                          }}
+                          className="min-h-12 min-w-0 flex-1 rounded-xl border px-3"
+                          dir="ltr"
+                        />
+                      </div>
+                    </label>
+                  );
+                })}
+              </fieldset>
+            </div>
+          );
+        })()}
+
+        {/* Advanced customization - Deep semantic controls under organized expandable groups */}
+        {(() => {
+          const resolved = resolveSemanticTheme(settings.template, settings);
+          const advancedGroups = [
+            {
+              title: L.themeGroupSurfaces,
+              tokens: [
+                "pageBackground",
+                "cardBackground",
+                "alternateSurface",
+                "navBackground",
+                "modalBackground",
+                "footerBackground",
+              ] as const,
+            },
+            {
+              title: L.themeGroupText,
+              tokens: ["text", "textMuted", "buttonText", "footerText"] as const,
+            },
+            {
+              title: L.themeGroupInteractive,
+              tokens: [
+                "buttonBackground",
+                "activeCategoryBackground",
+                "activeCategoryText",
+                "priceBackground",
+                "priceText",
+              ] as const,
+            },
+            {
+              title: L.themeGroupStatus,
+              tokens: ["openStatus", "closedStatus"] as const,
+            },
+            {
+              title: L.themeGroupAdvanced,
+              tokens: ["border", "heroOverlay"] as const,
+            },
+          ];
+
+          return (
+            <details className="mb-8 rounded-2xl border bg-[var(--bg-surface)] p-5" open>
+              <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-lg font-semibold">
+                <span>{L.advancedCustomization}</span>
+                <span className="text-xs font-normal text-[var(--fg-muted)]">
+                  {L.advancedCustomizationHelp}
+                </span>
+              </summary>
+              <div className="mt-5 space-y-6">
+                {advancedGroups.map((group) => (
+                  <div key={group.title} className="rounded-xl border p-4">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h4 className="text-base font-semibold">{group.title}</h4>
+                      <button
+                        type="button"
+                        onClick={() => resetGroupTokens(group.tokens)}
+                        className="text-xs font-medium text-[var(--fg-muted)] underline hover:text-black dark:hover:text-white"
+                      >
+                        {L.resetGroup}
+                      </button>
+                    </div>
+                    <fieldset disabled={busy} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                      {group.tokens.map((key) => {
+                        const tokenLabel = L[`theme_${key}` as keyof typeof L] ?? key;
+                        const value = settings.theme?.[key] ?? resolved[key];
+                        const origin = getTokenOrigin(key);
+                        const contrastWarning = getContrastWarning(key, resolved);
+                        return (
+                          <label key={key} className="text-sm">
+                            <div className="mb-1 flex items-center justify-between">
+                              <span>{tokenLabel}</span>
+                              <span
+                                className={`inline-block rounded px-2 py-0.5 text-[11px] font-medium ${
+                                  origin === "default"
+                                    ? "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                                    : origin === "preset"
+                                      ? "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
+                                      : "bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+                                }`}
+                              >
+                                {origin === "default"
+                                  ? L.originDefault
+                                  : origin === "preset"
+                                    ? L.originPreset
+                                    : L.originCustom}
+                              </span>
+                            </div>
+                            <div className="flex gap-2">
+                              <input
+                                type="color"
+                                aria-label={tokenLabel}
+                                value={value}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const updatedTheme: SemanticTheme = {
+                                    ...(settings.theme ?? {}),
+                                    [key]: val,
+                                  };
+                                  setSettings({ ...settings, theme: updatedTheme });
+                                }}
+                                className="h-12 w-16"
+                              />
+                              <input
+                                aria-label={tokenLabel + " HEX"}
+                                value={value}
+                                maxLength={7}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  const updatedTheme: SemanticTheme = {
+                                    ...(settings.theme ?? {}),
+                                    [key]: val,
+                                  };
+                                  setSettings({ ...settings, theme: updatedTheme });
+                                }}
+                                className="min-h-12 min-w-0 flex-1 rounded-xl border px-3"
+                                dir="ltr"
+                              />
+                            </div>
+                            {contrastWarning && (
+                              <p
+                                className="mt-1 text-xs font-medium text-amber-600 dark:text-amber-400"
+                                role="note"
+                              >
+                                {L.lowContrastWarning} ({contrastWarning.ratio.toFixed(1)}:1)
+                              </p>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </fieldset>
+                  </div>
+                ))}
               </div>
-            </label>
-          ))}
+            </details>
+          );
+        })()}
+        <fieldset disabled={busy} className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           <label className="text-sm">
             {L.density}
             <select
@@ -441,7 +866,7 @@ export function AppearanceEditor({
             {L.publicLink}
           </a>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <label>
             {L.branch}
             <select
