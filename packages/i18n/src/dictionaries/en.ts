@@ -294,6 +294,12 @@ export const en = {
     unavailable: "Appearance is available to owners and admins.",
     choose: "Use this template",
     loading: "Loading preview…",
+    today: "Today",
+    scrollAndDiscover: "Scroll & discover",
+    previousDish: "Previous dish",
+    nextDish: "Next dish",
+    waze: "Directions via Waze",
+    story: "Our story",
   },
   operations: {
     loading: "Loading operations…",

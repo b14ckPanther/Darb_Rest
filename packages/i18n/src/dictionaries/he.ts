@@ -292,6 +292,12 @@ export const he: TranslationDictionary = {
     unavailable: "עיצוב זמין לבעלים ולמנהלי מערכת בלבד.",
     choose: "בחירת התבנית",
     loading: "טוען תצוגה…",
+    today: "היום",
+    scrollAndDiscover: "גללו וגלו",
+    previousDish: "מנה קודמת",
+    nextDish: "מנה הבאה",
+    waze: "ניווט ב-Waze",
+    story: "הסיפור שלנו",
   },
   operations: {
     loading: "טוען תפעול…",

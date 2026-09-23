@@ -293,6 +293,12 @@ export const ar: TranslationDictionary = {
     unavailable: "المظهر متاح للمالكين والمديرين فقط.",
     choose: "استخدام القالب",
     loading: "جارٍ تحميل المعاينة…",
+    today: "اليوم",
+    scrollAndDiscover: "تصفح واكتشف",
+    previousDish: "الطبق السابق",
+    nextDish: "الطبق التالي",
+    waze: "الاتجاهات عبر Waze",
+    story: "قصتنا",
   },
   operations: {
     loading: "جارٍ تحميل العمليات…",
