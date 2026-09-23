@@ -2,8 +2,6 @@ import { commercialLabels } from "@darb-rest/i18n";
 import { prepareWhatsapp } from "../../../../../lib/whatsapp-actions";
 import { v1Context } from "../../../../../lib/v1-context";
 import { loadRestaurant } from "../../../../../lib/restaurant";
-import { RestaurantBranches } from "../../../../../components/restaurant-branches";
-import { RestaurantLanguage } from "../../../../../components/restaurant-language";
 import { notFound } from "next/navigation";
 import { getDictionary, isValidLocale } from "@darb-rest/i18n";
 import { WhatsappMenu } from "@darb-rest/ui";
@@ -40,21 +38,16 @@ export default async function PublicOrderPage({
   if (!restaurant) notFound();
   const access = await v1Context(loaded.business.id, loaded.locations[0]!.id);
   return (
-    <main className="min-h-screen bg-[var(--bg-surface)] px-3 py-5 sm:px-6">
-      <RestaurantLanguage label={dict.common.language} locale={locale} />
-      <RestaurantBranches
-        branches={restaurant.branches}
-        business={businessSlug}
-        locale={locale}
-        current={locationSlug}
-        label={dict.appearance.branch}
-        confirmLabel={dict.ordering.changeBranch}
-      />
+    <main className="min-h-screen">
       <WhatsappMenu
         restaurant={{
           settings: restaurant.settings,
           profile: restaurant.profile,
           labels: dict.appearance,
+          branches: restaurant.branches,
+          currentBranchSlug: locationSlug,
+          businessSlug: businessSlug,
+          confirmBranchLabel: dict.ordering.changeBranch,
         }}
         access={access}
         L={commercialLabels[locale]}

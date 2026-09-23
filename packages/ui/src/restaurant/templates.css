@@ -48,6 +48,95 @@
 .rt-hero {
   position: relative;
 }
+.rt-utility-bar {
+  position: absolute;
+  top: 0.75rem;
+  inset-inline: 4%;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.rt-utility-bar > * {
+  pointer-events: auto;
+}
+.rt-utility-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 2.125rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: 100px;
+  background: color-mix(in srgb, var(--rt-page-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--rt-border);
+  color: var(--rt-text);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.rt-utility-pill:hover {
+  background: var(--rt-page-bg);
+}
+.rt-utility-dropdown {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  z-index: 50;
+  min-width: 140px;
+  background: var(--rt-card-bg, #ffffff);
+  border: 1px solid var(--rt-border);
+  border-radius: 0.75rem;
+  padding: 0.375rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+.rt-utility-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--rt-text);
+  text-decoration: none;
+  transition: background 0.1s ease;
+}
+.rt-utility-item:hover,
+.rt-utility-item[aria-current="page"] {
+  background: var(--rt-alt-surface);
+  color: var(--rt-primary);
+}
+.rt-bold .rt-utility-pill {
+  border-radius: 0;
+  border: 2px solid var(--rt-text);
+  font-weight: 700;
+}
+.rt-bold .rt-utility-dropdown {
+  border-radius: 0;
+  border: 2px solid var(--rt-text);
+}
+.rt-editorial .rt-utility-pill {
+  border-radius: 0;
+  border: 1px solid var(--rt-text);
+}
+.rt-editorial .rt-utility-dropdown {
+  border-radius: 0;
+  border: 1px solid var(--rt-text);
+}
+.rt-bakery .rt-utility-pill {
+  border: 1px dashed var(--rt-border);
+}
+.rt-night .rt-utility-pill {
+  background: color-mix(in srgb, var(--rt-page-bg) 85%, transparent);
+  border: 1px solid var(--rt-border);
+  color: var(--rt-text);
+}
 .rt-identity {
   position: relative;
   padding: 32px;

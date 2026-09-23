@@ -31,6 +31,9 @@ export default async function PreviewPage({
         settings: data.settings,
         profile: data.profiles[location.id]!,
         labels: dict.appearance,
+        branches: data.locations.map((l) => ({ id: l.id, slug: l.slug, name: l.name })),
+        currentBranchSlug: location.slug,
+        businessSlug: data.business.slug,
       }}
     />
   );

@@ -17,11 +17,18 @@ import { ContentText, type MenuPreviewProps } from "../menu-preview";
 import { RestaurantImage } from "./image";
 import { restaurantTemplate } from "./registry";
 import { CaramelMenu } from "./caramel";
+import { RestaurantUtilityBar } from "./utility-bar";
+import type { ContentName } from "@darb-rest/types";
+
 export interface RestaurantPresentation {
   previewMedia?: boolean;
   settings: AppearanceSettings;
   profile: RestaurantProfile;
   labels: Record<string, string>;
+  branches?: { id: string; slug: string; name: ContentName }[];
+  currentBranchSlug?: string;
+  businessSlug?: string;
+  confirmBranchLabel?: string;
 }
 export function RestaurantMenu({
   restaurant,
@@ -128,6 +135,17 @@ export function RestaurantMenu({
       data-surface={layout.surface}
       style={style}
     >
+      <RestaurantUtilityBar
+        locale={p.locale}
+        showLanguageSwitcher={settings.showLanguageSwitcher !== false}
+        branches={restaurant.branches}
+        currentBranchSlug={restaurant.currentBranchSlug}
+        businessSlug={restaurant.businessSlug}
+        branchLabel={L.branch ?? "Branch"}
+        confirmBranchLabel={restaurant.confirmBranchLabel}
+        languageLabel={L.language ?? "Language"}
+        variant="default"
+      />
       <template.Hero
         name={p.business.name}
         locale={p.locale}
