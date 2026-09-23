@@ -5,5 +5,7 @@ it("binds every catalog definition to presentation without a fixed catalog limit
   expect(RESTAURANT_TEMPLATES.map((t) => t.id)).toEqual(TEMPLATE_CATALOG.map((t) => t.id));
   for (const t of RESTAURANT_TEMPLATES) expect(typeof t.Hero).toBe("function");
   expect(restaurantTemplate("future-unknown").id).toBe("signature");
+  expect(restaurantTemplate("caramel").id).toBe("caramel");
+  expect(restaurantTemplate("caramel").className).toBe("rt-caramel");
   expect(new Set(RESTAURANT_TEMPLATES.map((t) => t.Hero)).size).toBe(RESTAURANT_TEMPLATES.length);
 });
