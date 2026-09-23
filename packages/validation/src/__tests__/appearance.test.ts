@@ -60,4 +60,14 @@ it("validates safe appearance and rejects arbitrary controls", () => {
     }).success,
   ).toBe(false);
 
+  // showLanguageSwitcher validation
+  expect(
+    appearanceSaveSchema.safeParse({
+      ...value,
+      settings: {
+        ...value.settings,
+        showLanguageSwitcher: false,
+      },
+    }).success,
+  ).toBe(true);
 });

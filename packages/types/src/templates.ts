@@ -78,6 +78,7 @@ export interface AppearanceSettings {
   density: TemplateDensity;
   images: boolean;
   theme?: SemanticTheme;
+  showLanguageSwitcher?: boolean;
 }
 export interface TemplateMetadata {
   id: string;
@@ -104,6 +105,7 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
   coverVideo: "",
   density: "balanced",
   images: true,
+  showLanguageSwitcher: true,
 };
 export function safePublicUrl(value: string | null | undefined): string {
   if (!value || value.length > 2048) return "";
@@ -578,7 +580,11 @@ export function sameAppearance(a: AppearanceSettings, b: AppearanceSettings) {
   return (
     JSON.stringify(resolvedLayout(a)) === JSON.stringify(resolvedLayout(b)) &&
     sameSemanticTheme(a.theme, b.theme) &&
-    (Object.keys(DEFAULT_APPEARANCE) as (keyof AppearanceSettings)[]).every((k) => a[k] === b[k])
+    (Object.keys(DEFAULT_APPEARANCE) as (keyof AppearanceSettings)[]).every((k) =>
+      k === "showLanguageSwitcher"
+        ? (a.showLanguageSwitcher ?? true) === (b.showLanguageSwitcher ?? true)
+        : a[k] === b[k],
+    )
   );
 }
 

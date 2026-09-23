@@ -58,6 +58,7 @@ export const appearanceSchema = z
     density: z.enum(["airy", "balanced", "compact"]),
     images: z.boolean(),
     theme: semanticThemeSchema.optional(),
+    showLanguageSwitcher: z.boolean().optional(),
   })
   .strict();
 export const appearanceSaveSchema = z

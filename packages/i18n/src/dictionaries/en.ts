@@ -250,6 +250,8 @@ export const en = {
     theme_closedStatus: "Closed color",
     theme_border: "Border color",
     theme_heroOverlay: "Hero overlay / tint",
+    showLanguageSwitcher: "Show language selector on restaurant page",
+    showLanguageSwitcherHelp: "Allow guests to switch between English, Arabic, and Hebrew.",
     advancedCustomization: "Advanced color customization",
     advancedCustomizationHelp: "Fine-tune individual surface, text, and commerce colors",
     resetGroup: "Reset group",
@@ -257,6 +259,7 @@ export const en = {
     originPreset: "Preset",
     originCustom: "Custom",
     lowContrastWarning: "Low contrast warning",
+    previewLocale: "Preview language",
     closedOrdering:
       "The restaurant is closed. Contact it to confirm when your request can be handled.",
     openOrdering: "Explore the menu and contact the restaurant through WhatsApp where available.",

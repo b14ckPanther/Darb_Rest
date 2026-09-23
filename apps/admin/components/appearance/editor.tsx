@@ -42,6 +42,7 @@ export function AppearanceEditor({
     [tag, setTag] = useState("all"),
     [device, setDevice] = useState("mobile"),
     [branch, setBranch] = useState(locations[0]?.id ?? ""),
+    [previewLocale, setPreviewLocale] = useState(locale),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
   const [savedSettings, setSavedSettings] = useState(initial);
@@ -817,6 +818,16 @@ export function AppearanceEditor({
             />
             {L.images}
           </label>
+          <label className="flex min-h-11 items-center gap-2">
+            <input
+              type="checkbox"
+              checked={settings.showLanguageSwitcher !== false}
+              onChange={(e) =>
+                setSettings({ ...settings, showLanguageSwitcher: e.target.checked })
+              }
+            />
+            {L.showLanguageSwitcher}
+          </label>
         </fieldset>
         <p className="mt-4 text-sm text-[var(--fg-muted)]">{L.mediaHelp}</p>
         <h3 className="mb-2 mt-8 text-xl font-semibold">{L.composition}</h3>
@@ -882,6 +893,19 @@ export function AppearanceEditor({
               ))}
             </select>
           </label>
+          <div role="group" aria-label={L.previewLocale} className="flex flex-wrap gap-1">
+            {(["ar", "he", "en"] as const).map((l) => (
+              <button
+                key={l}
+                type="button"
+                aria-pressed={previewLocale === l}
+                onClick={() => setPreviewLocale(l)}
+                className="min-h-11 rounded-xl border px-3 text-xs font-semibold aria-pressed:bg-[#1a3c2a] aria-pressed:text-white"
+              >
+                {LOCALE_CONFIGS[l].nativeName}
+              </button>
+            ))}
+          </div>
           <div role="group" aria-label={L.preview} className="flex flex-wrap gap-2">
             {["mobile", "tablet", "desktop"].map((d) => (
               <button
@@ -911,7 +935,7 @@ export function AppearanceEditor({
               <iframe
                 ref={frame}
                 title={L.preview}
-                src={`/${locale}/appearance-preview?branch=${branch}`}
+                src={`/${previewLocale}/appearance-preview?branch=${branch}`}
                 onLoad={post}
                 style={{
                   width,
