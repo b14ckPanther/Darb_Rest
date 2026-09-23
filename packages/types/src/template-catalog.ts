@@ -109,6 +109,16 @@ export const TEMPLATE_CATALOG: readonly TemplateMetadata[] = [
     },
     ["cafe", "warm"],
   ),
+  define(
+    "caramel",
+    { en: "Caramel", ar: "كاراميل", he: "קרמל" },
+    {
+      en: "Warm boutique aesthetic with category rails, horizontal dish carousels, and detailed dish modals.",
+      ar: "طابع دافئ مع شريط فئات دائري وقوائم أطباق أفقية ونوافذ تفصيلية.",
+      he: "סגנון בוטיק חם עם מסילת קטגוריות, קרוסלת מנות אופקית וחלון מנה מפורט.",
+    },
+    ["warm", "dining", "cafe"],
+  ),
 ];
 
 export function templateDefinition(id: string) {
