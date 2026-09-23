@@ -152,3 +152,96 @@ test("appearance persistence and managed branding (requires migrations 10 and 11
   await page.getByRole("button", { name: L.publish, exact: true }).click();
   await expect(page.getByRole("status")).toHaveText(L.published);
 });
+
+test("semantic appearance theming customizes Caramel template live in preview", async ({ page }) => {
+  await login(page);
+  await page.goto("/en/appearance/templates");
+  const L = getDictionary("en").appearance;
+  const frame = page.frameLocator("iframe");
+
+  // Select Caramel template
+  await page.locator('[data-template-choice="caramel"]').click();
+  await expect(frame.locator(".rt-caramel")).toHaveAttribute("data-template", "caramel");
+
+  // Check initial default warm variables
+  const initialBg = await frame.locator(".rt-caramel").evaluate((el) => {
+    return getComputedStyle(el).getPropertyValue("--rt-page-bg").trim();
+  });
+  expect(initialBg.toLowerCase()).toBe("#fff6e3");
+
+  // Change page background HEX input
+  const pageBgInput = page.getByLabel("Page background HEX");
+  await pageBgInput.fill("#121212");
+  await pageBgInput.dispatchEvent("change");
+
+  // Verify preview updates live via postMessage
+  await expect
+    .poll(async () => {
+      return frame.locator(".rt-caramel").evaluate((el) => {
+        return getComputedStyle(el).getPropertyValue("--rt-page-bg").trim().toLowerCase();
+      });
+    })
+    .toBe("#121212");
+
+  // Click preset chip (e.g. Berry)
+  await page.getByRole("button", { name: L.paletteBerry }).click();
+  await expect
+    .poll(async () => {
+      return frame.locator(".rt-caramel").evaluate((el) => {
+        return getComputedStyle(el).getPropertyValue("--rt-primary").trim().toLowerCase();
+      });
+    })
+    .toBe("#632f4b");
+
+  // Click Reset to template defaults
+  await page.getByRole("button", { name: L.resetTemplateDefaults }).click();
+  await expect
+    .poll(async () => {
+      return frame.locator(".rt-caramel").evaluate((el) => {
+        return getComputedStyle(el).getPropertyValue("--rt-primary").trim().toLowerCase();
+      });
+    })
+    .toBe("#f07a12");
+
+  // Restore signature template
+  await page.locator('[data-template-choice="signature"]').click();
+  await page.getByRole("button", { name: L.resetTemplateDefaults }).click();
+});
+
+test("appearance studio language switcher toggle and integrated template utility controls", async ({
+  page,
+}) => {
+  await login(page);
+  await page.goto("/en/appearance/templates");
+  const L = getDictionary("en").appearance;
+  const frame = page.frameLocator("iframe");
+
+  // Select caramel template
+  await page.locator('[data-template-choice="caramel"]').click();
+
+  // Language selector button and branch selector exist inside caramel hero
+  const langButton = frame.getByRole("button", { name: "Language" });
+  await expect(langButton).toBeVisible();
+
+  // Toggle off showLanguageSwitcher
+  const toggle = page.getByLabel(L.showLanguageSwitcher);
+  await expect(toggle).toBeChecked();
+  await toggle.uncheck();
+
+  // Language switcher is no longer visible inside the template, but branch selector remains
+  await expect(langButton).toHaveCount(0);
+  await expect(frame.getByRole("button", { name: /Branch:/ })).toBeVisible();
+
+  // Toggle back on
+  await toggle.check();
+  await expect(langButton).toBeVisible();
+
+  // Test admin preview locale switcher
+  const previewLocaleGroup = page.getByRole("group", { name: L.previewLocale });
+  await previewLocaleGroup.getByRole("button", { name: "العربية" }).click();
+  await expect(frame.locator("html")).toHaveAttribute("dir", "rtl");
+
+  // Restore defaults
+  await previewLocaleGroup.getByRole("button", { name: "English" }).click();
+  await page.locator('[data-template-choice="signature"]').click();
+});
