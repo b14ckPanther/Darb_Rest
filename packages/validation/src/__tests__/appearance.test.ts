@@ -23,4 +23,41 @@ it("validates safe appearance and rejects arbitrary controls", () => {
     ).toBe(false);
   expect(appearanceSaveSchema.safeParse({ ...value, business_id: "other" }).success).toBe(false);
   expect(appearanceSaveSchema.safeParse({ ...value, revision: -1 }).success).toBe(false);
+
+  // Semantic theme validation
+  const withTheme = {
+    ...value,
+    settings: {
+      ...value.settings,
+      theme: {
+        pageBackground: "#fff6e3",
+        cardBackground: "#fffdf6",
+        buttonBackground: "#2a1208",
+      },
+    },
+  };
+  expect(appearanceSaveSchema.safeParse(withTheme).success).toBe(true);
+
+  // Rejects invalid theme hex
+  expect(
+    appearanceSaveSchema.safeParse({
+      ...value,
+      settings: {
+        ...value.settings,
+        theme: { pageBackground: "invalid" },
+      },
+    }).success,
+  ).toBe(false);
+
+  // Rejects unknown theme properties (strict)
+  expect(
+    appearanceSaveSchema.safeParse({
+      ...value,
+      settings: {
+        ...value.settings,
+        theme: { evilCss: "red" },
+      },
+    }).success,
+  ).toBe(false);
+
 });

@@ -4,6 +4,35 @@ const media = z
   .string()
   .max(2048)
   .refine((s) => s === "" || !!safePublicUrl(s));
+const hexColor = z.string().regex(/^#[0-9a-fA-F]{6}$/);
+
+export const semanticThemeSchema = z
+  .object({
+    primary: hexColor.optional(),
+    accent: hexColor.optional(),
+    pageBackground: hexColor.optional(),
+    cardBackground: hexColor.optional(),
+    alternateSurface: hexColor.optional(),
+    text: hexColor.optional(),
+    textMuted: hexColor.optional(),
+    border: hexColor.optional(),
+    navBackground: hexColor.optional(),
+    activeCategoryBackground: hexColor.optional(),
+    activeCategoryText: hexColor.optional(),
+    buttonBackground: hexColor.optional(),
+    buttonText: hexColor.optional(),
+    priceBackground: hexColor.optional(),
+    priceText: hexColor.optional(),
+    heroOverlay: hexColor.optional(),
+    openStatus: hexColor.optional(),
+    closedStatus: hexColor.optional(),
+    modalBackground: hexColor.optional(),
+    modalText: hexColor.optional(),
+    footerBackground: hexColor.optional(),
+    footerText: hexColor.optional(),
+  })
+  .strict();
+
 export const appearanceSchema = z
   .object({
     layout: z
@@ -28,6 +57,7 @@ export const appearanceSchema = z
     coverVideo: media,
     density: z.enum(["airy", "balanced", "compact"]),
     images: z.boolean(),
+    theme: semanticThemeSchema.optional(),
   })
   .strict();
 export const appearanceSaveSchema = z
