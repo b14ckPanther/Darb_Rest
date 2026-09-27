@@ -848,6 +848,12 @@ export const en = {
     navMenuTitle: "Site navigation",
     footerCreditLead: "Designed and built by",
     footerCreditName: "Nour",
+    darbInstagram: "Darb on Instagram",
+    founderLinks: "Nour's links",
+    founderInstagram: "Nour on Instagram",
+    founderGithub: "Nour on GitHub",
+    founderLinkedin: "Nour on LinkedIn",
+    founderPortfolio: "Nour's portfolio",
     brandStudiesNote: "Illustrative colour studies of one menu",
   },
   admin: {

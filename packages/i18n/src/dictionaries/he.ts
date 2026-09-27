@@ -839,6 +839,12 @@ export const he: TranslationDictionary = {
     navMenuTitle: "ניווט באתר",
     footerCreditLead: "עיצוב ופיתוח:",
     footerCreditName: "Nour",
+    darbInstagram: "Darb באינסטגרם",
+    founderLinks: "הקישורים של נור",
+    founderInstagram: "נור באינסטגרם",
+    founderGithub: "נור ב-GitHub",
+    founderLinkedin: "נור ב-LinkedIn",
+    founderPortfolio: "תיק העבודות של נור",
     brandStudiesNote: "דוגמאות צבע להמחשה של אותו תפריט",
   },
   admin: {

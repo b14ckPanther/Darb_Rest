@@ -1337,6 +1337,74 @@ html[lang="he"] .rs-heading {
   margin: 0;
 }
 
+.rs-footer__channels {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-footer__channels a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--rs-on-dark-muted);
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.rs-footer__channels a:hover {
+  color: var(--rs-on-dark);
+}
+
+.rs-footer__channels svg,
+.rs-footer__profiles svg {
+  color: var(--rs-gold);
+}
+
+.rs-footer__founder {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
+.rs-footer__profiles {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-footer__profiles a {
+  display: inline-grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--rs-line-dark);
+  border-radius: var(--rs-radius);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rs-footer__profiles a:hover {
+  border-color: rgb(218 166 77 / 55%);
+  background: rgb(218 166 77 / 8%);
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rs-footer__profiles a:hover {
+    transform: none;
+  }
+}
+
 .rs-footer__credit a {
   color: var(--rs-on-dark-muted);
   text-decoration: underline;

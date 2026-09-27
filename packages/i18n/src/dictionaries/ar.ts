@@ -840,6 +840,12 @@ export const ar: TranslationDictionary = {
     navMenuTitle: "التنقل بالموقع",
     footerCreditLead: "تصميم وتطوير",
     footerCreditName: "نور",
+    darbInstagram: "درب على إنستغرام",
+    founderLinks: "روابط نور",
+    founderInstagram: "نور على إنستغرام",
+    founderGithub: "نور على GitHub",
+    founderLinkedin: "نور على LinkedIn",
+    founderPortfolio: "بورتفوليو نور",
     brandStudiesNote: "أمثلة توضيحية لنفس المنيو بألوان مختلفة",
   },
   admin: {
