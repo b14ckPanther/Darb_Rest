@@ -835,6 +835,11 @@ export const he: TranslationDictionary = {
     footerPrivacy: "פרטיות",
     footerTerms: "תנאים",
     footerCopyright: "דרב רסט. כל הזכויות שמורות.",
+    darbPath: "מסלול של Darb",
+    navMenuTitle: "ניווט באתר",
+    footerCreditLead: "עיצוב ופיתוח:",
+    footerCreditName: "Nour Alden Mousa",
+    brandStudiesNote: "דוגמאות צבע להמחשה של אותו תפריט",
   },
   admin: {
     title: "לוח בקרת עסקים",

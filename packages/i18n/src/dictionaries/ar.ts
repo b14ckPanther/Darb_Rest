@@ -836,6 +836,11 @@ export const ar: TranslationDictionary = {
     footerPrivacy: "الخصوصية",
     footerTerms: "الشروط",
     footerCopyright: "درب ريست. جميع الحقوق محفوظة.",
+    darbPath: "من مسارات درب",
+    navMenuTitle: "التنقل بالموقع",
+    footerCreditLead: "تصميم وتطوير",
+    footerCreditName: "نور الدين موسى",
+    brandStudiesNote: "أمثلة توضيحية لنفس المنيو بألوان مختلفة",
   },
   admin: {
     title: "لوحة التحكم",

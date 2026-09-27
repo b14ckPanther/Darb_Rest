@@ -844,6 +844,11 @@ export const en = {
     footerPrivacy: "Privacy",
     footerTerms: "Terms",
     footerCopyright: "Darb REST. All rights reserved.",
+    darbPath: "A Darb path",
+    navMenuTitle: "Site navigation",
+    footerCreditLead: "Designed and built by",
+    footerCreditName: "Nour Alden Mousa",
+    brandStudiesNote: "Illustrative colour studies of one menu",
   },
   admin: {
     title: "Business Console",
