@@ -91,11 +91,33 @@ To prevent infinite recursion in RLS policies during membership evaluation:
 
 ## 5. Canonical Migrations and Local Development
 
-The three canonical migrations are:
+Canonical migrations, in order:
 
-1. `20260918000001_core_schema.sql`: nine core tables, helpers, triggers and RLS.
-2. `20260918000002_onboarding_and_hours.sql`: onboarding step, operating hours and onboarding RPC.
-3. `20260918000003_onboarding_drafts.sql`: one draft per auth user, timestamps and RLS.
+| #   | Migration                                                 | Purpose                                                                 |
+| --- | --------------------------------------------------------- | ----------------------------------------------------------------------- |
+| 1   | `20260918000001_core_schema.sql`                          | Nine core tables, helpers, triggers and RLS                             |
+| 2   | `20260918000002_onboarding_and_hours.sql`                 | Onboarding step, operating hours and onboarding RPC                     |
+| 3   | `20260918000003_onboarding_drafts.sql`                    | One draft per auth user, timestamps and RLS                             |
+| 4   | `20260919000004_restaurant_content.sql`                   | Menus, sections, items, variants, modifiers, branch overrides and media |
+| 5   | `20260919000005_ordering_core.sql`                        | Order drafts and submissions (dormant in v1)                            |
+| 6   | `20260919000006_payments.sql`                             | Payment intents and callbacks (dormant in v1)                           |
+| 7   | `20260919000007_tables_qr.sql`                            | Tables and QR capabilities (dormant in v1)                              |
+| 8   | `20260919000008_kitchen_operations.sql`                   | Kitchen board operations (dormant in v1)                                |
+| 9   | `20260919000009_restaurant_operations.sql`                | Stations, assignments and printer events (dormant in v1)                |
+| 10  | `20260919000010_restaurant_appearance.sql`                | Draft/published appearance and the revision-locked save RPC             |
+| 11  | `20260920000011_branding_media.sql`                       | Managed logo/cover storage                                              |
+| 12  | `20260920000012_template_composition.sql`                 | Optional validated layout object                                        |
+| 13  | `20260920000013_restaurant_analytics.sql`                 | Analytics events (dormant in v1)                                        |
+| 14  | `20260920000014_production_launch.sql`                    | Restaurant publication, domains and SEO projections                     |
+| 15  | `20260921000015_restaurant_applications.sql`              | Protected restaurant applications and platform review                   |
+| 16  | `20260921000016_v1_commercial_plans.sql`                  | Starter/Pro/Business catalog, prices and WhatsApp destinations          |
+| 17  | `20260921000017_v1_dormant_operation_privileges.sql`      | Revokes legacy operational entry points                                 |
+| 18  | `20260922000018_customer_activation_manual_billing.sql`   | Agreements, manual payments and customer activation                     |
+| 19  | `20260922000019_activation_verified_account_identity.sql` | Stable account identity after verified email changes                    |
+| 20  | `20260923000020_semantic_appearance_theme.sql`            | Optional semantic theme in appearance snapshots                         |
+| 21  | `20260923182500_appearance_language_switcher.sql`         | Language switcher visibility preference                                 |
+
+Subsystem documents describe each migration in detail.
 
 Do not rewrite applied migrations. Create a new migration for a genuine subsequent schema change.
 

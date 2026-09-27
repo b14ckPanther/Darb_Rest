@@ -41,7 +41,8 @@ references. Editor/foreign-tenant/invalid-file rejection checks pass. The E2E he
 the editor to be interactive and reads the collapsed legacy fields by label; no application or
 schema change was needed. This supersedes the earlier migration-related validation block.
 
-All eight templates retain EN/AR/HE responsive and RTL coverage (375/430/834/1440 widths and
-preview device modes). Representative rendered screenshots were inspected. Validation remains
+All templates (eight at the time of this record; Caramel was added later with its own
+coverage) retain EN/AR/HE responsive and RTL coverage (375/430/834/1440 widths and preview
+device modes). Representative rendered screenshots were inspected. Validation remains
 local Chromium-based, not a remote deployment or physical-device/cross-browser certification.
 Private orphan-object cleanup remains deferred. No migrations or remote database commands ran.

@@ -1,121 +1,138 @@
 # Darb REST
 
-Darb REST is a multilingual, multi-tenant restaurant and café platform within the **Darb**
-ecosystem. It is an independent product with a public restaurant application, an owner/staff
-console and a dedicated database and authorization model.
+**Digital menus and WhatsApp ordering for restaurants and cafés — in Arabic, Hebrew and English.**
 
-Darb REST v1 gives restaurants a premium digital presence with owner-managed menus,
-branding and multilingual templates. Pro adds customer requests through WhatsApp; Business
-adds centralized management across locations.
+[rest.darb.co.il](https://rest.darb.co.il) · A [Darb](https://darb.co.il) product
 
-## Product capabilities
+---
 
-- Eight controlled templates with draft/publish previews, managed logo/cover uploads,
-  palettes, crop/focal controls, navigation, cards and density options.
-- Arabic, Hebrew and English with native RTL/LTR and Cairo/Heebo/Ubuntu typography.
-- Menus, categories, dishes, photos, variants/modifiers, dietary information and availability.
-- Starter includes complete branding, all templates and menu QR access for one location.
-- Pro adds a session cart with server-revalidated totals and structured WhatsApp order and
-  reservation requests. Requests are not stored orders or confirmed bookings.
-- Business adds branch-specific menus/settings and WhatsApp destinations with tenant RBAC.
-- Commercial prices and localized plan copy are database-driven and editable by Platform Admin
-  without redeployment. Monthly and yearly prices are independently configured.
+Darb REST is a multi-tenant SaaS platform that gives restaurants a branded, mobile-first menu
+site they manage themselves. Owners pick from nine professionally designed templates, fine-tune
+colors and layout, publish their menu in up to three languages and share it through QR codes.
+Guests browse, build a cart and send a structured order or reservation request straight to the
+restaurant's WhatsApp.
 
-See [the v1 commercial model](docs/V1-COMMERCIAL-MODEL.md) for the authoritative scope.
-Earlier ordering/payment/KDS/table-operation/analytics/custom-domain implementations remain
-**dormant technical foundations**, not available v1 subscription benefits.
+The product runs in production at **[rest.darb.co.il](https://rest.darb.co.il)** and is part
+of the [Darb](https://darb.co.il) family of products for local businesses.
+
+## The product
+
+**For guests:** a fast restaurant page at `rest.darb.co.il/<restaurant>` with the menu, photos,
+dish options, dietary information, opening hours computed in the branch's timezone, contact
+details and a language switcher. Right-to-left Arabic and Hebrew layouts are native, not mirrored.
+
+**For restaurant owners:** an admin console to manage menus, categories, dishes, variants and
+modifiers, branch locations, branding and templates. Every appearance change is edited as a draft
+and previewed on real content at phone, tablet and desktop sizes before it goes live.
+
+**For the Darb team:** a platform console that reviews incoming restaurant applications, approves
+commercial agreements, records manual payments, sends account invitations and edits plan prices
+and localized plan copy without a redeploy.
+
+| Plan     | What it adds                                                                                                                       |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Starter  | One location, all templates, full branding, three languages, menu QR codes, rich dishes with variants, modifiers and availability. |
+| Pro      | Guest cart with server-verified totals, WhatsApp order requests and WhatsApp reservation requests.                                 |
+| Business | Multiple locations with branch-specific menus, hours, contact details and WhatsApp numbers.                                        |
+
+Prices, plan descriptions and limits live in the database, not the code.
+
+## Engineering highlights
+
+- **Tenant isolation in the database.** Every tenant table is protected by PostgreSQL row-level
+  security keyed on business membership. Role checks run in `SECURITY DEFINER` helpers with a
+  pinned `search_path`, and a trigger prevents a business from losing its last owner.
+- **The server owns the money.** Cart totals are recalculated server-side from the published menu
+  (variants, modifiers, availability, branch overrides) before a WhatsApp message is generated.
+  Prices from the client are never trusted.
+- **Draft/publish with optimistic locking.** Appearance settings are saved through a transactional
+  RPC that validates every key, takes a per-business lock and rejects stale revisions, so two
+  editors can't silently overwrite each other. Publishing copies the draft atomically; public
+  pages only ever read the published snapshot.
+- **A template engine, not nine copies of a page.** Templates are presentation only. A pure
+  metadata catalog declares each template's supported controls, and every template renders the
+  same menu model and cart. A semantic theme layer (22 color roles such as page, card, navigation,
+  price and footer) sits on top, with tuned defaults for each template.
+- **Built for three languages from the start.** Arabic, Hebrew and English with Cairo, Heebo and
+  Ubuntu typography, CSS logical properties throughout, direction-aware icons and complete
+  dictionary parity. There are no hardcoded UI strings.
+- **Safe media handling.** Logos and covers go through a private upload pipeline. Images are
+  re-encoded to WebP with bounded responsive widths, and drafts are never exposed on public routes.
+- **Production hardening.** Startup validation for the production environment, rate limits on
+  public mutations, tenant-aware SEO (canonical URLs, alternate languages, Restaurant JSON-LD,
+  a paginated sitemap) and `noindex` on capability URLs and the admin console.
+- **Tested at every layer.** Vitest unit suites, pgTAP assertions for RLS and RPC contracts, and
+  Playwright end-to-end coverage across locales and viewport widths from 375 to 1440 px.
 
 ## Architecture
 
 ```text
-Guest application ─┐
-                   ├─ Shared types, validation, presentation and validation contracts
-Owner/staff console┘                         │
-                                  Authenticated server boundaries
-                                             │
-                                Supabase Auth / PostgreSQL / Storage
-                                RLS + transactional RPCs + Realtime
+ Guest site (apps/web)        Admin & platform console (apps/admin)
+          │                                  │
+          └──────────── shared packages ─────┘
+              types · validation · ui · i18n · supabase
+                             │
+                 Server Components / Server Actions
+                             │
+        Supabase: Auth · PostgreSQL (RLS + RPCs) · Storage
 ```
 
-Business membership is the tenant boundary; locations scope branch operations. Sensitive server
-credentials stay server-side. Public restaurant projections expose published customer-facing
-content, while guest capabilities protect order and table context. Realtime messages trigger
-refreshes of authoritative data rather than replacing database authorization.
+Business membership is the tenant boundary; locations scope branch-level data. The service-role
+key stays on the server. Public pages read from narrow projections that only expose published,
+customer-facing content.
 
-### Monorepo
+### Repository layout
 
 ```text
 apps/
-  web/             Public restaurant experience and product website
-  admin/           Owner, manager and staff console
+  web/             Public restaurant sites and the marketing website
+  admin/           Owner console and Darb platform console
 packages/
-  config/          Workspace configuration and environment contracts
+  config/          Environment contracts and production validation
   design-tokens/   Shared visual tokens
-  i18n/            Dictionaries, locale handling and direction
+  i18n/            Dictionaries, locale routing and text direction
   icons/           SVG icon components
-  payments/        Provider interface and local test adapter
-  supabase/        Browser/server clients, database types and entitlements
-  types/           Shared domain models and calculations
-  ui/              UI primitives, templates and ordering presentation
-  validation/      Input and customization validation
+  payments/        Payment provider interface (dormant in the current release)
+  supabase/        Browser/server clients, database types and entitlement resolver
+  types/           Domain models, template catalog and theme resolution
+  ui/              UI primitives, restaurant templates and ordering flow
+  validation/      Zod schemas for every write boundary
 supabase/
-  migrations/      Canonical database history
-  tests/           Transactional database assertions
+  migrations/      Versioned schema history
+  tests/           pgTAP database assertions
   seed.sql         Local development data
-scripts/           Local fixture and test runners
-e2e/              Browser integration coverage
-docs/             Architecture, validation records and roadmap
+e2e/               Playwright suites
+docs/              Architecture and subsystem documentation
 ```
 
-### Technology
+### Stack
 
-Next.js 16 App Router, React 19, TypeScript, Tailwind CSS 4, PostgreSQL/Supabase, Zod,
-Lucide SVG icons, Sharp image processing, pnpm workspaces and Turborepo. Validation uses
-Vitest, Playwright and database assertions through pgTAP.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS 4 · Supabase (PostgreSQL 17,
+Auth, Storage) · Zod · Sharp · pnpm workspaces · Turborepo · Vitest · Playwright · pgTAP.
+Deployed on Vercel in the Frankfurt region, next to the database.
 
-## Local development
+## Running locally
 
-### Prerequisites
-
-Use Node.js 22 or a compatible newer release, the pnpm version pinned in `package.json`,
-Supabase CLI and a running Docker-compatible container runtime.
+Requirements: Node.js 22+, the pnpm version pinned in `package.json`, the Supabase CLI and Docker.
 
 ```bash
 pnpm install
 supabase start
-```
 
-### Environment
-
-Next.js reads environment files from each application directory:
-
-```bash
 cp .env.example apps/web/.env.local
 cp .env.example apps/admin/.env.local
-supabase status
-```
+# Fill in the local URL and keys printed by `supabase status`
 
-Populate each application's ignored file with the **local** API URL and keys reported by the
-local runtime. Never commit real environment values or paste service-role keys into public
-configuration. The `NEXT_PUBLIC_*` values are browser-visible; `SUPABASE_SERVICE_ROLE_KEY`
-is server-only. Dormant payment settings must remain unset for the v1 production deployment.
-
-Reconstruct the local database from canonical migrations and development seed data:
-
-```bash
-supabase db reset --local
+supabase db reset --local   # rebuilds the local database from migrations + seed
 pnpm dev
 ```
 
-**A local reset deletes local database data.** Do not use a linked reset against a shared project.
-The public application runs at `http://localhost:3000`; the admin console runs at
-`http://localhost:3001`. Public restaurant routes include the locale and business slug.
+The public site runs on `http://localhost:3000` and the admin console on `http://localhost:3001`.
+`supabase db reset --local` wipes local data; never run a reset against a linked project.
 
-For the comprehensive development account, follow [the manual fixture workflow](docs/TEST-ACCOUNT.md).
-It reads credentials from the environment, refuses remote/production execution and is separate
-from database resets. The ordinary seed does not provision that authentication account.
+For a fully populated development account, see [docs/TEST-ACCOUNT.md](docs/TEST-ACCOUNT.md).
 
-### Build and validation
+## Testing
 
 ```bash
 pnpm typecheck
@@ -123,67 +140,46 @@ pnpm lint
 pnpm test
 pnpm build
 pnpm format:check
-```
 
-With local Supabase running and all canonical migrations applied:
-
-```bash
+# With local Supabase running
 supabase test db
 pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-Browser tests use isolated local-backed servers on ports 3100/3101 alongside the development
-shells. The test harness provisions fictional local fixtures; it does not target the linked
-remote project. See the architecture documents for test scopes and validation limitations.
+End-to-end tests start their own servers on ports 3100/3101 against local Supabase with
+fictional fixtures. They never touch a remote project.
 
-## Database workflow
+## Database changes
 
-Schema changes belong in versioned migrations. Preserve applied migration history; do not
-manually replay migration files in the remote SQL Editor.
+All schema changes are versioned migrations; applied migrations are never edited.
 
 ```bash
 supabase migration new describe_change
-# Edit the generated migration, then validate locally:
 supabase db reset --local
 supabase test db
 ```
 
-An authorized operator should verify the intended linked environment and pending changes before
-applying a remote update:
+Remote rollout is done by an operator after checking `supabase migration list` and
+`supabase db push --dry-run`. See [docs/DATABASE.md](docs/DATABASE.md) for the schema, RLS model
+and migration history.
 
-```bash
-supabase migration list
-supabase db push --dry-run
-supabase db push
-supabase migration list
-```
+## Documentation
 
-Never include development seed data in a production push. Backup and deployment review remain
-operator responsibilities. [Database documentation](docs/DATABASE.md) explains schema ownership,
-RLS, history reconciliation and the established workflow.
+| Topic               | Document                                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plans and scope     | [V1 commercial model](docs/V1-COMMERCIAL-MODEL.md)                                                                                                |
+| System design       | [Architecture](docs/ARCHITECTURE.md), [Database](docs/DATABASE.md)                                                                                |
+| Menus and templates | [Menu content](docs/MENU-ARCHITECTURE.md), [Templates and theming](docs/TEMPLATE-ARCHITECTURE.md), [Branding media](docs/BRANDING-MEDIA.md)       |
+| Customer lifecycle  | [Applications](docs/ACQUISITION-ARCHITECTURE.md), [Activation and billing](docs/CUSTOMER-ACTIVATION.md), [Platform admin](docs/PLATFORM-ADMIN.md) |
+| Production          | [Production architecture](docs/PRODUCTION-ARCHITECTURE.md), [Vercel regions](docs/VERCEL-REGIONS.md), [Performance](docs/PERFORMANCE.md)          |
+| History             | [Progress log](docs/PROGRESS.md)                                                                                                                  |
 
-## Current status and roadmap
+The repository also contains complete, tested foundations for stored orders, payments, table QR
+ordering, a kitchen display and analytics. They are switched off in the current release and
+documented in [docs/](docs/) for when they are brought back.
 
-The current release is the locked **Darb REST v1** commercial model. Migrations 16 and 17
-align the catalog and revoke legacy operational entry points. The retained phase history is
-not the subscription offering. See [progress](docs/PROGRESS.md) for validation evidence.
+---
 
-Future work stays subject to explicit roadmap approval. Live payments, stored online ordering,
-KDS, inventory, delivery and booking engines are not activated by this release. WhatsApp
-requests require the customer to open WhatsApp and send; delivery is not tracked by Darb.
-
-## Engineering documentation
-
-- [System architecture](docs/ARCHITECTURE.md) and [database](docs/DATABASE.md)
-- [Menu content](docs/MENU-ARCHITECTURE.md), [ordering](docs/ORDER-ARCHITECTURE.md) and
-  [payments](docs/PAYMENT-ARCHITECTURE.md)
-- [Tables and QR](docs/TABLE-QR-ARCHITECTURE.md), [kitchen board](docs/KDS-ARCHITECTURE.md) and
-  [restaurant operations](docs/RESTAURANT-OPERATIONS.md)
-- [Templates](docs/TEMPLATE-ARCHITECTURE.md), [managed branding](docs/BRANDING-MEDIA.md) and
-  [self-service audit](docs/SELF-SERVICE-AUDIT.md)
-- [Analytics](docs/ANALYTICS-ARCHITECTURE.md) and [implementation progress](docs/PROGRESS.md)
-
-Production launch foundations are documented in [production architecture](docs/PRODUCTION-ARCHITECTURE.md)
-and [custom domains](docs/CUSTOM-DOMAINS.md). Migration 14 and deployment-specific DNS, TLS, ingress
-and smoke validation remain operator-controlled launch gates.
+© Darb — [darb.co.il](https://darb.co.il). All rights reserved.
+Built by [Zangeel](https://github.com/b14ckPanther).

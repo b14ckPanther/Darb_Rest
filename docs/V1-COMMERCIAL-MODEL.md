@@ -8,11 +8,11 @@ Previous phase documents describe technical history, not current commercial scop
 
 ## Locked scope
 
-| Plan     | Scope                                                                                                                                                                                                                                                     |
-| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Starter  | One location; premium digital presence; all eight templates, colors, logo, cover, AR/HE/EN, native directionality, menu QR access, rich dishes, variants/modifiers, availability, hours, contact and social information. No cart or reservation requests. |
-| Pro      | Starter plus session cart, structured WhatsApp order requests, customer details/notes, lightweight WhatsApp reservation requests and priority support. One location.                                                                                      |
-| Business | Pro plus centrally managed locations, branch menus/settings/hours/contact/availability, branch WhatsApp destinations and guided onboarding. Default included-location limit two; commercial limits remain editable.                                       |
+| Plan     | Scope                                                                                                                                                                                                                                                                   |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Starter  | One location; premium digital presence; all nine templates, semantic theme colors, logo, cover, AR/HE/EN, native directionality, menu QR access, rich dishes, variants/modifiers, availability, hours, contact and social information. No cart or reservation requests. |
+| Pro      | Starter plus session cart, structured WhatsApp order requests, customer details/notes, lightweight WhatsApp reservation requests and priority support. One location.                                                                                                    |
+| Business | Pro plus centrally managed locations, branch menus/settings/hours/contact/availability, branch WhatsApp destinations and guided onboarding. Default included-location limit two; commercial limits remain editable.                                                     |
 
 No dish/menu quotas are introduced. Branding and template quality belong to every plan.
 Reservation requests are messages, not confirmed bookings. WhatsApp order requests do

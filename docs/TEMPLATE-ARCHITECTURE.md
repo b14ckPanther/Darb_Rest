@@ -1,4 +1,8 @@
-# Restaurant templates — Phase 10
+# Restaurant templates and theming
+
+> Current catalog: nine templates. The Phase 10 sections below describe how the engine was
+> built; the [Caramel and semantic theming](#caramel-and-semantic-theming) section at the end
+> covers the latest additions.
 
 ## One engine, a growing catalog
 
@@ -8,7 +12,7 @@ preview assets, premium readiness and supported density/media controls. There is
 or maximum template count. The UI registry binds definitions to hero components and scoped styles.
 
 The eight initial designs are Signature, Editorial, Essential, Coffee House, Quick Counter,
-Bold Table, After Dark and Bake & Gather. They have different hero compositions, navigation,
+Bold Table, After Dark and Bake & Gather; Caramel was added later as the ninth. They have different hero compositions, navigation,
 item grids/rows, image proportions, typography scales, spacing and mobile layouts—not just colors.
 Their shared font system remains Ubuntu/Cairo/Heebo.
 
@@ -183,3 +187,44 @@ formatting pass. No migrations or remote commands were run during this validatio
 
 Physical-device, cross-browser, photographic art-direction and production-load certification
 remain outside this evidence. Phase 11 has not started.
+
+## Caramel and semantic theming
+
+### Caramel, the ninth template
+
+Caramel is a warm boutique layout with a category rail, horizontal dish carousels, a detailed
+dish modal, venue information and its own footer. It lives in `packages/ui/src/restaurant/caramel`
+with scoped `caramel.css`, and was added exactly as the extension model above describes: a catalog
+definition in `template-catalog.ts`, a registry binding and localized copy. It reuses the shared
+menu model, `OrderingMenu` cart and WhatsApp request flow; no schema, pricing or cart code changed.
+Unit tests (`caramel-template.test.ts`) and the E2E template suite cover it alongside the others.
+
+### Semantic theme
+
+`AppearanceSettings.theme` is an optional object of 22 named color roles: brand (primary, accent),
+surfaces (page, card, alternate surface, navigation, modal, footer), text (main, muted, modal,
+footer), interactive elements (buttons, active category, price badge), status (open, closed) and
+details (border, hero overlay). `TEMPLATE_DEFAULT_THEMES` gives every template its own tuned
+defaults; `resolveSemanticTheme` merges the template defaults, the brand colors and any owner
+overrides, and `semanticThemeToCssVars` exposes the result as scoped CSS variables. Snapshots
+without a theme keep rendering exactly as before.
+
+The Appearance editor groups the roles (brand, surfaces, text, interactive, status, advanced),
+supports per-group reset back to the template preset and shows a low-contrast warning using the
+same `contrastRatio` helper as the renderer. Colors are still validated hex values only; there is
+no custom CSS.
+
+### Restaurant utility bar and language switcher
+
+Restaurant pages share a utility bar for language and branch selection. Owners can hide the
+language selector with `showLanguageSwitcher`; the bar hides itself entirely when the selector is
+off and the restaurant has a single branch. Language links keep the branch and cart context.
+
+### Persistence
+
+Migration `20260923000020_semantic_appearance_theme.sql` extends `save_restaurant_appearance` to
+accept the optional, strictly validated `theme` object, and
+`20260923182500_appearance_language_switcher.sql` adds the boolean `showLanguageSwitcher` key.
+Both are additive: the RPC keeps its tenant checks, revision lock and atomic publication, and
+older nine- and ten-key snapshots remain valid. `packages/validation` rejects unknown theme roles
+and malformed colors at the editor boundary.

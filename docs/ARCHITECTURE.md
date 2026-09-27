@@ -6,9 +6,9 @@
 
 ## 1. Project Purpose & Scope
 
-**Darb REST** is an independent, multi-tenant digital restaurant and café engine under the Darb brand family. It powers digital menus, QR ordering, takeaway, table service, and full back-of-house operations.
+**Darb REST** is an independent, multi-tenant restaurant and café platform in the [Darb](https://darb.co.il) product family. The current release powers branded multilingual menu sites, menu QR codes, WhatsApp order and reservation requests, multi-location management and a platform console for customer activation and plans. Stored ordering, payments, table service and kitchen operations exist as dormant foundations (see the note above).
 
-Future public domain:
+Production domain:
 `https://rest.darb.co.il`
 
 ### Independence Principle
@@ -37,13 +37,16 @@ Darb_Rest/
 │   ├── design-tokens/           # Central visual design tokens & CSS custom properties
 │   ├── i18n/                    # Multilingual engine (Arabic, Hebrew, English) with RTL support
 │   ├── icons/                   # Centralized Lucide SVG abstraction (strictly NO emojis)
+│   ├── payments/                # Payment provider interface and local test adapter (dormant)
 │   ├── supabase/                # Supabase client, SSR server client, and admin service-role utilities
 │   ├── types/                   # Multi-tenant domain models, roles, plans, and API contracts
 │   ├── ui/                      # Accessible design system primitives (Button, Card, Modal, etc.)
 │   └── validation/              # Zod validation schemas for tenant, business, and locations
-├── docs/
-│   ├── ARCHITECTURE.md          # Architectural blueprints and patterns (this file)
-│   └── PROGRESS.md              # Project status, milestones, and phase tracking
+├── supabase/
+│   ├── migrations/              # Versioned schema history
+│   ├── tests/                   # pgTAP database assertions
+│   └── seed.sql                 # Local development data
+├── docs/                        # Architecture, subsystem and progress documentation
 ├── e2e/                         # Monorepo-wide Playwright E2E smoke test suite
 ├── package.json                 # Root scripts and workspace devDependencies
 ├── pnpm-workspace.yaml          # Workspace declarations
@@ -60,24 +63,24 @@ Darb_Rest/
 - **Domain**: `rest.darb.co.il` (and tenant sub-paths like `rest.darb.co.il/[business-slug]`)
 - **Audience**: Restaurant & café customers, visitors, and diners.
 - **Responsibilities**:
-  - Digital menu viewing
-  - QR code landing and dine-in table ordering
-  - Takeaway and pickup ordering
-  - Business discovery and public landing pages
+  - Branded restaurant pages and digital menus (`rest.darb.co.il/[business-slug]`)
+  - Menu QR landing
+  - Session cart and WhatsApp order/reservation requests (Pro and Business plans)
+  - Marketing site: pricing, restaurant applications and contact forms
   - Dynamic tenant theme rendering (primary brand colors, hero covers, logos)
   - Full mobile-first optimization (designed for quick dining encounters)
 
 ### `apps/admin` (REST Business Dashboard)
 
-- **Domain**: `admin.rest.darb.co.il` (or business console portal)
-- **Audience**: Business owners, general managers, kitchen staff, and authorized operators.
+- **Domain**: configured through `NEXT_PUBLIC_ADMIN_URL` (a separate origin from the public site)
+- **Audience**: Business owners, managers and editors, plus the Darb platform team (`/platform`).
 - **Responsibilities**:
   - Business profile and branch location management
   - Digital menu authoring (categories, items, modifiers, pricing)
-  - Live order management & kitchen displays
-  - Visual branding and theme customization
-  - Staff role assignment and permission controls
-  - Performance analytics and plan entitlements
+  - Visual branding, templates and semantic theme customization with draft/publish
+  - Branch WhatsApp destinations and publication controls
+  - Account settings and business switching
+  - Platform console: applications, commercial approval, manual billing, activation, plans
 
 ---
 
@@ -94,25 +97,27 @@ graph TD
     Business --> Branches["Branches / Locations"]
     Business --> Menus["Menus & Categories"]
     Business --> Branding["Branding & Theme Overrides"]
-    Branches --> Orders["Orders & Tables"]
+    Branches --> Requests["WhatsApp destinations & hours"]
     Branches --> Staff["Location Staff Scopes"]
 ```
 
 ### Role Hierarchy & Permissions
 
-1. `platform_super_admin`: Full system-level oversight across all tenants.
-2. `business_owner`: Full administrative and commercial control over their business and all branches.
-3. `business_admin`: Operational management over all branches, menus, and branding (excluding billing).
-4. `manager`: Branch-level operational control (menus, active orders, operating hours).
-5. `staff_editor`: Menu updates and live order processing.
-6. `read_only`: Reporting and read-only viewing permissions.
+Platform administration is separate from tenant roles: Darb staff are listed in `platform_admins`
+and checked with `is_platform_admin()`. Tenant roles (`TENANT_ROLES` in `@darb-rest/types`) are:
+
+1. `owner`: Full administrative and commercial control over the business and all branches.
+2. `admin`: Management of all branches, menus, branding and publication.
+3. `manager`: Branch-level control (branches, menus, operating hours).
+4. `editor`: Menu content updates.
+5. `staff`: Day-to-day operational access.
+6. `read_only`: Read-only viewing.
 
 ### Unified Restaurant & Café Engine
 
 Restaurants and cafés share the same unified REST core. Differences in workflow (e.g. coffee counter ordering vs. multi-course table service) are configured via:
 
 - `business.type` (`'restaurant'` or `'cafe'`)
-- Configurable settings flags (`allowTableOrdering`, `allowTakeaway`)
 - Layout presets and theme variations
 
 ---
@@ -198,20 +203,22 @@ REST implements a three-tier precedence engine for commercial feature gating:
 Business Feature Override > Plan Entitlements > System Default Fallback
 ```
 
-Features governed by plans include:
+The v1 runtime only honors the eight v1 capabilities (`V1_FEATURE_FLAGS` in `@darb-rest/types`):
 
 - `digital_menu`
 - `qr_codes`
-- `online_ordering`
-- `table_ordering`
-- `takeaway`
-- `online_payments`
-- `advanced_analytics`
-- `custom_domains`
 - `custom_branding`
+- `menu_templates`
+- `cart`
+- `whatsapp_ordering`
+- `reservation_requests`
 - `multi_location`
 
-The resolver evaluates numeric limits and boolean flags centrally via `resolveEntitlements()`, providing callers with unified resolved capabilities without scattered plan checks.
+Legacy flags (online ordering, payments, analytics, custom domains and others) remain in the
+schema for historical data, but overrides cannot re-enable them. The resolver evaluates numeric
+limits and boolean flags centrally via `resolveEntitlements()`. Plans (`starter`, `pro`,
+`business`), prices and limits are defined in the database; see
+[V1-COMMERCIAL-MODEL.md](V1-COMMERCIAL-MODEL.md).
 
 ---
 
@@ -225,7 +232,7 @@ Run from the repository root:
 | `pnpm build`        | Run Turborepo production build across all packages and applications        |
 | `pnpm lint`         | Execute ESLint flat checks across the workspace                            |
 | `pnpm typecheck`    | Strict TypeScript type validation without emitting code                    |
-| `pnpm test`         | Run Vitest unit suites for packages                                        |
+| `pnpm test`         | Run Vitest unit suites and script tests                                    |
 | `pnpm test:e2e`     | Run Playwright end-to-end smoke tests against web and admin shells         |
 | `pnpm format`       | Run Prettier across all source files                                       |
 | `pnpm format:check` | Check code formatting compliance                                           |
@@ -241,7 +248,7 @@ Run from the repository root:
 3. **Contact & Branding**: Public phone, email, website, Instagram, Facebook, and primary/accent brand colors.
 4. **First Branch**: Initial location name, branch slug, physical address line, city, country, optional GPS coordinates.
 5. **Weekly Operating Hours**: 7-day normalized schedule (Monday through Sunday) with open/close intervals and closed day toggling.
-6. **Commercial Plan**: Real database-driven plan tier selection (`starter`, `pro`, `enterprise`) with previewed feature entitlements.
+6. **Commercial Plan**: Real database-driven plan tier selection (`starter`, `pro`, `business`) with previewed feature entitlements. For activated customers the plan is locked to their approved agreement.
 7. **Review & Confirm**: Summary of all configured parameters with atomic creation launch.
 
 ### Safe Resume & Draft Persistence

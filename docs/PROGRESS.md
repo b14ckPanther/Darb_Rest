@@ -1,21 +1,26 @@
 # Darb REST: Roadmap & Progress
 
-## Customer Account Settings — verified-email prerequisite
+Newest entries first. Phase records further down are kept as engineering history.
 
-Migration 18 was operator-applied and its 16 contract assertions passed again locally.
-A new rollback regression fails because changing an activated user's verified Auth email
-breaks subsequent activation/onboarding updates. Migration 19 narrowly fixes stable account
-identity after activation; it is prepared, not applied. Existing email checks before activation,
-immutable agreement terms, paid-access checks and account binding remain intact.
-Application implementation is paused at the user's mandatory migration boundary; see
-[CUSTOMER-ACTIVATION.md](CUSTOMER-ACTIVATION.md). No emails or invitations were sent.
+## Current status — September 2026
 
-## Customer activation and manual billing — database prerequisite
+Darb REST v1 is live at [rest.darb.co.il](https://rest.darb.co.il) as part of
+[Darb](https://darb.co.il). Recent work since the v1 commercial alignment:
 
-Migration 18 and local contract tests are prepared for operator application. See
-[CUSTOMER-ACTIVATION.md](CUSTOMER-ACTIVATION.md). This is not a completed activation
-release: billing UI, email adapters, Auth invites/password setup and locked onboarding UI
-remain pending. No migration, email, external configuration or push was executed.
+- **Caramel template.** Ninth template with category rails, horizontal dish carousels, a
+  detailed dish modal, venue and footer sections, fully localized and wired into the shared
+  cart and WhatsApp flows. Unit and E2E coverage added.
+- **Semantic theme studio.** 22 named color roles with per-template defaults, grouped editor
+  controls, per-group reset and low-contrast warnings. Persisted through migration 20.
+- **Restaurant utility bar.** Integrated language and branch controls on restaurant pages,
+  with an owner setting to hide the language selector (migration `20260923182500`).
+- **Customer activation and manual billing.** Commercial approval, immutable agreements,
+  bit/bank-transfer payment recording, account invitations, account settings and locked
+  onboarding. Migrations 18 and 19 are applied; see [CUSTOMER-ACTIVATION.md](CUSTOMER-ACTIVATION.md).
+  Production email delivery depends on Supabase custom SMTP and a configured transactional
+  adapter; unconfigured mail stays queued rather than being faked.
+
+Details: [TEMPLATE-ARCHITECTURE.md](TEMPLATE-ARCHITECTURE.md#caramel-and-semantic-theming).
 
 ## V1 commercial alignment — implemented and locally validated
 
