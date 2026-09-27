@@ -1,7 +1,6 @@
 import React from "react";
 import { type SupportedLocale, isValidLocale, DEFAULT_LOCALE } from "@darb-rest/i18n";
-import { Header } from "../../../components/header";
-import { Footer } from "../../../components/footer";
+import { MarketingShell } from "../../../components/marketing/marketing-shell";
 import { ContactForm } from "../../../components/contact-form";
 import { IconMail, IconPhone, IconMapPin, IconClock } from "@darb-rest/icons";
 
@@ -65,8 +64,7 @@ export default async function ContactPage({
   }[currentLocale];
 
   return (
-    <>
-      <Header solid />
+    <MarketingShell locale={currentLocale} solid>
       <main className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-primary)]/10 text-[var(--color-primary)] border border-[var(--color-primary)]/20 mb-4">
@@ -160,7 +158,6 @@ export default async function ContactPage({
           </div>
         </div>
       </main>
-      <Footer locale={currentLocale} />
-    </>
+    </MarketingShell>
   );
 }

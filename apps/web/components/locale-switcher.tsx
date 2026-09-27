@@ -12,7 +12,7 @@ export function LocaleSwitcher({
   variant = "default",
 }: {
   currentLocale: SupportedLocale;
-  variant?: "default" | "compact" | "footer";
+  variant?: "default" | "compact" | "footer" | "signage" | "signage-compact";
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -36,6 +36,30 @@ export function LocaleSwitcher({
     rememberLocalePosition(newPath, segments.length === 1);
     router.push(`${newPath}${window.location.search}${window.location.hash}`, { scroll: false });
   };
+
+  if (variant === "signage" || variant === "signage-compact") {
+    const compact = variant === "signage-compact";
+    return (
+      <div className="rs-locales">
+        {SUPPORTED_LOCALES.map((localeCode) => {
+          const config = LOCALE_CONFIGS[localeCode];
+          return (
+            <button
+              key={localeCode}
+              lang={compact ? "en" : localeCode}
+              dir={compact || localeCode === "en" ? "ltr" : "rtl"}
+              type="button"
+              onClick={() => handleLocaleChange(localeCode)}
+              aria-current={currentLocale === localeCode ? "true" : undefined}
+              aria-label={`Switch language to ${config.name}`}
+            >
+              {compact ? config.code.toUpperCase() : config.nativeName}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (variant === "footer") {
     return (

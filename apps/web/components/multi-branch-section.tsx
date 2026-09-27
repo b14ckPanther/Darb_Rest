@@ -1,10 +1,11 @@
 import React from "react";
 import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
-import { IconMapPin, IconClock } from "@darb-rest/icons";
+import { IconClock, IconMapPin } from "@darb-rest/icons";
+import { DoorwayOutline } from "./marketing/doorway";
 
+/** Every location is another doorway on the same route, managed from one place. */
 export function MultiBranchSection({ locale }: { locale: SupportedLocale }) {
   const dict = getDictionary(locale);
-
   const points = [
     { icon: <IconMapPin size={18} />, text: dict.web.branchPoint1 },
     { icon: <IconClock size={18} />, text: dict.web.branchPoint2 },
@@ -12,86 +13,34 @@ export function MultiBranchSection({ locale }: { locale: SupportedLocale }) {
   ];
 
   return (
-    <section
-      className="relative bg-[var(--warm-bone)]"
-      style={{ paddingBlock: "var(--section-py)" }}
-    >
-      <div className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--content-max)" }}>
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* Visual Column — Abstract branch visualization */}
-          <div className="reveal order-2 lg:order-1">
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
-              {["A", "B", "C", "D"].map((branch, i) => (
-                <div
-                  key={branch}
-                  className={`reveal reveal-delay-${i + 1} rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--bg-surface)] p-4 transition-all hover:shadow-[var(--shadow-md)] sm:p-5`}
-                  style={{ transitionDuration: "var(--motion-medium)" }}
-                >
-                  <div className="mb-3 flex items-center gap-2">
-                    <div
-                      className={`h-2.5 w-2.5 rounded-full ${i === 0 ? "bg-[var(--color-primary)]" : "bg-[var(--color-success)]"}`}
-                    />
-                    <div className="h-2 w-16 rounded-full bg-[var(--fg-default)]/15" />
-                  </div>
-                  <div className="space-y-2">
-                    <div className="h-2 w-full rounded-full bg-[var(--fg-default)]/8" />
-                    <div className="h-2 w-3/4 rounded-full bg-[var(--fg-default)]/8" />
-                    <div className="flex items-center gap-1.5 pt-1">
-                      <div className="h-1.5 w-1.5 rounded-full bg-[var(--color-primary)]/40" />
-                      <div className="h-1.5 w-12 rounded-full bg-[var(--fg-default)]/8" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Text Column */}
-          <div className="reveal order-1 lg:order-2">
-            <h2
-              className="font-bold text-[var(--fg-default)]"
-              style={{
-                fontSize: "var(--text-display)",
-                lineHeight: "var(--leading-display)",
-                letterSpacing: "var(--tracking-tight)",
-              }}
-            >
-              {dict.web.branchTitle}
-            </h2>
-            <p
-              className="mt-5 max-w-lg text-[var(--fg-muted)]"
-              style={{
-                fontSize: "var(--text-body-lg)",
-                lineHeight: "var(--leading-body)",
-              }}
-            >
-              {dict.web.branchDesc}
-            </p>
-
-            {/* Feature Points */}
-            <div className="mt-8 space-y-4">
-              {points.map((point, i) => (
-                <div key={i} className={`reveal reveal-delay-${i + 1} flex items-center gap-3`}>
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-[var(--darb-green-deep)] text-white">
-                    {point.icon}
-                  </span>
-                  <span
-                    className="font-medium text-[var(--fg-default)]"
-                    style={{ fontSize: "var(--text-body)" }}
-                  >
-                    {point.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
+    <section className="rs-route rs-route--canvas rs-section" aria-labelledby="rs-branches-title">
+      <div className="rs-rail rs-rail--waypoint" aria-hidden="true" />
+      <div className="rs-shell rs-shell--railed rs-branches">
+        <div>
+          <h2 id="rs-branches-title" className="rs-heading">
+            {dict.web.branchTitle}
+          </h2>
+          <p className="rs-lead">{dict.web.branchDesc}</p>
+          <ul className="rs-points">
+            {points.map((point) => (
+              <li key={point.text}>
+                {point.icon}
+                <span>{point.text}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="rs-doorways" aria-hidden="true">
+          <DoorwayOutline lit />
+          <DoorwayOutline />
+          <DoorwayOutline />
+          <DoorwayOutline />
         </div>
       </div>
     </section>
   );
 }
 
-// Re-export icon used inline
 function IconStore({ size }: { size: number }) {
   return (
     <svg

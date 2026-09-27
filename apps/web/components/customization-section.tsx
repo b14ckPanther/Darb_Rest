@@ -1,10 +1,32 @@
 import React from "react";
 import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
-import { IconCheck } from "@darb-rest/icons";
+import { doorwayFramePath, doorwayOpeningPath } from "./marketing/doorway";
+
+/** Illustrative palettes only: the same menu structure dressed in three identities. */
+const studies = [
+  { ground: "#0f3326", line: "#daa64d", frame: "#0a2119" },
+  { ground: "#f6efe2", line: "#b4553a", frame: "#e3d8c4" },
+  { ground: "#24272d", line: "#e0a84a", frame: "#16181c" },
+] as const;
+
+function MenuStudy({ ground, line, frame }: (typeof studies)[number]) {
+  return (
+    <svg viewBox="0 0 64 96" aria-hidden="true" focusable="false">
+      <path d={doorwayFramePath} fill={frame} className="rs-swatch__frame" />
+      <path d={doorwayOpeningPath} fill={ground} />
+      <g className="rs-swatch__line" stroke={line}>
+        <circle cx="32" cy="43" r="3.4" />
+        <path d="M25 51h14" />
+        <path d="M17 58h6M26 58h6M35 58h6" opacity="0.7" />
+        <path d="M17 66h20M17 74h16M17 82h22M17 90h14" opacity="0.8" />
+        <path d="M44 66h3M44 74h3M44 82h3M44 90h3" />
+      </g>
+    </svg>
+  );
+}
 
 export function CustomizationSection({ locale }: { locale: SupportedLocale }) {
   const dict = getDictionary(locale);
-
   const points = [
     dict.web.customizePoint1,
     dict.web.customizePoint2,
@@ -13,101 +35,30 @@ export function CustomizationSection({ locale }: { locale: SupportedLocale }) {
   ];
 
   return (
-    <section
-      id="restaurants"
-      className="relative bg-[var(--darb-green-deep)] text-white"
-      style={{ paddingBlock: "var(--section-py)" }}
-    >
-      <div className="mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--content-max)" }}>
-        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
-          {/* Text Column */}
-          <div className="reveal">
-            <h2
-              className="font-bold"
-              style={{
-                fontSize: "var(--text-display)",
-                lineHeight: "var(--leading-display)",
-                letterSpacing: "var(--tracking-tight)",
-              }}
-            >
-              {dict.web.customizeTitle}
-            </h2>
-            <p
-              className="mt-5 max-w-lg text-white/70"
-              style={{
-                fontSize: "var(--text-body-lg)",
-                lineHeight: "var(--leading-body)",
-              }}
-            >
-              {dict.web.customizeDesc}
-            </p>
-
-            {/* Feature Points */}
-            <ul className="mt-8 space-y-4" role="list">
-              {points.map((point, i) => (
-                <li key={i} className={`reveal reveal-delay-${i + 1} flex items-start gap-3`}>
-                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-[var(--color-primary-fg)]">
-                    <IconCheck size={14} />
-                  </span>
-                  <span
-                    className="text-white/90 font-medium"
-                    style={{ fontSize: "var(--text-body-lg)" }}
-                  >
-                    {point}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Visual Column — Abstract product frame */}
-          <div className="reveal reveal-delay-2">
-            <div className="relative overflow-hidden rounded-[var(--radius-xl)] bg-[var(--darb-green-mid)] p-1">
-              <div className="rounded-[calc(var(--radius-xl)-4px)] bg-[var(--darb-green-dark)]/50 p-6 sm:p-8">
-                {/* Abstract UI Frame */}
-                <div className="space-y-4">
-                  {/* Brand bar mockup */}
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-[var(--radius-md)] bg-[var(--color-primary)]/30" />
-                    <div className="space-y-1.5">
-                      <div className="h-3 w-28 rounded-full bg-white/20" />
-                      <div className="h-2 w-20 rounded-full bg-white/10" />
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-white/10" />
-
-                  {/* Menu categories mockup */}
-                  <div className="flex gap-2">
-                    <div className="rounded-full bg-[var(--color-primary)]/25 px-4 py-1.5">
-                      <div className="h-2.5 w-12 rounded-full bg-[var(--color-primary)]" />
-                    </div>
-                    <div className="rounded-full bg-white/5 px-4 py-1.5">
-                      <div className="h-2.5 w-16 rounded-full bg-white/15" />
-                    </div>
-                    <div className="hidden rounded-full bg-white/5 px-4 py-1.5 sm:block">
-                      <div className="h-2.5 w-10 rounded-full bg-white/15" />
-                    </div>
-                  </div>
-
-                  {/* Menu items mockup */}
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {[1, 2, 3, 4].map((n) => (
-                      <div key={n} className="flex gap-3 rounded-[var(--radius-md)] bg-white/5 p-3">
-                        <div className="h-14 w-14 shrink-0 rounded-[var(--radius-sm)] bg-white/10" />
-                        <div className="flex-1 space-y-1.5 pt-1">
-                          <div className="h-2.5 w-3/4 rounded-full bg-white/20" />
-                          <div className="h-2 w-1/2 rounded-full bg-white/10" />
-                          <div className="h-2.5 w-10 rounded-full bg-[var(--color-primary)]/40" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+    <section id="restaurants" className="rs-place rs-section" aria-labelledby="rs-brand-title">
+      <div className="rs-rail rs-rail--waypoint" aria-hidden="true" />
+      <div className="rs-shell rs-shell--railed rs-brand">
+        <div>
+          <h2 id="rs-brand-title" className="rs-heading">
+            {dict.web.customizeTitle}
+          </h2>
+          <p className="rs-lead">{dict.web.customizeDesc}</p>
+          <ul className="rs-checks">
+            {points.map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
         </div>
+        <figure className="rs-brand__studies" style={{ margin: 0 }}>
+          <div className="rs-swatches">
+            {studies.map((study) => (
+              <div className="rs-swatch" key={study.ground}>
+                <MenuStudy {...study} />
+              </div>
+            ))}
+          </div>
+          <figcaption className="rs-brand__note">{dict.web.brandStudiesNote}</figcaption>
+        </figure>
       </div>
     </section>
   );

@@ -2,8 +2,7 @@ import { getCommercialPlans } from "@darb-rest/supabase/commercial";
 import Link from "next/link";
 import { getDictionary, type SupportedLocale } from "@darb-rest/i18n";
 import { requestedPlanSchema } from "@darb-rest/validation";
-import { Header } from "../../../components/header";
-import { Footer } from "../../../components/footer";
+import { MarketingShell } from "../../../components/marketing/marketing-shell";
 import { AcquisitionForm } from "../../../components/acquisition-form";
 export async function generateMetadata({
   params,
@@ -26,8 +25,7 @@ export default async function GetStarted({
   const plans = await getCommercialPlans();
   const plan = requestedPlanSchema.safeParse(query.plan);
   return (
-    <>
-      <Header solid />
+    <MarketingShell locale={locale} solid>
       <main className="mx-auto max-w-6xl px-5 pb-16 pt-28 sm:px-8 sm:pt-36">
         <div className="grid items-start gap-9 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <div className="space-y-5 lg:sticky lg:top-28">
@@ -56,7 +54,6 @@ export default async function GetStarted({
           </div>
         </div>
       </main>
-      <Footer locale={locale} />
-    </>
+    </MarketingShell>
   );
 }

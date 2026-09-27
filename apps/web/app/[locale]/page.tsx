@@ -1,7 +1,7 @@
 import { HomeScrollRestoration } from "../../components/home-scroll-restoration";
-import React from "react";
+import React, { Suspense } from "react";
 import type { SupportedLocale } from "@darb-rest/i18n";
-import { Header } from "../../components/header";
+import { MarketingShell } from "../../components/marketing/marketing-shell";
 import { Hero } from "../../components/hero";
 import { ValueSection } from "../../components/value-section";
 import { ExperienceSection } from "../../components/experience-section";
@@ -10,8 +10,6 @@ import { MultiBranchSection } from "../../components/multi-branch-section";
 import { MenuPreviewSection } from "../../components/menu-preview-section";
 import { PlansTeaser } from "../../components/plans-teaser";
 import { FinalCta } from "../../components/final-cta";
-import { Footer } from "../../components/footer";
-import { RevealProvider } from "../../components/reveal-provider";
 
 export default async function WebHomePage({
   params,
@@ -21,22 +19,24 @@ export default async function WebHomePage({
   const { locale } = await params;
 
   return (
-    <>
-      <Header />
+    <MarketingShell locale={locale} arrival>
       <main>
         <Hero locale={locale} />
-        <RevealProvider>
-          <ValueSection locale={locale} />
-          <ExperienceSection locale={locale} />
-          <CustomizationSection locale={locale} />
-          <MultiBranchSection locale={locale} />
-          <MenuPreviewSection locale={locale} />
+        <ValueSection locale={locale} />
+        <ExperienceSection locale={locale} />
+        <CustomizationSection locale={locale} />
+        <MultiBranchSection locale={locale} />
+        <MenuPreviewSection locale={locale} />
+        <Suspense
+          fallback={
+            <div className="rs-route rs-route--canvas rs-plans-pending" aria-hidden="true" />
+          }
+        >
           <PlansTeaser locale={locale} />
-          <FinalCta locale={locale} />
-        </RevealProvider>
+        </Suspense>
+        <FinalCta locale={locale} />
       </main>
-      <Footer locale={locale} />
       <HomeScrollRestoration />
-    </>
+    </MarketingShell>
   );
 }

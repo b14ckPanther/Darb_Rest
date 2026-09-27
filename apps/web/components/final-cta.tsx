@@ -2,54 +2,26 @@ import Link from "next/link";
 import React from "react";
 import { getDictionary, getDirection, type SupportedLocale } from "@darb-rest/i18n";
 import { ArrowEnd } from "@darb-rest/icons";
+import { DoorwayOutline } from "./marketing/doorway";
 
+/** The close: the same lit doorway, now held open for the next restaurant. */
 export function FinalCta({ locale }: { locale: SupportedLocale }) {
   const dict = getDictionary(locale);
   const direction = getDirection(locale);
 
   return (
-    <section
-      className="relative bg-[var(--darb-green-deep)] text-white"
-      style={{ paddingBlock: "var(--section-py)" }}
-    >
-      {/* Subtle decorative gradient */}
-      <div
-        className="absolute inset-0 bg-gradient-to-br from-[var(--darb-green-mid)]/30 to-transparent"
-        aria-hidden="true"
-      />
-
-      <div className="relative mx-auto px-5 sm:px-8" style={{ maxWidth: "var(--content-narrow)" }}>
-        <div className="reveal text-center">
-          <h2
-            className="font-bold"
-            style={{
-              fontSize: "var(--text-display)",
-              lineHeight: "var(--leading-display)",
-              letterSpacing: "var(--tracking-tight)",
-            }}
-          >
-            {dict.web.finalCtaTitle}
-          </h2>
-          <p
-            className="mx-auto mt-4 max-w-md text-white/70"
-            style={{
-              fontSize: "var(--text-body-lg)",
-              lineHeight: "var(--leading-body)",
-            }}
-          >
-            {dict.web.finalCtaDesc}
-          </p>
-
-          <div className="mt-10">
-            <Link
-              href={`/${locale}/get-started`}
-              className="inline-flex h-14 items-center justify-center gap-2.5 rounded-[var(--radius-md)] bg-[var(--color-primary)] px-8 text-base font-semibold text-[var(--color-primary-fg)] shadow-lg transition-all hover:bg-[var(--color-primary-hover)] hover:-translate-y-0.5 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--darb-green-deep)] active:translate-y-0"
-              style={{ transitionDuration: "var(--motion-fast)" }}
-            >
-              <span>{dict.web.finalCta}</span>
-              <ArrowEnd direction={direction} size={18} />
-            </Link>
-          </div>
+    <section className="rs-place rs-final" aria-labelledby="rs-final-title">
+      <div className="rs-shell">
+        <DoorwayOutline className="rs-final__door" lit />
+        <h2 id="rs-final-title" className="rs-heading">
+          {dict.web.finalCtaTitle}
+        </h2>
+        <p className="rs-lead">{dict.web.finalCtaDesc}</p>
+        <div className="rs-final__actions">
+          <Link className="rs-button rs-button--gold" href={`/${locale}/get-started`}>
+            <span>{dict.web.finalCta}</span>
+            <ArrowEnd className="rs-arrow" direction={direction} size={18} />
+          </Link>
         </div>
       </div>
     </section>

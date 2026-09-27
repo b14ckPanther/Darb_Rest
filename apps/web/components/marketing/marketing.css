@@ -1,0 +1,1605 @@
+/*
+ * Darb REST marketing surfaces: the Restaurant path of Darb.
+ * Scoped to `.rest-site` so tenant restaurant pages keep their own identity.
+ * Grammar shared with darb.co.il: forest places, ivory route, one gold rail with waypoints,
+ * gold reserved for light and for the route.
+ */
+
+.rest-site {
+  --rs-night: #051711;
+  --rs-forest-black: #061a14;
+  --rs-forest-deep: #09291f;
+  --rs-forest: #123c2e;
+  --rs-gold: #daa64d;
+  --rs-gold-bright: #e9bd69;
+  --rs-gold-soft: #f2e3bd;
+  --rs-gold-ink: #6d4c17;
+  --rs-gold-deep: #8c6119;
+  --rs-light: #f3d59b;
+  --rs-ivory: #fffdf6;
+  --rs-canvas: #f2f0e9;
+  --rs-ink: #10241c;
+  --rs-muted: #56615b;
+  --rs-on-dark: #fffdf6;
+  --rs-on-dark-muted: rgb(255 253 246 / 74%);
+  --rs-on-dark-faint: rgb(255 253 246 / 58%);
+  --rs-line-dark: rgb(255 253 246 / 14%);
+  --rs-line-light: rgb(16 36 28 / 14%);
+  --rs-radius: 2px;
+  --rs-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --rs-header: 4.5rem;
+  --rs-shell: min(calc(100% - 2.5rem), 76rem);
+  --rs-gutter: max(1.25rem, calc((100% - 76rem) / 2));
+  --rs-rail-inset: clamp(1.75rem, 4vw, 4rem);
+  --rs-door-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 96' preserveAspectRatio='none'%3E%3Cpath d='M11 96V38Q11 33.5 15 32L49 18Q53 17.5 53 22V96Z'/%3E%3C/svg%3E");
+
+  /* Re-theme the shared tokens inside the marketing scope only. */
+  --color-primary: var(--rs-gold);
+  --color-primary-hover: var(--rs-gold-bright);
+  --color-primary-fg: var(--rs-forest-black);
+  --focus-ring: rgb(218 166 77 / 55%);
+  --darb-green-deep: var(--rs-forest-deep);
+  --darb-green-dark: var(--rs-night);
+  --darb-green-mid: var(--rs-forest);
+  --warm-ivory: var(--rs-ivory);
+  --warm-bone: var(--rs-canvas);
+  --warm-cream: #e8e3d6;
+  --graphite: var(--rs-forest-black);
+  --graphite-light: #133426;
+  --charcoal: var(--rs-ink);
+  --warm-stone: var(--rs-muted);
+  --fg-default: var(--rs-ink);
+  --fg-muted: var(--rs-muted);
+  --bg-surface: var(--rs-ivory);
+  --bg-surface-elevated: #f7f4ec;
+  --border-default: rgb(16 36 28 / 16%);
+  --border-subtle: rgb(16 36 28 / 10%);
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 3px;
+  --radius-xl: 4px;
+
+  min-width: 0;
+  overflow-x: clip;
+  color: var(--rs-ink);
+  background: var(--rs-ivory);
+}
+
+.rest-site :focus-visible {
+  outline: 2px solid var(--rs-gold);
+  outline-offset: 3px;
+}
+
+.rest-site .rs-route :focus-visible {
+  outline-color: var(--rs-forest);
+}
+
+.rest-site ::selection {
+  color: var(--rs-forest-black);
+  background: var(--rs-gold-soft);
+}
+
+.rs-shell {
+  width: var(--rs-shell);
+  margin-inline: auto;
+}
+
+.rs-shell--railed {
+  padding-inline-start: var(--rs-rail-inset);
+}
+
+/* Direction-aware arrows */
+
+.rs-arrow {
+  flex: 0 0 auto;
+  transition: transform 220ms var(--rs-ease);
+}
+
+a:hover > .rs-arrow,
+a:focus-visible > .rs-arrow {
+  transform: translateX(4px);
+}
+
+[dir="rtl"] a:hover > .rs-arrow,
+[dir="rtl"] a:focus-visible > .rs-arrow {
+  transform: translateX(-4px);
+}
+
+/* Buttons */
+
+.rs-button {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.7rem 1.35rem;
+  border: 1px solid transparent;
+  border-radius: var(--rs-radius);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    color 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms var(--rs-ease);
+}
+
+.rs-button:active {
+  transform: translateY(1px);
+}
+
+.rs-button--gold {
+  color: var(--rs-forest-black);
+  background: var(--rs-gold);
+}
+
+.rs-button--gold:hover {
+  background: var(--rs-gold-bright);
+}
+
+.rs-button--line {
+  border-color: rgb(255 253 246 / 38%);
+  color: var(--rs-on-dark);
+  background: rgb(5 23 17 / 35%);
+}
+
+.rs-button--line:hover {
+  border-color: var(--rs-gold-soft);
+  background: rgb(5 23 17 / 65%);
+}
+
+.rs-button--compact {
+  min-height: 2.75rem;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Header */
+
+.rs-header {
+  position: fixed;
+  z-index: 50;
+  inset: 0 0 auto;
+  color: var(--rs-on-dark);
+  background: rgb(5 23 17 / 88%);
+  border-block-end: 1px solid var(--rs-line-dark);
+  backdrop-filter: blur(14px) saturate(140%);
+  view-transition-name: rest-header;
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rs-header:not(.rs-header--solid) {
+      animation: rs-header-settle linear both;
+      animation-range: 0 30vh;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+@keyframes rs-header-settle {
+  from {
+    border-block-end-color: transparent;
+    background: rgb(5 23 17 / 0%);
+    backdrop-filter: blur(0) saturate(100%);
+  }
+}
+
+.rs-header__bar {
+  display: flex;
+  width: min(calc(100% - 2.5rem), 84rem);
+  min-height: var(--rs-header);
+  align-items: center;
+  gap: 1rem;
+  margin-inline: auto;
+}
+
+.rs-header__home {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.rs-header__home img {
+  display: block;
+  width: auto;
+  height: 2.5rem;
+}
+
+.rs-header__nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
+  margin-inline-start: clamp(1.5rem, 4vw, 3.5rem);
+}
+
+.rs-header__nav a,
+.rs-header__sign-in {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--rs-on-dark-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 160ms ease;
+}
+
+.rs-header__nav a::after {
+  position: absolute;
+  inset: auto 0 0.45rem;
+  height: 1px;
+  background: var(--rs-gold);
+  content: "";
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms var(--rs-ease);
+}
+
+[dir="rtl"] .rs-header__nav a::after {
+  transform-origin: right;
+}
+
+.rs-header__nav a:hover,
+.rs-header__nav a:focus-visible,
+.rs-header__sign-in:hover,
+.rs-header__sign-in:focus-visible {
+  color: var(--rs-on-dark);
+}
+
+.rs-header__nav a:hover::after,
+.rs-header__nav a:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.rs-header__actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: clamp(0.75rem, 1.5vw, 1.35rem);
+  margin-inline-start: auto;
+}
+
+.rs-header__compact {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+  margin-inline-start: auto;
+}
+
+.rs-menu-button {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid rgb(255 253 246 / 28%);
+  border-radius: var(--rs-radius);
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rs-menu-button:hover {
+  border-color: var(--rs-gold-soft);
+}
+
+/* Trilingual locale links (signage) */
+
+.rs-locales {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.rs-locales button {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.4rem;
+  border: 0;
+  color: var(--rs-on-dark-faint);
+  background: none;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: color 160ms ease;
+}
+
+.rs-locales button:hover {
+  color: var(--rs-on-dark);
+}
+
+.rs-locales button[aria-current="true"] {
+  color: var(--rs-on-dark);
+  text-decoration: underline;
+  text-decoration-color: var(--rs-gold);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.45rem;
+}
+
+/* Directory (mobile navigation) */
+
+.rs-directory {
+  width: min(100vw, 30rem);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 0 0 auto;
+  padding: 0;
+  border: 0;
+  color: var(--rs-on-dark);
+  background: var(--rs-forest-black);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+[dir="rtl"] .rs-directory {
+  margin: 0 auto 0 0;
+}
+
+.rs-directory::backdrop {
+  background: rgb(2 12 9 / 70%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rs-directory[open] {
+    animation: rs-directory-open 420ms var(--rs-ease) both;
+  }
+
+  [dir="rtl"] .rs-directory[open] {
+    animation-name: rs-directory-open-rtl;
+  }
+
+  .rs-directory[open] .rs-directory__links a {
+    animation: rs-row-in 480ms var(--rs-ease) both;
+  }
+
+  .rs-directory[open] .rs-directory__links a:nth-child(2) {
+    animation-delay: 40ms;
+  }
+
+  .rs-directory[open] .rs-directory__links a:nth-child(3) {
+    animation-delay: 80ms;
+  }
+
+  .rs-directory[open] .rs-directory__links a:nth-child(4) {
+    animation-delay: 120ms;
+  }
+}
+
+@keyframes rs-directory-open {
+  from {
+    clip-path: inset(0 0 0 100%);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes rs-directory-open-rtl {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes rs-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+.rs-directory__panel {
+  display: grid;
+  min-height: 100%;
+  grid-template-rows: auto 1fr auto;
+  padding: 1rem 1.25rem 1.5rem;
+}
+
+.rs-directory__header {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block-end: 1rem;
+  border-block-end: 1px solid var(--rs-line-dark);
+}
+
+.rs-directory__links {
+  display: grid;
+  align-content: start;
+  padding-block: 1rem 2rem;
+}
+
+.rs-directory__links a {
+  display: flex;
+  min-height: 4.25rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-block-end: 1px solid var(--rs-line-dark);
+  color: var(--rs-on-dark);
+  font-size: clamp(1.4rem, 6vw, 1.9rem);
+  font-weight: 500;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.rs-directory__links a .rs-arrow {
+  color: var(--rs-gold);
+}
+
+.rs-directory__footer {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.rs-directory__footer .rs-button {
+  width: 100%;
+}
+
+/* Arrival handoff from darb.co.il */
+
+.rs-arrival-veil {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rs-arrival-veil[data-play] {
+    position: fixed;
+    z-index: 60;
+    display: block;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 60% 70% at 50% 45%,
+      #fff4d6 0%,
+      var(--rs-light) 45%,
+      #e7bf77 100%
+    );
+    pointer-events: none;
+    animation: rs-veil-out 760ms var(--rs-ease) 80ms both;
+  }
+}
+
+@keyframes rs-veil-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Hero: the lit door opens into the restaurant */
+
+.rs-hero {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  align-items: center;
+  overflow: clip;
+  color: var(--rs-on-dark);
+  background:
+    radial-gradient(ellipse 45% 60% at 72% 50%, rgb(218 166 77 / 16%), transparent 70%),
+    var(--rs-night);
+  isolation: isolate;
+}
+
+[dir="rtl"] .rs-hero {
+  background:
+    radial-gradient(ellipse 45% 60% at 28% 50%, rgb(218 166 77 / 16%), transparent 70%),
+    var(--rs-night);
+}
+
+.rs-hero__inner {
+  display: grid;
+  width: var(--rs-shell);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(2rem, 6vw, 6rem);
+  margin-inline: auto;
+  padding-block: calc(var(--rs-header) + 2rem) 3rem;
+}
+
+.rs-hero__copy {
+  max-width: 38rem;
+}
+
+.rs-hero h1 {
+  margin: 0;
+  color: var(--rs-on-dark);
+  font-size: clamp(2.6rem, 1.2rem + 4.2vw, 5.25rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+html[lang="ar"] .rs-hero h1 {
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.25;
+}
+
+html[lang="he"] .rs-hero h1 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.rs-hero__path {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 1.5rem;
+  color: var(--rs-gold-soft);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.rs-hero__path a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgb(218 166 77 / 55%);
+  text-underline-offset: 0.3rem;
+}
+
+.rs-hero__path .rs-diamond {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--rs-gold);
+  transform: rotate(45deg);
+}
+
+.rs-hero__subtitle {
+  max-width: 32rem;
+  margin: 1.5rem 0 0;
+  color: var(--rs-on-dark-muted);
+  font-size: clamp(1.02rem, 0.92rem + 0.35vw, 1.2rem);
+  line-height: 1.7;
+}
+
+.rs-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: 2.25rem;
+}
+
+/* The doorway frame: architecture from darb.co.il, never mirrored. */
+
+.rs-door {
+  position: relative;
+  height: min(78svh, 44rem);
+  aspect-ratio: 64 / 96;
+}
+
+.rs-door::before {
+  position: absolute;
+  z-index: -1;
+  inset: 12% -30% -6%;
+  background: radial-gradient(ellipse 50% 55% at 50% 60%, rgb(243 213 155 / 34%), transparent 70%);
+  content: "";
+  filter: blur(8px);
+}
+
+.rs-door__view {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  -webkit-mask: var(--rs-door-mask) center / 100% 100% no-repeat;
+  mask: var(--rs-door-mask) center / 100% 100% no-repeat;
+}
+
+.rs-door__view picture,
+.rs-door__view img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.rs-door__view img {
+  object-fit: cover;
+  object-position: 42% 55%;
+}
+
+.rs-door__light {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #fff4d6, var(--rs-light) 60%, #e7bf77);
+  opacity: 0;
+}
+
+.rs-door__frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.rs-door__frame-body {
+  fill: var(--rs-forest-deep);
+}
+
+.rs-door__frame-rim {
+  fill: none;
+  stroke: var(--rs-gold);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-door__floor {
+  position: absolute;
+  inset: auto -40% -1px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--rs-gold) 30%,
+    var(--rs-gold) 70%,
+    transparent
+  );
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rs-door__light {
+    animation: rs-door-open 1100ms var(--rs-ease) 120ms both;
+  }
+
+  .rs-door__view img {
+    animation: rs-door-settle 1600ms var(--rs-ease) both;
+  }
+
+  .rs-arrival-veil[data-play] ~ main .rs-door__light {
+    animation-duration: 1500ms;
+    animation-delay: 380ms;
+  }
+}
+
+@keyframes rs-door-open {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes rs-door-settle {
+  from {
+    transform: scale(1.12);
+  }
+}
+
+/* The route: ivory ground carrying one gold rail */
+
+.rs-route {
+  position: relative;
+  color: var(--rs-ink);
+  background: var(--rs-ivory);
+}
+
+.rs-route--canvas {
+  background: var(--rs-canvas);
+}
+
+.rs-rail {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: var(--rs-gutter);
+  width: 1px;
+  background: var(--rs-gold);
+  transform-origin: top;
+}
+
+.rs-rail--waypoint::before {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: -4px;
+  width: 9px;
+  height: 9px;
+  background: var(--rs-gold);
+  content: "";
+  transform: translateY(-50%) rotate(45deg);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rs-rail {
+      animation: rs-rail-draw linear both;
+      animation-range: entry 10% cover 55%;
+      animation-timeline: view();
+    }
+  }
+}
+
+@keyframes rs-rail-draw {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+.rs-section {
+  padding-block: clamp(4.5rem, 9vw, 8rem);
+}
+
+.rs-heading {
+  margin: 0;
+  font-size: clamp(2rem, 1.1rem + 3vw, 3.9rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+html[lang="ar"] .rs-heading {
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+html[lang="he"] .rs-heading {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.14;
+}
+
+.rs-lead {
+  max-width: 40rem;
+  margin: 1.25rem 0 0;
+  color: var(--rs-muted);
+  font-size: clamp(1.02rem, 0.95rem + 0.25vw, 1.15rem);
+  line-height: 1.7;
+  text-wrap: pretty;
+}
+
+.rs-place .rs-lead {
+  color: var(--rs-on-dark-muted);
+}
+
+/* Value: signed waypoints */
+
+.rs-values__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  align-items: end;
+  gap: 1.5rem clamp(2rem, 5vw, 5rem);
+}
+
+.rs-values__intro .rs-lead {
+  margin: 0;
+}
+
+.rs-signs {
+  display: grid;
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  padding: 0;
+  border-block-start: 1px solid var(--rs-line-light);
+  list-style: none;
+}
+
+.rs-signs li {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  align-items: baseline;
+  gap: 0.5rem clamp(2rem, 5vw, 5rem);
+  padding-block: clamp(1.4rem, 2.6vw, 2rem);
+  border-block-end: 1px solid var(--rs-line-light);
+}
+
+.rs-signs li::before {
+  position: absolute;
+  inset-block-start: calc(clamp(1.4rem, 2.6vw, 2rem) + 0.55rem);
+  inset-inline-start: calc(-1 * var(--rs-rail-inset) - 4px);
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--rs-gold);
+  background: var(--rs-ivory);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.rs-signs h3 {
+  margin: 0;
+  font-size: clamp(1.25rem, 1rem + 0.8vw, 1.7rem);
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.rs-signs p {
+  max-width: 36rem;
+  margin: 0;
+  color: var(--rs-muted);
+  line-height: 1.65;
+}
+
+/* Experience: five stops on the route */
+
+.rs-stops {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 2rem);
+  margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-stops::before {
+  position: absolute;
+  inset-block-start: 1.35rem;
+  inset-inline: 1.35rem 0;
+  height: 1px;
+  background: var(--rs-gold);
+  content: "";
+  transform-origin: left;
+}
+
+[dir="rtl"] .rs-stops::before {
+  transform-origin: right;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rs-stops::before {
+      animation: rs-line-draw linear both;
+      animation-range: entry 30% cover 50%;
+      animation-timeline: view();
+    }
+  }
+}
+
+@keyframes rs-line-draw {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+.rs-stops li {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+}
+
+.rs-stop__number {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--rs-gold);
+  border-radius: var(--rs-radius);
+  color: var(--rs-gold-ink);
+  background: var(--rs-ivory);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.rs-stops li:last-child .rs-stop__number {
+  border-color: var(--rs-forest-deep);
+  color: var(--rs-gold-soft);
+  background: var(--rs-forest-deep);
+}
+
+.rs-stops h3 {
+  margin: 0.75rem 0 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.rs-stops p {
+  margin: 0;
+  color: var(--rs-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+/* Places: forest rooms entered through an opening */
+
+.rs-place {
+  position: relative;
+  color: var(--rs-on-dark);
+  background: var(--rs-forest-deep);
+}
+
+.rs-place .rs-rail {
+  background: var(--rs-gold);
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rs-place {
+      animation: rs-place-open linear both;
+      animation-range: entry 0% entry 55vh;
+      animation-timeline: view();
+    }
+  }
+}
+
+@keyframes rs-place-open {
+  from {
+    clip-path: inset(0 20% 0 20% round 45vw 45vw 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0);
+  }
+}
+
+/* Brand: the same door in different colours */
+
+.rs-brand {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(3rem, 6vw, 6rem);
+}
+
+.rs-checks {
+  display: grid;
+  gap: 0.9rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-checks li {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: var(--rs-on-dark);
+  font-weight: 500;
+}
+
+.rs-checks li::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  background: var(--rs-gold);
+  content: "";
+  transform: rotate(45deg);
+}
+
+.rs-swatches {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.rs-swatch {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+  margin: 0;
+}
+
+.rs-swatch svg {
+  width: clamp(5rem, 11vw, 9rem);
+  height: auto;
+  overflow: visible;
+}
+
+.rs-swatch:nth-child(2) svg {
+  width: clamp(6.5rem, 14vw, 11.5rem);
+}
+
+.rs-swatch figcaption {
+  color: var(--rs-on-dark-faint);
+  font-size: 0.8rem;
+}
+
+.rs-swatch__frame {
+  stroke: rgb(255 253 246 / 22%);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-swatch__line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-brand__note {
+  margin: 1.5rem 0 0;
+  color: var(--rs-on-dark-faint);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Branches: doorways along the route */
+
+.rs-branches {
+  display: grid;
+  grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+  align-items: center;
+  gap: clamp(3rem, 6vw, 6rem);
+}
+
+.rs-doorways {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-block-end: 1px;
+}
+
+.rs-doorways::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--rs-gold);
+  content: "";
+}
+
+.rs-doorways svg {
+  width: clamp(3.5rem, 8vw, 6rem);
+  height: auto;
+  overflow: visible;
+}
+
+.rs-doorways svg:nth-child(1) {
+  width: clamp(4.5rem, 10vw, 7.5rem);
+}
+
+.rs-doorway__frame {
+  fill: var(--rs-canvas);
+  stroke: rgb(16 36 28 / 50%);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-doorway__light {
+  fill: rgb(218 166 77 / 40%);
+}
+
+.rs-points {
+  display: grid;
+  gap: 0;
+  margin: 2rem 0 0;
+  padding: 0;
+  border-block-start: 1px solid var(--rs-line-light);
+  list-style: none;
+}
+
+.rs-points li {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 0.85rem;
+  border-block-end: 1px solid var(--rs-line-light);
+  font-weight: 600;
+}
+
+.rs-points svg {
+  flex: 0 0 auto;
+  color: var(--rs-gold-ink);
+}
+
+/* Menu anatomy: an elevation of a menu page with callouts */
+
+.rs-anatomy {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(3rem, 6vw, 6rem);
+}
+
+.rs-anatomy__drawing {
+  position: relative;
+  justify-self: center;
+  width: min(100%, 22rem);
+}
+
+.rs-anatomy__drawing svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.rs-anatomy__phone {
+  fill: var(--rs-ivory);
+  stroke: var(--rs-ink);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-anatomy__ink {
+  fill: none;
+  stroke: rgb(16 36 28 / 45%);
+  stroke-linecap: round;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-anatomy__gold {
+  fill: none;
+  stroke: var(--rs-gold-deep);
+  stroke-linecap: round;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+
+.rs-anatomy__fill {
+  fill: rgb(218 166 77 / 22%);
+  stroke: none;
+}
+
+.rs-anatomy__marker {
+  fill: var(--rs-forest-deep);
+}
+
+.rs-anatomy__marker-text {
+  fill: var(--rs-gold-soft);
+  font-size: 11px;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.rs-callouts {
+  display: grid;
+  margin: 2rem 0 0;
+  padding: 0;
+  border-block-start: 1px solid var(--rs-line-light);
+  counter-reset: callout;
+  list-style: none;
+}
+
+.rs-callouts li {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 0.9rem;
+  border-block-end: 1px solid var(--rs-line-light);
+  font-weight: 600;
+}
+
+.rs-callouts li::before {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: var(--rs-radius);
+  color: var(--rs-gold-soft);
+  background: var(--rs-forest-deep);
+  content: counter(callout);
+  counter-increment: callout;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Plans */
+
+.rs-plans__title {
+  margin: 0 0 clamp(2rem, 4vw, 3rem);
+}
+
+/* Final: the door is open */
+
+.rs-final {
+  padding-block: clamp(5rem, 10vw, 8.5rem);
+  background:
+    radial-gradient(ellipse 40% 55% at 50% 100%, rgb(243 213 155 / 22%), transparent 70%),
+    var(--rs-night);
+  text-align: center;
+}
+
+.rs-final__door {
+  width: clamp(3rem, 6vw, 4.25rem);
+  height: auto;
+  margin: 0 auto 2rem;
+  overflow: visible;
+}
+
+.rs-final__door .rs-doorway__frame {
+  fill: var(--rs-forest-deep);
+  stroke: var(--rs-gold);
+}
+
+.rs-final__door .rs-doorway__light {
+  fill: var(--rs-light);
+}
+
+.rs-final .rs-heading {
+  max-width: 20ch;
+  margin-inline: auto;
+}
+
+.rs-final .rs-lead {
+  margin-inline: auto;
+}
+
+.rs-final__actions {
+  display: flex;
+  justify-content: center;
+  margin-block-start: 2.25rem;
+}
+
+/* Footer */
+
+.rs-footer {
+  color: var(--rs-on-dark);
+  background: var(--rs-forest-black);
+  border-block-start: 1px solid var(--rs-line-dark);
+}
+
+.rs-footer__top {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  gap: 2.5rem;
+  padding-block: 4rem 3rem;
+}
+
+.rs-footer__brand {
+  display: grid;
+  align-content: start;
+  gap: 1.1rem;
+}
+
+.rs-footer__brand img {
+  width: auto;
+  height: 2.5rem;
+}
+
+.rs-footer__brand p {
+  max-width: 22rem;
+  margin: 0;
+  color: var(--rs-on-dark-muted);
+}
+
+.rs-footer__darb {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--rs-gold-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.rs-footer__darb:hover {
+  color: var(--rs-gold-bright);
+}
+
+.rs-footer__darb .rs-diamond {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--rs-gold);
+  transform: rotate(45deg);
+}
+
+.rs-footer__column h2 {
+  margin: 0 0 0.75rem;
+  color: var(--rs-on-dark-faint);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.rs-footer__column ul {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rs-footer__column a {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  color: var(--rs-on-dark);
+  font-size: 0.95rem;
+  text-decoration: underline;
+  text-decoration-color: rgb(218 166 77 / 40%);
+  text-underline-offset: 0.35rem;
+}
+
+.rs-footer__column a:hover {
+  text-decoration-color: var(--rs-gold);
+}
+
+.rs-footer__bottom {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-block: 1.25rem 2rem;
+  border-block-start: 1px solid var(--rs-line-dark);
+  color: var(--rs-on-dark-faint);
+  font-size: 0.85rem;
+}
+
+.rs-footer__bottom p {
+  margin: 0;
+}
+
+.rs-footer__credit a {
+  color: var(--rs-on-dark-muted);
+  text-decoration: underline;
+  text-decoration-color: rgb(218 166 77 / 50%);
+  text-underline-offset: 0.3rem;
+}
+
+.rs-footer__credit a:hover {
+  color: var(--rs-on-dark);
+}
+
+/* View transitions between marketing pages */
+
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-old(.rs-page-out) {
+    animation: rs-page-out 180ms ease-out both;
+  }
+
+  ::view-transition-new(.rs-page-in) {
+    animation: rs-page-in 380ms var(--rs-ease) 120ms both;
+  }
+}
+
+@keyframes rs-page-out {
+  to {
+    opacity: 0;
+    transform: translateY(-0.5rem);
+  }
+}
+
+@keyframes rs-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+/* Responsive composition */
+
+@media (max-width: 74.99rem) {
+  .rs-header__nav {
+    display: none;
+  }
+}
+
+@media (max-width: 63.99rem) {
+  .rs-header__actions {
+    display: none;
+  }
+
+  .rs-header__compact {
+    display: flex;
+  }
+
+  .rs-hero {
+    align-items: stretch;
+  }
+
+  .rs-hero__inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(11rem, 1fr) auto;
+    align-items: stretch;
+    gap: 1.5rem;
+    padding-block: calc(var(--rs-header) + 1rem) 2rem;
+  }
+
+  .rs-hero__stage {
+    display: grid;
+    min-height: 0;
+    order: -1;
+    place-items: center;
+  }
+
+  .rs-door {
+    height: 100%;
+    max-height: 30rem;
+  }
+
+  .rs-hero__copy {
+    max-width: 40rem;
+  }
+
+  .rs-values__intro,
+  .rs-signs li,
+  .rs-brand,
+  .rs-branches,
+  .rs-anatomy {
+    grid-template-columns: 1fr;
+  }
+
+  .rs-stops {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    padding-inline-start: 0.5rem;
+  }
+
+  .rs-stops::before {
+    inset-block: 1.35rem 1.35rem;
+    inset-inline: 1.85rem auto;
+    width: 1px;
+    height: auto;
+    transform-origin: top;
+  }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .rs-stops::before {
+        animation-name: rs-rail-draw;
+      }
+    }
+  }
+
+  .rs-stops li {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    column-gap: 1.25rem;
+  }
+
+  .rs-stops li > :not(.rs-stop__number) {
+    grid-column: 2;
+  }
+
+  .rs-stops h3 {
+    margin: 0;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .rs-stop__number {
+    grid-row: 1 / span 2;
+  }
+
+  .rs-footer__top {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rs-footer__brand {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .rest-site {
+    --rs-shell: calc(100% - 2rem);
+    --rs-gutter: 1rem;
+  }
+
+  .rs-header__bar {
+    width: calc(100% - 1.5rem);
+    gap: 0.5rem;
+  }
+
+  .rs-header__home img {
+    height: 2.2rem;
+  }
+
+  .rs-locales button {
+    min-width: 2.75rem;
+    padding-inline: 0.2rem;
+  }
+
+  .rs-hero__actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .rs-hero__actions .rs-button {
+    width: 100%;
+  }
+
+  .rs-hero h1 {
+    font-size: clamp(2.1rem, 1.3rem + 5vw, 3rem);
+  }
+
+  .rs-hero__subtitle {
+    margin-block-start: 1rem;
+  }
+
+  .rs-hero__actions {
+    margin-block-start: 1.5rem;
+  }
+
+  .rs-hero__path {
+    margin-block-end: 0.9rem;
+  }
+
+  .rs-swatches {
+    gap: 0.5rem;
+  }
+
+  .rs-footer__top {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rs-final__actions .rs-button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 25.99rem) {
+  .rs-header__compact .rs-locales button {
+    min-width: 2.75rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rest-site *,
+  .rest-site *::before,
+  .rest-site *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Legacy hero hooks keep their selectors for tests, without the old entrance delay. */
+.rest-site .hero-animate-delay-3 {
+  animation: none;
+}
+
+.rs-footer .rs-diamond {
+  display: inline-block;
+}
+
+.rs-footer__bottom .rs-locales {
+  margin-inline-start: -0.4rem;
+}
+
+@media (max-width: 47.99rem) {
+  .rs-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Short phones: the doorway yields height so both actions stay above the fold. */
+@media (max-width: 47.99rem) and (max-height: 42rem) {
+  .rs-hero__inner {
+    grid-template-rows: minmax(5.5rem, 1fr) auto;
+    gap: 1rem;
+    padding-block: calc(var(--rs-header) + 0.5rem) 1.25rem;
+  }
+
+  .rs-hero h1 {
+    font-size: 1.85rem;
+  }
+
+  .rs-hero__path {
+    margin-block-end: 0.5rem;
+  }
+
+  .rs-hero__subtitle {
+    margin-block-start: 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+
+  .rs-hero__actions {
+    gap: 0.5rem;
+    margin-block-start: 1rem;
+  }
+}
+
+.rs-plans-pending {
+  min-height: 48rem;
+}
