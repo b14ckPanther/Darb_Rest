@@ -839,7 +839,7 @@ export const ar: TranslationDictionary = {
     darbPath: "من مسارات درب",
     navMenuTitle: "التنقل بالموقع",
     footerCreditLead: "تصميم وتطوير",
-    footerCreditName: "نور الدين موسى",
+    footerCreditName: "نور",
     brandStudiesNote: "أمثلة توضيحية لنفس المنيو بألوان مختلفة",
   },
   admin: {

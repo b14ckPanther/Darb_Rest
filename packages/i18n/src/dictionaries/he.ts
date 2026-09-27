@@ -838,7 +838,7 @@ export const he: TranslationDictionary = {
     darbPath: "מסלול של Darb",
     navMenuTitle: "ניווט באתר",
     footerCreditLead: "עיצוב ופיתוח:",
-    footerCreditName: "Nour Alden Mousa",
+    footerCreditName: "Nour",
     brandStudiesNote: "דוגמאות צבע להמחשה של אותו תפריט",
   },
   admin: {

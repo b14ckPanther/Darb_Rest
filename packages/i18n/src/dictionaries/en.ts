@@ -847,7 +847,7 @@ export const en = {
     darbPath: "A Darb path",
     navMenuTitle: "Site navigation",
     footerCreditLead: "Designed and built by",
-    footerCreditName: "Nour Alden Mousa",
+    footerCreditName: "Nour",
     brandStudiesNote: "Illustrative colour studies of one menu",
   },
   admin: {
